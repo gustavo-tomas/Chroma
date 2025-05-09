@@ -1,7 +1,7 @@
 # Brute
 
 ## Tasks 0 (definir requisitos)
-- [ ] Levantamento de projetos correlatos
+- [x] Levantamento de projetos correlatos
 - [ ] Decidir stack a ser utilizado
 
 ## Tasks 1 (fazer o mínimo possível que funcione corretamente)
