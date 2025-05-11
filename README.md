@@ -21,3 +21,4 @@
 
 ## Extras (adicione o que quiser aqui)
 - [ ] Adicionar funcionalidades de input
+- [ ] Linkagem de blocos de codigo entre aba de explicação e editor
