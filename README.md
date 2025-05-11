@@ -9,6 +9,7 @@
 - [ ] Adicionar aba de teoria
 - [ ] Integrar o [ThreeJS](https://github.com/mrdoob/three.js) ao projeto
 - [ ] Adicionar output do shader
+- [ ] Integrar o [CodeMirror](https://github.com/codemirror/dev/) ao projeto
 - [ ] Adicionar aba do editor de fragmento
 - [ ] Adicionar botão para rodar o código
 - [ ] Adicionar aba do editor de vértice
