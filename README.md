@@ -2,7 +2,7 @@
 
 ## Tasks 0 (definir requisitos)
 - [x] Levantamento de projetos correlatos
-- [ ] Decidir stack a ser utilizado
+- [x] Decidir stack a ser utilizado
 
 ## Tasks 1 (fazer o mínimo possível que funcione corretamente)
 - [ ] Criar o projeto com Vanilla JS (`html + js + css`)
