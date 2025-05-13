@@ -5,11 +5,11 @@
 - [x] Decidir stack a ser utilizado
 
 ## Tasks 1 (fazer o mínimo possível que funcione corretamente)
-- [ ] Criar o projeto com Vanilla JS (`html + js + css`)
+- [x] Criar o projeto com Vanilla JS (`html + js + css`)
+- [x] Integrar o [ThreeJS](https://github.com/mrdoob/three.js) ao projeto
+- [x] Integrar o [CodeMirror](https://github.com/codemirror/dev/) ao projeto
 - [ ] Adicionar aba de teoria
-- [ ] Integrar o [ThreeJS](https://github.com/mrdoob/three.js) ao projeto
 - [ ] Adicionar output do shader
-- [ ] Integrar o [CodeMirror](https://github.com/codemirror/dev/) ao projeto
 - [ ] Adicionar aba do editor de fragmento
 - [ ] Adicionar botão para rodar o código
 - [ ] Adicionar aba do editor de vértice
