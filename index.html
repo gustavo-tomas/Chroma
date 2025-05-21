@@ -9,7 +9,10 @@
 </head>
 
 <body>
+  
+  <!-- Main application container -->
   <div id="app">
+    <!-- Left panel: theory/content -->
     <div id="theory-tab">
       Theory tab
       <hr>
@@ -19,13 +22,29 @@
       similique molestiae iusto impedit dolor mollitia itaque, sunt numquam culpa tenetur id nisi aspernatur porro enim
       reprehenderit?
     </div>
+
+    <!-- Vertical resizer between theory and editor -->
+    <div id="resizer"></div>
+
+    <!-- Right panel: code editor above, shader view below -->
     <div id="editor-tab">
-      Editor tab
-      <div id="editor"></div>
-      <canvas id="canvas"></canvas>
+      <!-- Code editor container (height adjustable) -->
+      <div id="code-panel">
+        Editor tab
+        <div id="editor"></div>
+      </div>
+      
+      <!-- Horizontal resizer between code editor and shader view -->
+      <div id="v-resizer"></div>
+
+      <!-- Shader view container -->
+      <div id="view-panel">
+        <canvas id="canvas"></canvas>
+      </div>
     </div>
   </div>
   <script type="module" src="/src/main.js"></script>
 </body>
 
 </html>
+
