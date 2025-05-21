@@ -1,50 +1,47 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <!-- <link rel="icon" type="" href="" /> -->
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Brute</title>
+  </head>
 
-<head>
-  <meta charset="UTF-8" />
-  <!-- <link rel="icon" type="" href="" /> -->
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <title>Brute</title>
-</head>
-
-<body>
-  
-  <!-- Main application container -->
-  <div id="app">
-    <!-- Left panel: theory/content -->
-    <div id="theory-tab">
-      Theory tab
-      <hr>
-      (This sections will be retrieved from the project file)
-      <hr>
-      Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aperiam facere, possimus maiores modi,
-      similique molestiae iusto impedit dolor mollitia itaque, sunt numquam culpa tenetur id nisi aspernatur porro enim
-      reprehenderit?
-    </div>
-
-    <!-- Vertical resizer between theory and editor -->
-    <div id="resizer"></div>
-
-    <!-- Right panel: code editor above, shader view below -->
-    <div id="editor-tab">
-      <!-- Code editor container (height adjustable) -->
-      <div id="code-panel">
-        Editor tab
-        <div id="editor"></div>
+  <body>
+    <!-- Main application container -->
+    <div id="app">
+      <!-- Left panel: theory/content -->
+      <div id="theory-tab">
+        Theory tab
+        <hr />
+        (This sections will be retrieved from the project file)
+        <hr />
+        Lorem ipsum dolor, sit amet consectetur adipisicing elit. Aperiam
+        facere, possimus maiores modi, similique molestiae iusto impedit dolor
+        mollitia itaque, sunt numquam culpa tenetur id nisi aspernatur porro
+        enim reprehenderit?
       </div>
-      
-      <!-- Horizontal resizer between code editor and shader view -->
-      <div id="v-resizer"></div>
 
-      <!-- Shader view container -->
-      <div id="view-panel">
-        <canvas id="canvas"></canvas>
+      <!-- Vertical resizer between theory and editor -->
+      <div id="resizer"></div>
+
+      <!-- Right panel: code editor above, shader view below -->
+      <div id="editor-tab">
+        <!-- Code editor container (height adjustable) -->
+        <div id="code-panel">
+          Editor tab
+          <div id="editor"></div>
+        </div>
+
+        <!-- Horizontal resizer between code editor and shader view -->
+        <div id="v-resizer"></div>
+
+        <!-- Shader view container -->
+        <div id="view-panel">
+          <canvas id="canvas"></canvas>
+        </div>
       </div>
     </div>
-  </div>
-  <script type="module" src="/src/main.js"></script>
-</body>
-
+    <script type="module" src="/src/main.js"></script>
+  </body>
 </html>
-

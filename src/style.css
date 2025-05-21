@@ -1,51 +1,84 @@
+body {
+  margin: 0;
+  padding: 0;
+}
+
 #app {
-    display: flex;
-    height: 100vh;       /* full viewport height */
-    margin: 0;
-  }
-  
-  /* Theory tab on the left */
-  #theory-tab {
-    flex: none;          /* width controlled via JS */
-    width: 300px;        /* initial width */
-    overflow: auto;      /* enable scrolling if content overflows */
-  }
-  
-  /* Vertical resizer bar */
-  #resizer {
-    width: 5px;
-    cursor: ew-resize;   /* horizontal resize cursor */
-    background: rgba(0,0,0,0.1);
-    user-select: none;   /* prevent text selection while dragging */
-    align-self: stretch; /* full height */
-  }
-  
-  /* Editor tab on the right, arranged vertically */
-  #editor-tab {
-    flex: 1;                     /* take remaining width */
-    display: flex;
-    flex-direction: column;      /* stack children vertically */
-    overflow: hidden;
-  }
-  
-  /* Code editor panel (top) */
-  #code-panel {
-    flex: none;                  /* height controlled via JS */
-    height: 200px;               /* initial height */
-    overflow: auto;              /* enable scrolling */
-  }
-  
-  /* Horizontal resizer bar */
-  #v-resizer {
-    height: 5px;
-    cursor: ns-resize;           /* vertical resize cursor */
-    background: rgba(0,0,0,0.1);
-    user-select: none;           /* prevent text selection */
-  }
-  
-  /* Shader view panel (bottom) */
-  #view-panel {
-    flex: 1;                     /* take remaining height */
-    overflow: auto;              /* enable scrolling if needed */
-  }
-  
+  display: flex;
+  height: 100vh;
+  /* full viewport height */
+  margin: 0;
+}
+
+/* Theory tab on the left */
+#theory-tab {
+  flex: none;
+  /* width controlled via JS */
+  width: 300px;
+  /* initial width */
+  overflow: auto;
+  /* enable scrolling if content overflows */
+}
+
+/* Vertical resizer bar */
+#resizer {
+  width: 5px;
+  cursor: ew-resize;
+  /* horizontal resize cursor */
+  background: rgba(0, 0, 0, 0.1);
+  user-select: none;
+  /* prevent text selection while dragging */
+  align-self: stretch;
+  /* full height */
+}
+
+/* Editor tab on the right, arranged vertically */
+#editor-tab {
+  flex: 1;
+  /* take remaining width */
+  display: flex;
+  flex-direction: column;
+  /* stack children vertically */
+  overflow: hidden;
+}
+
+/* Code editor panel (top) */
+#code-panel {
+  flex: none;
+  /* height controlled via JS */
+  height: 200px;
+  /* initial height */
+  overflow: auto;
+  /* enable scrolling */
+}
+
+/* Horizontal resizer bar */
+#v-resizer {
+  height: 5px;
+  cursor: ns-resize;
+  /* vertical resize cursor */
+  background: rgba(0, 0, 0, 0.1);
+  user-select: none;
+  /* prevent text selection */
+}
+
+/* Shader view panel (bottom) */
+#view-panel {
+  flex: 1;
+  /* take remaining height */
+  overflow: hidden;
+  /* prevent scrollbars */
+  position: relative;
+  /* important for canvas positioning */
+}
+
+/* Canvas element styling - makes the canvas fit its container */
+#canvas {
+  display: block;
+  /* removes inline element's default spacing */
+  width: 100%;
+  /* fill the container width */
+  height: 100%;
+  /* fill the container height */
+  position: absolute;
+}
