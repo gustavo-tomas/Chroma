@@ -20,8 +20,8 @@ body {
   /* enable scrolling if content overflows */
 }
 
-/* Vertical resizer bar */
-#resizer {
+/* Horizontal resizer bar */
+#h-resizer {
   width: 5px;
   cursor: ew-resize;
   /* horizontal resize cursor */
