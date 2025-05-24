@@ -1,16 +1,38 @@
 import "./style.css";
 
-import * as GRAPHICS from "./graphics.js";
-import * as EDITOR from "./editor.js";
+import { Graphics } from "./graphics.js";
+import { Editor } from "./editor.js";
 
-GRAPHICS.initializeGraphics();
-EDITOR.initializeEditor();
+const vertexCode = `varying vec3 vUv; 
+void main() {
+    vUv = position; 
+
+    vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
+    gl_Position = projectionMatrix * modelViewPosition; 
+}`;
+
+const fragmentCode = `uniform vec3 colorA;
+uniform vec3 colorB;
+varying vec3 vUv;
+
+void main() {
+    gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
+}
+`;
+
+const graphics = new Graphics(vertexCode, fragmentCode);
+
+function onVertexCodeUpdateCallback(code) {
+  graphics.onVertexCodeUpdate(code);
+}
+
+const editor = new Editor(vertexCode, onVertexCodeUpdateCallback);
 
 // ===== Horizontal Resize (Theory ↔ Editor) =====
 const theoryTab = document.getElementById("theory-tab");
-const resizer = document.getElementById("resizer");
+const hResizer = document.getElementById("h-resizer");
 
-resizer.addEventListener("mousedown", initHResize);
+hResizer.addEventListener("mousedown", initHResize);
 
 function initHResize(e) {
   e.preventDefault(); // prevent text selection while dragging
@@ -24,7 +46,7 @@ function doHResize(e) {
   theoryTab.style.width = `${newWidth}px`;
 
   // send resize event to the graphics
-  GRAPHICS.onResize();
+  graphics.onResize();
 }
 
 function stopHResize() {
@@ -51,7 +73,7 @@ function doVResize(e) {
   codePanel.style.height = `${height}px`;
 
   // send resize event to the graphics
-  GRAPHICS.onResize();
+  graphics.onResize();
 }
 
 function stopVResize() {
