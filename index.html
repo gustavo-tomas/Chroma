@@ -27,16 +27,17 @@
 
       <!-- Right panel: code editor above, shader view below -->
       <div id="editor-tab">
-        <!-- Code editor container (height adjustable) -->
+        <!-- tabs above the editor/view -->
+        <div id="editor-buttons">
+          <button id="tab-vertex" class="active">Vertex Shader</button>
+          <button id="tab-fragment">Fragment Shader</button>
+        </div>
+        <!-- code editor panel -->
         <div id="code-panel">
-          Editor tab
           <div id="editor"></div>
         </div>
-
-        <!-- Vertical resizer between code editor and shader view -->
         <div id="v-resizer"></div>
-
-        <!-- Shader view container -->
+        <!-- shader view panel -->
         <div id="view-panel">
           <canvas id="canvas"></canvas>
         </div>

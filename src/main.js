@@ -1,5 +1,4 @@
 import "./style.css";
-
 import { Graphics } from "./graphics.js";
 import { Editor } from "./editor.js";
 
@@ -22,11 +21,15 @@ void main() {
 
 const graphics = new Graphics(vertexCode, fragmentCode);
 
-function onVertexCodeUpdateCallback(code) {
-  graphics.onVertexCodeUpdate(code);
+function onEditorUpdateCallback(tab, code) {
+  if (tab === "vertex") {
+    graphics.onVertexCodeUpdate(code);
+  } else {
+    graphics.onFragmentCodeUpdate(code);
+  }
 }
 
-const editor = new Editor(vertexCode, onVertexCodeUpdateCallback);
+const editor = new Editor(vertexCode, fragmentCode, onEditorUpdateCallback);
 
 // ===== Horizontal Resize (Theory ↔ Editor) =====
 const theoryTab = document.getElementById("theory-tab");
