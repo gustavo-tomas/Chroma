@@ -1,4 +1,4 @@
-export function setupResizers(graphics) {
+function setupResizers(graphics) {
   const theoryTab = document.getElementById("theory-tab");
   const hResizer = document.getElementById("h-resizer");
   hResizer.addEventListener("mousedown", initHResize);
@@ -42,3 +42,5 @@ export function setupResizers(graphics) {
     document.removeEventListener("mouseup", stopVResize);
   }
 }
+
+export { setupResizers };

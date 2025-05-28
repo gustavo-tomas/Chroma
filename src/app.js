@@ -17,7 +17,7 @@ void main() {
     gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
 }`;
 
-export class App {
+class App {
   init() {
     this.graphics = new Graphics(vertexCode, fragmentCode);
     this.editor = new Editor(
@@ -36,3 +36,5 @@ export class App {
     }
   }
 }
+
+export { App };

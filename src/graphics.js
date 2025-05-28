@@ -52,6 +52,11 @@ class Graphics {
     this._material.needsUpdate = true;
   }
 
+  onFragmentCodeUpdate(fragmentCode) {
+    this._material.fragmentShader = fragmentCode;
+    this._material.needsUpdate = true;
+  }
+
   onResize(w1, w2) {
     const viewPanel = document.getElementById("view-panel");
 
