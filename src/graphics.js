@@ -57,7 +57,7 @@ class Graphics {
     this._material.needsUpdate = true;
   }
 
-  onResize(w1, w2) {
+  onResize() {
     const viewPanel = document.getElementById("view-panel");
 
     const width = viewPanel.clientWidth;
