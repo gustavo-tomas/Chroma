@@ -41,9 +41,11 @@ class App {
   setProject(json) {
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
+    const projectName = document.getElementById("project-name");
 
     tabTitle.textContent = json.Section.Title;
     tabContent.textContent = json.Section.Content;
+    projectName.textContent = json.ProjectName;
 
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;
@@ -57,7 +59,7 @@ class App {
 
   // Build project from current data
   getProject() {
-    const projectName = "Brute";
+    const projectName = document.getElementById("project-name").textContent;
     const tabTitle = document.getElementById("tab-title").textContent;
     const tabContent = document.getElementById("tab-content").textContent;
 

@@ -5,7 +5,7 @@
     "Fragment": "varying vec3 vUv;\n\nuniform vec3 colorA;\nuniform vec3 colorB;\n\nvoid main() {\n\tgl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);\n}\n"
   },
   "Section": {
-    "Title": "Brute",
+    "Title": "Welcome",
     "Content": "Welcome to Brute!"
   }
 }
