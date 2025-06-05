@@ -15,9 +15,10 @@
 - [x] Adicionar aba do editor de fragmento
 - [ ] Adicionar botão para rodar o código
 - [x] Adicionar aba do editor de vértice
-- [ ] Adicionar o formato de arquivo 'Project'
-- [ ] Adicionar funcionalidade para carregar (load) um project
+- [x] Adicionar o formato de arquivo 'Project'
+- [x] Adicionar funcionalidade para carregar (load) um project
 - [ ] Adicionar funcionalidade para salvar (save) um project
+- [ ] Adicionar funcionalidade para editar (edit) um project
 
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
@@ -26,4 +27,5 @@
 ## Extras (adicione o que quiser aqui)
 
 - [ ] Adicionar funcionalidades de input
+- [ ] Adicionar uniforms
 - [ ] Linkagem de blocos de codigo entre aba de explicação e editor
