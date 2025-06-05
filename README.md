@@ -17,7 +17,7 @@
 - [x] Adicionar aba do editor de vértice
 - [x] Adicionar o formato de arquivo 'Project'
 - [x] Adicionar funcionalidade para carregar (load) um project
-- [ ] Adicionar funcionalidade para salvar (save) um project
+- [x] Adicionar funcionalidade para salvar (save) um project
 - [ ] Adicionar funcionalidade para editar (edit) um project
 
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)

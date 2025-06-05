@@ -17,7 +17,7 @@ class App {
     );
     setupResizers(this.graphics);
 
-    this.setupProject(json);
+    this.setProject(json);
 
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
@@ -38,7 +38,7 @@ class App {
   }
 
   // Update the divs, the editor code and the graphics code
-  setupProject(json) {
+  setProject(json) {
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
 
@@ -55,9 +55,49 @@ class App {
     this.graphics.onFragmentCodeUpdate(fragmentCode);
   }
 
-  // @TODO: finish. create a json, retrieve section information and code from the editor
+  // Build project from current data
+  getProject() {
+    const projectName = "Brute";
+    const tabTitle = document.getElementById("tab-title").textContent;
+    const tabContent = document.getElementById("tab-content").textContent;
+
+    const project = new Object();
+    project.ProjectName = projectName;
+    project.Shaders = {};
+    project.Shaders.Vertex = this.editor.vertexCode;
+    project.Shaders.Fragment = this.editor.fragmentCode;
+    project.Section = {};
+    project.Section.Title = tabTitle;
+    project.Section.Content = tabContent;
+
+    return project;
+  }
+
+  // Create a json, retrieve section information and code from the editor
   onProjectSave() {
-    console.log("save");
+    const project = this.getProject();
+
+    // Convert object to JSON string
+    const json = JSON.stringify(project, null, 2); // null, 2 for pretty formatting
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([json], { type: "application/json" });
+
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element and trigger download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = project.ProjectName;
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log("Saved project: ", project);
   }
 
   // @TODO: this can also be drag n drop
@@ -77,7 +117,7 @@ class App {
       reader.onload = (e) => {
         try {
           const json = JSON.parse(e.target.result);
-          this.setupProject(json);
+          this.setProject(json);
 
           console.log("Project loaded:", json);
         } catch (error) {
