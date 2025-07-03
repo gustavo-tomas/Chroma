@@ -19,9 +19,11 @@ class App {
 
     this.setProject(json);
 
+    const editProjectButton = document.getElementById("edit-button");
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
 
+    editProjectButton.onclick = this.onProjectEdit.bind(this);
     saveProjectButton.onclick = this.onProjectSave.bind(this);
     loadProjectButton.onclick = this.onProjectLoad.bind(this);
   }
@@ -132,6 +134,36 @@ class App {
     input.click();
   }
 
+  // Make fields available for editing
+  onProjectEdit() {
+    const projectName = document.getElementById("project-name");
+    const tabTitle = document.getElementById("tab-title");
+    const tabContent = document.getElementById("tab-content");
+    const editProjectButton = document.getElementById("edit-button");
+
+    // Enter edit mode
+    if (!this._editMode) {
+      editProjectButton.textContent = "Finish Edit";
+
+      projectName.contentEditable = true;
+      tabTitle.contentEditable = true;
+      tabContent.contentEditable = true;
+
+      this._editMode = true;
+    }
+
+    // Exit edit mode
+    else {
+      editProjectButton.textContent = "Edit";
+
+      projectName.contentEditable = false;
+      tabTitle.contentEditable = false;
+      tabContent.contentEditable = false;
+
+      this._editMode = false;
+    }
+  }
+
   onEditorUpdate(tab, code) {
     if (tab === "vertex") {
       this.graphics.onVertexCodeUpdate(code);
@@ -139,6 +171,8 @@ class App {
       this.graphics.onFragmentCodeUpdate(code);
     }
   }
+
+  _editMode = false;
 }
 
 export { App };

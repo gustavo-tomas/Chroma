@@ -81,3 +81,8 @@ body {
   height: 100%;
   position: absolute;
 }
+
+/* Makes editable fields easier to see */
+div[contenteditable="true"] {
+  background-color: aliceblue;
+}
