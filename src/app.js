@@ -3,22 +3,12 @@ import { Graphics } from "./graphics.js";
 import { Editor } from "./editor.js";
 import { setupResizers } from "./resizer.js";
 
-const vertexCode = `varying vec3 vUv;
-void main() {
-    vUv = position;
-    vec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);
-    gl_Position = projectionMatrix * modelViewPosition;
-}`;
-
-const fragmentCode = `uniform vec3 colorA;
-uniform vec3 colorB;
-varying vec3 vUv;
-void main() {
-    gl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);
-}`;
-
 class App {
-  init() {
+  async init() {
+    const json = await this.loadDefaultProject();
+    const vertexCode = json.Shaders.Vertex;
+    const fragmentCode = json.Shaders.Fragment;
+
     this.graphics = new Graphics(vertexCode, fragmentCode);
     this.editor = new Editor(
       vertexCode,
@@ -26,6 +16,152 @@ class App {
       this.onEditorUpdate.bind(this)
     );
     setupResizers(this.graphics);
+
+    this.setProject(json);
+
+    const editProjectButton = document.getElementById("edit-button");
+    const saveProjectButton = document.getElementById("save-button");
+    const loadProjectButton = document.getElementById("load-button");
+
+    editProjectButton.onclick = this.onProjectEdit.bind(this);
+    saveProjectButton.onclick = this.onProjectSave.bind(this);
+    loadProjectButton.onclick = this.onProjectLoad.bind(this);
+  }
+
+  async loadDefaultProject() {
+    try {
+      const response = await fetch("./projects/brute.json");
+      const data = await response.json();
+      console.log("Loaded default project:", data);
+      return data;
+    } catch (error) {
+      console.error("Error loading default project:", error);
+    }
+  }
+
+  // Update the divs, the editor code and the graphics code
+  setProject(json) {
+    const tabTitle = document.getElementById("tab-title");
+    const tabContent = document.getElementById("tab-content");
+    const projectName = document.getElementById("project-name");
+
+    tabTitle.textContent = json.Section.Title;
+    tabContent.textContent = json.Section.Content;
+    projectName.textContent = json.ProjectName;
+
+    const vertexCode = json.Shaders.Vertex;
+    const fragmentCode = json.Shaders.Fragment;
+
+    this.editor.vertexCode = vertexCode;
+    this.editor.fragmentCode = fragmentCode;
+
+    this.graphics.onVertexCodeUpdate(vertexCode);
+    this.graphics.onFragmentCodeUpdate(fragmentCode);
+  }
+
+  // Build project from current data
+  getProject() {
+    const projectName = document.getElementById("project-name").textContent;
+    const tabTitle = document.getElementById("tab-title").textContent;
+    const tabContent = document.getElementById("tab-content").textContent;
+
+    const project = new Object();
+    project.ProjectName = projectName;
+    project.Shaders = {};
+    project.Shaders.Vertex = this.editor.vertexCode;
+    project.Shaders.Fragment = this.editor.fragmentCode;
+    project.Section = {};
+    project.Section.Title = tabTitle;
+    project.Section.Content = tabContent;
+
+    return project;
+  }
+
+  // Create a json, retrieve section information and code from the editor
+  onProjectSave() {
+    const project = this.getProject();
+
+    // Convert object to JSON string
+    const json = JSON.stringify(project, null, 2); // null, 2 for pretty formatting
+
+    // Create a Blob with the JSON data
+    const blob = new Blob([json], { type: "application/json" });
+
+    // Create a temporary URL for the blob
+    const url = URL.createObjectURL(blob);
+
+    // Create a temporary anchor element and trigger download
+    const a = document.createElement("a");
+    a.href = url;
+    a.download = project.ProjectName;
+    document.body.appendChild(a);
+    a.click();
+
+    // Clean up
+    document.body.removeChild(a);
+    URL.revokeObjectURL(url);
+
+    console.log("Saved project: ", project);
+  }
+
+  // @TODO: this can also be drag n drop
+  onProjectLoad() {
+    const input = document.createElement("input");
+    input.type = "file";
+    input.accept = ".json";
+
+    input.onchange = (event) => {
+      const file = event.target.files[0];
+
+      if (!file) {
+        return;
+      }
+
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        try {
+          const json = JSON.parse(e.target.result);
+          this.setProject(json);
+
+          console.log("Project loaded:", json);
+        } catch (error) {
+          alert("Error loading project file: " + error.message);
+        }
+      };
+      reader.readAsText(file);
+    };
+
+    input.click();
+  }
+
+  // Make fields available for editing
+  onProjectEdit() {
+    const projectName = document.getElementById("project-name");
+    const tabTitle = document.getElementById("tab-title");
+    const tabContent = document.getElementById("tab-content");
+    const editProjectButton = document.getElementById("edit-button");
+
+    // Enter edit mode
+    if (!this._editMode) {
+      editProjectButton.textContent = "Finish Edit";
+
+      projectName.contentEditable = true;
+      tabTitle.contentEditable = true;
+      tabContent.contentEditable = true;
+
+      this._editMode = true;
+    }
+
+    // Exit edit mode
+    else {
+      editProjectButton.textContent = "Edit";
+
+      projectName.contentEditable = false;
+      tabTitle.contentEditable = false;
+      tabContent.contentEditable = false;
+
+      this._editMode = false;
+    }
   }
 
   onEditorUpdate(tab, code) {
@@ -35,6 +171,8 @@ class App {
       this.graphics.onFragmentCodeUpdate(code);
     }
   }
+
+  _editMode = false;
 }
 
 export { App };
