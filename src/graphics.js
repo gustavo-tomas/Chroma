@@ -15,8 +15,9 @@ class Graphics {
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
     let uniforms = {
-      colorB: { type: "vec3", value: new THREE.Color(0xacb6e5) },
-      colorA: { type: "vec3", value: new THREE.Color(0x74ebd5) },
+      colorB: { type: "vec3", value: new THREE.Color(0xacf6e5) },
+      colorA: { type: "vec3", value: new THREE.Color(0xbb55ff) },
+      time: { type: "float", value: 0 },
     };
 
     // const geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
@@ -37,8 +38,8 @@ class Graphics {
     });
     this._renderer.setSize(width, height);
     this._renderer.setAnimationLoop((time) => {
-      mesh.rotation.x = time / 2000;
-      mesh.rotation.y = time / 1000;
+      // @TODO: use deltaTime
+      mesh.material.uniforms.time.value = time;
 
       this._renderer.render(this._scene, this._camera);
     });
@@ -48,12 +49,12 @@ class Graphics {
   }
 
   onVertexCodeUpdate(vertexCode) {
-    this._material.vertexShader = vertexCode;
+    this._material.vertexShader = this._prependUniformsIntoCode(vertexCode);
     this._material.needsUpdate = true;
   }
 
   onFragmentCodeUpdate(fragmentCode) {
-    this._material.fragmentShader = fragmentCode;
+    this._material.fragmentShader = this._prependUniformsIntoCode(fragmentCode);
     this._material.needsUpdate = true;
   }
 
@@ -67,6 +68,13 @@ class Graphics {
     this._camera.updateProjectionMatrix();
 
     this._renderer.setSize(width, height);
+  }
+
+  // These uniforms should be accessible but not modifiable by the user,
+  // so we add them at the top without changing the editable code
+  _prependUniformsIntoCode(code) {
+    let codeWithUniforms = "uniform float time;\n" + code;
+    return codeWithUniforms;
   }
 
   _scene;

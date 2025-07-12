@@ -1,7 +1,7 @@
 {
   "ProjectName": "Brute",
   "Shaders": {
-    "Vertex": "varying vec3 vUv;\n\nvoid main() {\n\tvUv = position;\n\tvec4 modelViewPosition = modelViewMatrix * vec4(position, 1.0);\n\tgl_Position = projectionMatrix * modelViewPosition;\n}\n",
+    "Vertex": "varying vec3 vUv;\n\nvoid main() {\n\tvUv = position;\n    float range = 0.6;\n    float speed = 0.001;\n\tvec3 pos = position;\n\tpos.x += sin(time * speed) * range;\n\t\n    vec4 modelViewPosition = modelViewMatrix * vec4(pos, 1.0);\n\tgl_Position = projectionMatrix * modelViewPosition;\n}\n",
     "Fragment": "varying vec3 vUv;\n\nuniform vec3 colorA;\nuniform vec3 colorB;\n\nvoid main() {\n\tgl_FragColor = vec4(mix(colorA, colorB, vUv.z), 1.0);\n}\n"
   },
   "Section": {

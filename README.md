@@ -28,7 +28,7 @@
 ## Extras (adicione o que quiser aqui)
 
 - [ ] Adicionar funcionalidades de input (mouse, teclado)
-- [ ] Adicionar variável de tempo (time)
+- [x] Adicionar variável de tempo (time)
 - [ ] Adicionar uniforms
 - [ ] Adicionar carregamento de texturas
 - [ ] Adicionar carregamento de modelos
