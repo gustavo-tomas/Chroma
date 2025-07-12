@@ -23,6 +23,7 @@
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
 - [ ] Fazer o design da UI
+- [ ] Checagem de erro ao compilar o código
 
 ## Extras (adicione o que quiser aqui)
 
