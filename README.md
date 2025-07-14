@@ -13,7 +13,7 @@
 - [x] Adicionar aba de teoria
 - [x] Adicionar output do shader
 - [x] Adicionar aba do editor de fragmento
-- [ ] Adicionar botão para rodar o código
+- [X] Adicionar botão para rodar o código
 - [x] Adicionar aba do editor de vértice
 - [x] Adicionar o formato de arquivo 'Project'
 - [x] Adicionar funcionalidade para carregar (load) um project

@@ -52,6 +52,16 @@ body {
   color: #007acc;
 }
 
+#update-shader-btn {
+  padding: 0.5rem 1rem;
+  background: #007acc;
+  color: #fff;
+}
+
+#update-shader-btn:hover {
+  background: #005fa3;
+}
+
 /* Code editor panel (top) */
 #code-panel {
   flex: none;

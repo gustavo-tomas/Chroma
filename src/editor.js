@@ -14,26 +14,19 @@ class Editor {
     this.tabVertex = document.getElementById("tab-vertex");
     this.tabFragment = document.getElementById("tab-fragment");
 
+    // run code, update the shader
+    this.updateButton = document.getElementById("update-shader-btn");
+
     // initialize CodeMirror view
     this.view = new EditorView({
       doc: this.vertexCode,
       parent: document.querySelector("#editor"),
-      extensions: [
-        basicSetup,
-        EditorView.updateListener.of((update) => {
-          if (update.docChanged) {
-            const code = this.view.state.doc.toString();
-            // store in the right buffer
-            if (this.currentTab === "vertex") {
-              this.vertexCode = code;
-            } else {
-              this.fragmentCode = code;
-            }
+      extensions: [basicSetup],
+    });
 
-            this.onUpdate(this.currentTab, code);
-          }
-        }),
-      ],
+    this.updateButton.addEventListener("click", () => {
+      const code = this.view.state.doc.toString();
+      this.onUpdate(this.currentTab, code);
     });
 
     // attach click handlers to switch tabs
