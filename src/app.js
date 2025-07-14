@@ -52,8 +52,8 @@ class App {
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;
 
-    this.editor.vertexCode = vertexCode;
-    this.editor.fragmentCode = fragmentCode;
+    this.editor.setVertexCode(vertexCode);
+    this.editor.setFragmentCode(fragmentCode);
 
     this.graphics.onVertexCodeUpdate(vertexCode);
     this.graphics.onFragmentCodeUpdate(fragmentCode);

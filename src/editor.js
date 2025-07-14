@@ -46,6 +46,33 @@ class Editor {
     this._updateTabStyles();
   }
 
+  setVertexCode(vertexCode) {
+    // @TODO: switching tabs is a bit of a hack but works fine
+    this.switchTab("vertex");
+    this.vertexCode = vertexCode;
+
+    this.view.dispatch({
+      changes: {
+        from: 0,
+        to: this.view.state.doc.length,
+        insert: this.vertexCode,
+      },
+    });
+  }
+
+  setFragmentCode(fragmentCode) {
+    this.switchTab("fragment");
+    this.fragmentCode = fragmentCode;
+
+    this.view.dispatch({
+      changes: {
+        from: 0,
+        to: this.view.state.doc.length,
+        insert: this.fragmentCode,
+      },
+    });
+  }
+
   switchTab(tabName) {
     if (tabName === this.currentTab) return;
 
