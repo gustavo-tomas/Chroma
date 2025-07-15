@@ -72,6 +72,7 @@ class App {
     project.Shaders = {};
     project.Shaders.Vertex = this.editor.vertexCode;
     project.Shaders.Fragment = this.editor.fragmentCode;
+    project.Shaders.Uniforms = this.graphics.getUserUniforms();
     project.Section = {};
     project.Section.Title = tabTitle;
     project.Section.Content = tabContent;

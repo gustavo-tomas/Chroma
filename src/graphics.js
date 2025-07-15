@@ -62,18 +62,9 @@ class Graphics {
     this._material.uniforms = {};
 
     for (const [name, description] of Object.entries(uniforms)) {
-      let value;
-
-      if (description.type == "vec3") {
-        value = this._array3ToColor(description.value);
-      } else {
-        console.error("Unhandled uniform type: ", description.type);
-        return;
-      }
-
       let uniform = {
         type: description.type,
-        value: value,
+        value: description.value,
       };
 
       this._material.uniforms[name] = uniform;
@@ -94,10 +85,25 @@ class Graphics {
     this._renderer.setSize(width, height);
   }
 
+  getUserUniforms() {
+    let uniforms = {};
+
+    // Filter presets
+    for (const [name, description] of Object.entries(this._material.uniforms)) {
+      if (description.preset) {
+        continue;
+      }
+
+      uniforms[name] = description;
+    }
+
+    return uniforms;
+  }
+
   _onBeforeCompile(shader) {
     // These uniforms should be accessible but not modifiable by the user,
     // so we add them at the top without changing the editable code
-    shader.uniforms["time"] = { type: "float", value: 0 };
+    shader.uniforms["time"] = { type: "float", value: 0, preset: true };
 
     // Add user uniforms
     for (const [name, description] of Object.entries(shader.uniforms)) {
@@ -108,13 +114,6 @@ class Graphics {
     }
 
     this._material.userData.shader = shader;
-  }
-
-  // Helpers
-  _array3ToColor(array) {
-    // @TODO: This will crash if the indices are out of bounds
-    const color = new THREE.Color(array[0], array[1], array[2]);
-    return color;
   }
 
   _scene;
