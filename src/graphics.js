@@ -14,16 +14,9 @@ class Graphics {
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
-    let uniforms = {
-      colorB: { type: "vec3", value: new THREE.Color(0xacf6e5) },
-      colorA: { type: "vec3", value: new THREE.Color(0xbb55ff) },
-      time: { type: "float", value: 0 },
-    };
-
     // const geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
     const geometry = new THREE.PlaneGeometry(0.5, 0.5);
     this._material = new THREE.ShaderMaterial({
-      uniforms: uniforms,
       vertexShader: vertexCode,
       fragmentShader: fragmentCode,
       side: THREE.DoubleSide,
@@ -31,8 +24,8 @@ class Graphics {
 
     this._material.onBeforeCompile = this._onBeforeCompile.bind(this);
 
-    const mesh = new THREE.Mesh(geometry, this._material);
-    this._scene.add(mesh);
+    this._mesh = new THREE.Mesh(geometry, this._material);
+    this._scene.add(this._mesh);
 
     this._renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -40,8 +33,12 @@ class Graphics {
     });
     this._renderer.setSize(width, height);
     this._renderer.setAnimationLoop((time) => {
-      // @TODO: use deltaTime
-      mesh.material.uniforms.time.value = time;
+      const shader = this._mesh.material.userData.shader;
+
+      if (shader) {
+        // @TODO: use deltaTime
+        shader.uniforms.time.value = time;
+      }
 
       this._renderer.render(this._scene, this._camera);
     });
@@ -77,6 +74,12 @@ class Graphics {
     // so we add them at the top without changing the editable code
     shader.vertexShader = "uniform float time;\n" + shader.vertexShader;
     shader.fragmentShader = "uniform float time;\n" + shader.fragmentShader;
+    shader.uniforms.time = { type: "float", value: 0 };
+
+    // Add user uniforms
+    // @TODO: hardcoded
+    shader.uniforms.colorB = { type: "vec3", value: new THREE.Color(0xacf6e5) };
+    shader.uniforms.colorA = { type: "vec3", value: new THREE.Color(0xbb55ff) };
 
     this._material.userData.shader = shader;
   }
@@ -85,6 +88,7 @@ class Graphics {
   _camera;
   _renderer;
   _material;
+  _mesh;
 }
 
 export { Graphics };
