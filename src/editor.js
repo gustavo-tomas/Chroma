@@ -1,7 +1,6 @@
-// src/editor.js
-
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
+import { lintGutter, linter, setDiagnostics } from "@codemirror/lint";
 
 class Editor {
   constructor(initialVertex, initialFragment, onUpdate) {
@@ -9,6 +8,11 @@ class Editor {
     this.fragmentCode = initialFragment;
     this.currentTab = "vertex";
     this.onUpdate = onUpdate;
+
+    const validationCanvas = document.createElement("canvas");
+    this.gl =
+      validationCanvas.getContext("webgl2") ||
+      validationCanvas.getContext("webgl");
 
     // tab buttons
     this.tabVertex = document.getElementById("tab-vertex");
@@ -21,12 +25,42 @@ class Editor {
     this.view = new EditorView({
       doc: this.vertexCode,
       parent: document.querySelector("#editor"),
-      extensions: [basicSetup],
+      extensions: [basicSetup, lintGutter(), linter(() => [])],
     });
 
     this.updateButton.addEventListener("click", () => {
       const code = this.view.state.doc.toString();
+
+      // Unconditionally update the shader
       this.onUpdate(this.currentTab, code);
+
+      // collect diagnostics only at the exact position of the token with the error
+      const diags = [];
+      const info = this._getShaderLog(code, this.currentTab)
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l && !/No precision specified/.test(l));
+      if (info.length) {
+        const first = info[0];
+        const m = first.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
+        const lineNum = m ? parseInt(m[1], 10) : 1;
+        const token = m && m[2] ? m[2] : null;
+        const line = this.view.state.doc.line(lineNum);
+        let from = line.from,
+          to = line.to;
+        if (token) {
+          const text = this.view.state.doc.sliceString(line.from, line.to);
+          const idx = text.indexOf(token);
+          if (idx >= 0) {
+            from = line.from + idx;
+            to = from + token.length;
+          }
+        }
+        diags.push({ from, to, severity: "error", message: first });
+      }
+
+      // Apply the diagnostics (an empty list will clear them)
+      this.view.dispatch(setDiagnostics(this.view.state, diags));
     });
 
     // attach click handlers to switch tabs
@@ -37,6 +71,17 @@ class Editor {
 
     // set initial active styles
     this._updateTabStyles();
+  }
+
+  _getShaderLog(src, tab) {
+    const gl = this.gl;
+    const type = tab === "vertex" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
+    const sh = gl.createShader(type);
+    gl.shaderSource(sh, src);
+    gl.compileShader(sh);
+    const log = gl.getShaderInfoLog(sh) || "";
+    gl.deleteShader(sh);
+    return log;
   }
 
   setVertexCode(vertexCode) {
