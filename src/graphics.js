@@ -29,6 +29,8 @@ class Graphics {
       side: THREE.DoubleSide,
     });
 
+    this._material.onBeforeCompile = this._onBeforeCompile.bind(this);
+
     const mesh = new THREE.Mesh(geometry, this._material);
     this._scene.add(mesh);
 
@@ -49,12 +51,12 @@ class Graphics {
   }
 
   onVertexCodeUpdate(vertexCode) {
-    this._material.vertexShader = this._prependUniformsIntoCode(vertexCode);
+    this._material.vertexShader = vertexCode;
     this._material.needsUpdate = true;
   }
 
   onFragmentCodeUpdate(fragmentCode) {
-    this._material.fragmentShader = this._prependUniformsIntoCode(fragmentCode);
+    this._material.fragmentShader = fragmentCode;
     this._material.needsUpdate = true;
   }
 
@@ -70,11 +72,13 @@ class Graphics {
     this._renderer.setSize(width, height);
   }
 
-  // These uniforms should be accessible but not modifiable by the user,
-  // so we add them at the top without changing the editable code
-  _prependUniformsIntoCode(code) {
-    let codeWithUniforms = "uniform float time;\n" + code;
-    return codeWithUniforms;
+  _onBeforeCompile(shader) {
+    // These uniforms should be accessible but not modifiable by the user,
+    // so we add them at the top without changing the editable code
+    shader.vertexShader = "uniform float time;\n" + shader.vertexShader;
+    shader.fragmentShader = "uniform float time;\n" + shader.fragmentShader;
+
+    this._material.userData.shader = shader;
   }
 
   _scene;
