@@ -57,6 +57,31 @@ class Graphics {
     this._material.needsUpdate = true;
   }
 
+  onUniformUpdate(uniforms) {
+    // Clear current uniforms to avoid dealing with old state
+    this._material.uniforms = {};
+
+    for (const [name, description] of Object.entries(uniforms)) {
+      let value;
+
+      if (description.type == "vec3") {
+        value = this._array3ToColor(description.value);
+      } else {
+        console.error("Unhandled uniform type: ", description.type);
+        return;
+      }
+
+      let uniform = {
+        type: description.type,
+        value: value,
+      };
+
+      this._material.uniforms[name] = uniform;
+    }
+
+    this._material.needsUpdate = true;
+  }
+
   onResize() {
     const viewPanel = document.getElementById("view-panel");
 
@@ -72,16 +97,24 @@ class Graphics {
   _onBeforeCompile(shader) {
     // These uniforms should be accessible but not modifiable by the user,
     // so we add them at the top without changing the editable code
-    shader.vertexShader = "uniform float time;\n" + shader.vertexShader;
-    shader.fragmentShader = "uniform float time;\n" + shader.fragmentShader;
-    shader.uniforms.time = { type: "float", value: 0 };
+    shader.uniforms["time"] = { type: "float", value: 0 };
 
     // Add user uniforms
-    // @TODO: hardcoded
-    shader.uniforms.colorB = { type: "vec3", value: new THREE.Color(0xacf6e5) };
-    shader.uniforms.colorA = { type: "vec3", value: new THREE.Color(0xbb55ff) };
+    for (const [name, description] of Object.entries(shader.uniforms)) {
+      const uniformStr = "uniform " + description.type + " " + name + ";\n";
+
+      shader.vertexShader = uniformStr + shader.vertexShader;
+      shader.fragmentShader = uniformStr + shader.fragmentShader;
+    }
 
     this._material.userData.shader = shader;
+  }
+
+  // Helpers
+  _array3ToColor(array) {
+    // @TODO: This will crash if the indices are out of bounds
+    const color = new THREE.Color(array[0], array[1], array[2]);
+    return color;
   }
 
   _scene;

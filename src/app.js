@@ -51,12 +51,14 @@ class App {
 
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;
+    const uniforms = json.Shaders.Uniforms;
 
     this.editor.setVertexCode(vertexCode);
     this.editor.setFragmentCode(fragmentCode);
 
     this.graphics.onVertexCodeUpdate(vertexCode);
     this.graphics.onFragmentCodeUpdate(fragmentCode);
+    this.graphics.onUniformUpdate(uniforms);
   }
 
   // Build project from current data
