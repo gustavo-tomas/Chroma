@@ -27,24 +27,18 @@ class Graphics {
     this._mesh = new THREE.Mesh(geometry, this._material);
     this._scene.add(this._mesh);
 
+    this._mousePositionNormalized = new THREE.Vector2();
+
     this._renderer = new THREE.WebGLRenderer({
       antialias: true,
       canvas: canvas,
     });
     this._renderer.setSize(width, height);
-    this._renderer.setAnimationLoop((time) => {
-      const shader = this._mesh.material.userData.shader;
+    this._renderer.setAnimationLoop(this._onUpdate.bind(this));
 
-      if (shader) {
-        // @TODO: use deltaTime
-        shader.uniforms.time.value = time;
-      }
-
-      this._renderer.render(this._scene, this._camera);
-    });
-
-    viewPanel.addEventListener("resize", this.onResize);
-    window.addEventListener("resize", this.onResize);
+    viewPanel.addEventListener("resize", this.onResize.bind(this));
+    window.addEventListener("resize", this.onResize.bind(this));
+    canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
   }
 
   onVertexCodeUpdate(vertexCode) {
@@ -100,10 +94,27 @@ class Graphics {
     return uniforms;
   }
 
+  _onUpdate(time) {
+    const shader = this._mesh.material.userData.shader;
+
+    if (shader) {
+      // @TODO: use deltaTime
+      shader.uniforms.time.value = time;
+      shader.uniforms.mousePosition.value = this._mousePositionNormalized;
+    }
+
+    this._renderer.render(this._scene, this._camera);
+  }
+
   _onBeforeCompile(shader) {
     // These uniforms should be accessible but not modifiable by the user,
     // so we add them at the top without changing the editable code
     shader.uniforms["time"] = { type: "float", value: 0, preset: true };
+    shader.uniforms["mousePosition"] = {
+      type: "vec2",
+      value: new THREE.Vector2(0, 0),
+      preset: true,
+    };
 
     // Add user uniforms
     for (const [name, description] of Object.entries(shader.uniforms)) {
@@ -116,11 +127,30 @@ class Graphics {
     this._material.userData.shader = shader;
   }
 
+  _onMouseMove(event) {
+    const canvas = document.getElementById("canvas");
+    const boundingRect = canvas.getBoundingClientRect();
+    const mousePosition = new THREE.Vector2();
+
+    // Convert to range [0, canvas_size]
+    mousePosition.x = event.clientX - boundingRect.left;
+    mousePosition.y = event.clientY - boundingRect.top;
+
+    // Convert to range [-1, 1] with (0, 0) at the center
+    mousePosition.x = mousePosition.x / canvas.clientWidth;
+    mousePosition.y = mousePosition.y / canvas.clientHeight;
+    mousePosition.x = mousePosition.x * 2.0 - 1.0;
+    mousePosition.y = mousePosition.y * -2.0 + 1.0;
+
+    this._mousePositionNormalized = mousePosition;
+  }
+
   _scene;
   _camera;
   _renderer;
   _material;
   _mesh;
+  _mousePositionNormalized; // [-1.0, 1.0]
 }
 
 export { Graphics };

@@ -13,7 +13,7 @@
 - [x] Adicionar aba de teoria
 - [x] Adicionar output do shader
 - [x] Adicionar aba do editor de fragmento
-- [X] Adicionar botão para rodar o código
+- [x] Adicionar botão para rodar o código
 - [x] Adicionar aba do editor de vértice
 - [x] Adicionar o formato de arquivo 'Project'
 - [x] Adicionar funcionalidade para carregar (load) um project
@@ -23,11 +23,11 @@
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
 - [ ] Fazer o design da UI
-- [X] Checagem de erro ao compilar o código
+- [x] Checagem de erro ao compilar o código
 
 ## Extras (adicione o que quiser aqui)
 
-- [ ] Adicionar funcionalidades de input (mouse, teclado)
+- [x] Adicionar funcionalidades de input (mouse, teclado)
 - [x] Adicionar variável de tempo (time)
 - [ ] Adicionar uniforms
 - [ ] Adicionar carregamento de texturas
