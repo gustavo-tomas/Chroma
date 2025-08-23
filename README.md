@@ -29,8 +29,11 @@
 
 - [x] Adicionar funcionalidades de input (mouse, teclado)
 - [x] Adicionar variável de tempo (time)
-- [ ] Adicionar uniforms
+- [ ] Adicionar uniform de resolução da tela
+- [ ] Adicionar checagem de erro com uniformes
+- [ ] Adicionar markdown para aba de teoria (sem imagem)
+- [ ] Adicionar imagens na aba de teoria
 - [ ] Adicionar carregamento de texturas
 - [ ] Adicionar carregamento de modelos
-- [ ] Linkagem/highlight de blocos de código entre aba de explicação e editor
 - [ ] Adicionar opções de acessibilidade
+- [ ] Linkagem/highlight de blocos de código entre aba de explicação e editor
