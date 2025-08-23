@@ -1,8 +1,8 @@
 {
   "ProjectName": "Brute",
   "Shaders": {
-    "Vertex": "varying vec3 vUv;\n\nvoid main() {\n\tvUv = position;\n    vec3 pos = position;\n\tpos.x += sin(time * speed) * range;\n\t\n    vec4 modelViewPosition = modelViewMatrix * vec4(pos, 1.0);\n\tgl_Position = projectionMatrix * modelViewPosition;\n}\n",
-    "Fragment": "varying vec3 vUv;\n\nvoid main() {\n\n    // Convert from [-1, 1] to [0, 1]\n    vec2 mousePos = mousePosition;\n    mousePos.x = (mousePos.x + 1.0) / 2.0;\n    mousePos.y = (mousePos.y + 1.0) / 2.0;\n    \n\tgl_FragColor = vec4(mousePos.x, 1.0 - mousePos.y, vUv.y, 1.0);\n}",
+    "Vertex": "varying vec3 vUv;\n\nvoid main() {\n\tvUv = position;\n    vec3 pos = position;\n\tpos.x += sin(u_time * speed) * range;\n\t\n    vec4 modelViewPosition = modelViewMatrix * vec4(pos, 1.0);\n\tgl_Position = projectionMatrix * modelViewPosition;\n}\n",
+    "Fragment": "varying vec3 vUv;\n\nvoid main() {\n\n    // Convert from [-1, 1] to [0, 1]\n    vec2 mousePos = u_mousePosition;\n    mousePos.x = (mousePos.x + 1.0) / 2.0;\n    mousePos.y = (mousePos.y + 1.0) / 2.0;\n    \n\tgl_FragColor = vec4(mousePos.x, 1.0 - mousePos.y, vUv.y, 1.0);\n}",
     "Uniforms": {
       "speed": {
         "type": "float",

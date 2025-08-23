@@ -29,7 +29,7 @@
 
 - [x] Adicionar funcionalidades de input (mouse, teclado)
 - [x] Adicionar variável de tempo (time)
-- [ ] Adicionar uniform de resolução da tela
+- [x] Adicionar uniform de resolução da tela
 - [ ] Adicionar checagem de erro com uniformes
 - [ ] Adicionar markdown para aba de teoria (sem imagem)
 - [ ] Adicionar imagens na aba de teoria

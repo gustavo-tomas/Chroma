@@ -28,6 +28,7 @@ class Graphics {
     this._scene.add(this._mesh);
 
     this._mousePositionNormalized = new THREE.Vector2();
+    this._screenResolution = new THREE.Vector2(width, height);
 
     this._renderer = new THREE.WebGLRenderer({
       antialias: true,
@@ -77,6 +78,9 @@ class Graphics {
     this._camera.updateProjectionMatrix();
 
     this._renderer.setSize(width, height);
+
+    this._screenResolution.x = width;
+    this._screenResolution.y = height;
   }
 
   getUserUniforms() {
@@ -99,8 +103,9 @@ class Graphics {
 
     if (shader) {
       // @TODO: use deltaTime
-      shader.uniforms.time.value = time;
-      shader.uniforms.mousePosition.value = this._mousePositionNormalized;
+      shader.uniforms.u_time.value = time;
+      shader.uniforms.u_mousePosition.value = this._mousePositionNormalized;
+      shader.uniforms.u_screenResolution.value = this._screenResolution;
     }
 
     this._renderer.render(this._scene, this._camera);
@@ -108,9 +113,16 @@ class Graphics {
 
   _onBeforeCompile(shader) {
     // These uniforms should be accessible but not modifiable by the user,
-    // so we add them at the top without changing the editable code
-    shader.uniforms["time"] = { type: "float", value: 0, preset: true };
-    shader.uniforms["mousePosition"] = {
+    // so we prepend them without changing the editable code
+    shader.uniforms["u_time"] = { type: "float", value: 0, preset: true };
+
+    shader.uniforms["u_mousePosition"] = {
+      type: "vec2",
+      value: new THREE.Vector2(0, 0),
+      preset: true,
+    };
+
+    shader.uniforms["u_screenResolution"] = {
       type: "vec2",
       value: new THREE.Vector2(0, 0),
       preset: true,
@@ -151,6 +163,7 @@ class Graphics {
   _material;
   _mesh;
   _mousePositionNormalized; // [-1.0, 1.0]
+  _screenResolution;
 }
 
 export { Graphics };
