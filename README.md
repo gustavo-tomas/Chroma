@@ -31,8 +31,8 @@
 - [x] Adicionar variável de tempo (time)
 - [x] Adicionar uniform de resolução da tela
 - [ ] Adicionar checagem de erro com uniformes
-- [ ] Adicionar markdown para aba de teoria (sem imagem)
-- [ ] Adicionar imagens na aba de teoria
+- [x] Adicionar markdown para aba de teoria (sem imagem)
+- [ ] Adicionar suporte para salvar imagens na aba de teoria
 - [ ] Adicionar carregamento de texturas
 - [ ] Adicionar carregamento de modelos
 - [ ] Adicionar opções de acessibilidade

@@ -15,7 +15,7 @@
     }
   },
   "Section": {
-    "Title": "Welcome",
-    "Content": "Welcome to Brute!"
+    "Title": "# Welcome",
+    "Content": "## Welcome to Brute!\n\n### Lists\n\n- One\n- Two\n- Three\n\n### Images\n\nFull Image: ![UnB Logo](</projects/unb_logo.webp>)\n\n[Just the link](</projects/unb_logo.webp>)"
   }
 }

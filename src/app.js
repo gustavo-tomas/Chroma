@@ -2,9 +2,13 @@ import "./style.css";
 import { Graphics } from "./graphics.js";
 import { Editor } from "./editor.js";
 import { setupResizers } from "./resizer.js";
+import Showdown from "showdown";
 
 class App {
   async init() {
+    this._markdownConverter = new Showdown.Converter();
+    this._markdownConverter.setOption("openLinksInNewWindow", true);
+
     const json = await this.loadDefaultProject();
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;
@@ -45,9 +49,9 @@ class App {
     const tabContent = document.getElementById("tab-content");
     const projectName = document.getElementById("project-name");
 
-    tabTitle.textContent = json.Section.Title;
-    tabContent.textContent = json.Section.Content;
-    projectName.textContent = json.ProjectName;
+    tabTitle.innerHTML = this._convertToHtml(json.Section.Title);
+    tabContent.innerHTML = this._convertToHtml(json.Section.Content);
+    projectName.innerHTML = this._convertToHtml(json.ProjectName);
 
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;
@@ -63,9 +67,15 @@ class App {
 
   // Build project from current data
   getProject() {
-    const projectName = document.getElementById("project-name").textContent;
-    const tabTitle = document.getElementById("tab-title").textContent;
-    const tabContent = document.getElementById("tab-content").textContent;
+    const projectName = this._convertToMarkdown(
+      document.getElementById("project-name").innerHTML
+    );
+    const tabTitle = this._convertToMarkdown(
+      document.getElementById("tab-title").innerHTML
+    );
+    const tabContent = this._convertToMarkdown(
+      document.getElementById("tab-content").innerHTML
+    );
 
     const project = new Object();
     project.ProjectName = projectName;
@@ -152,6 +162,10 @@ class App {
       tabTitle.contentEditable = true;
       tabContent.contentEditable = true;
 
+      projectName.innerText = this._convertToMarkdown(projectName.innerHTML);
+      tabTitle.innerText = this._convertToMarkdown(tabTitle.innerHTML);
+      tabContent.innerText = this._convertToMarkdown(tabContent.innerHTML);
+
       this._editMode = true;
     }
 
@@ -162,6 +176,10 @@ class App {
       projectName.contentEditable = false;
       tabTitle.contentEditable = false;
       tabContent.contentEditable = false;
+
+      projectName.innerHTML = this._convertToHtml(projectName.innerText);
+      tabTitle.innerHTML = this._convertToHtml(tabTitle.innerText);
+      tabContent.innerHTML = this._convertToHtml(tabContent.innerText);
 
       this._editMode = false;
     }
@@ -175,7 +193,21 @@ class App {
     }
   }
 
+  _convertToHtml(markdownText) {
+    return this._markdownConverter.makeHtml(markdownText);
+  }
+
+  _convertToMarkdown(htmlText) {
+    // @NOTE: Showdown adds some comments at the bottom, so we need to remove them
+
+    return this._markdownConverter
+      .makeMarkdown(htmlText)
+      .replace(/<!-- -->/g, "")
+      .trim();
+  }
+
   _editMode = false;
+  _markdownConverter;
 }
 
 export { App };
