@@ -33,7 +33,7 @@
 - [ ] Adicionar checagem de erro com uniformes
 - [x] Adicionar markdown para aba de teoria (sem imagem)
 - [ ] Adicionar suporte para salvar imagens na aba de teoria
-- [ ] Adicionar carregamento de texturas
+- [x] Adicionar carregamento de texturas
 - [ ] Adicionar carregamento de modelos
 - [ ] Adicionar opções de acessibilidade
 - [ ] Linkagem/highlight de blocos de código entre aba de explicação e editor
