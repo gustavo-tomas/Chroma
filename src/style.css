@@ -96,3 +96,77 @@ body {
 div[contenteditable="true"] {
   background-color: aliceblue;
 }
+
+#channels-panel {
+  display: flex;
+  gap: 12px;
+  align-items: flex-start;
+  padding: 8px;
+  border-top: 1px solid #ddd;
+  background: #fff;
+}
+
+.channels-lib {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+}
+
+.channels-grid {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(240px, 1fr));
+  gap: 8px;
+  flex: 1;
+}
+
+.tex-preview {
+  width: 112px;
+  height: 112px;
+  border: 1px dashed #999;
+  background: rgba(255, 255, 255, 0.6);
+  object-fit: cover;
+  cursor: grab;
+}
+
+.tex-actions {
+  display: flex;
+  gap: 6px;
+}
+
+.tex-btn {
+  font: 12px system-ui;
+  padding: 4px 6px;
+  border: 1px solid #ccc;
+  background: #fff;
+  cursor: pointer;
+}
+
+.tex-slot {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  padding: 6px;
+  border: 1px solid #ccc;
+  background: rgba(255, 255, 255, 0.85);
+}
+
+.tex-thumb {
+  width: 56px;
+  height: 56px;
+  object-fit: cover;
+  background: #eee;
+  border: 1px solid #bbb;
+}
+
+.tex-label {
+  font: 12px system-ui;
+  min-width: 84px;
+}
+
+.tex-slot .tex-actions {
+  margin-left: auto;
+}
+
+.tex-slot.dragover {
+  outline: 2px dashed #007acc;
+}

@@ -40,15 +40,39 @@ class Graphics {
     viewPanel.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
+
+    initTexturePanelStatic(this._material);
   }
 
   onVertexCodeUpdate(vertexCode) {
     this._material.vertexShader = vertexCode;
+    this._material.uniforms = this._material.uniforms || {};
+    [
+      "iChannel0",
+      "iChannel1",
+      "iChannel2",
+      "iChannel3",
+      "u_userTexture",
+    ].forEach((n) => {
+      if (!this._material.uniforms[n])
+        this._material.uniforms[n] = { value: null };
+    });
     this._material.needsUpdate = true;
   }
 
   onFragmentCodeUpdate(fragmentCode) {
     this._material.fragmentShader = fragmentCode;
+    this._material.uniforms = this._material.uniforms || {};
+    [
+      "iChannel0",
+      "iChannel1",
+      "iChannel2",
+      "iChannel3",
+      "u_userTexture",
+    ].forEach((n) => {
+      if (!this._material.uniforms[n])
+        this._material.uniforms[n] = { value: null };
+    });
     this._material.needsUpdate = true;
   }
 
@@ -112,6 +136,11 @@ class Graphics {
   }
 
   _onBeforeCompile(shader) {
+    const prev = (n) =>
+      this._material.uniforms && this._material.uniforms[n]
+        ? this._material.uniforms[n].value
+        : null;
+
     // These uniforms should be accessible but not modifiable by the user,
     // so we prepend them without changing the editable code
     shader.uniforms["u_time"] = { type: "float", value: 0, preset: true };
@@ -128,15 +157,47 @@ class Graphics {
       preset: true,
     };
 
-    // Add user uniforms
-    for (const [name, description] of Object.entries(shader.uniforms)) {
-      const uniformStr = "uniform " + description.type + " " + name + ";\n";
+    shader.uniforms["u_userTexture"] = {
+      type: "sampler2D",
+      value: null,
+      preset: true,
+    };
 
-      shader.vertexShader = uniformStr + shader.vertexShader;
-      shader.fragmentShader = uniformStr + shader.fragmentShader;
+    shader.uniforms["iChannel0"] = {
+      type: "sampler2D",
+      value: prev("iChannel0") || null,
+      preset: true,
+    };
+    shader.uniforms["iChannel1"] = {
+      type: "sampler2D",
+      value: prev("iChannel1") || null,
+      preset: true,
+    };
+    shader.uniforms["iChannel2"] = {
+      type: "sampler2D",
+      value: prev("iChannel2") || null,
+      preset: true,
+    };
+    shader.uniforms["iChannel3"] = {
+      type: "sampler2D",
+      value: prev("iChannel3") || null,
+      preset: true,
+    };
+
+    shader.uniforms["u_userTexture"] = {
+      type: "sampler2D",
+      value: prev("u_userTexture") || prev("iChannel0") || null,
+      preset: true,
+    };
+
+    for (const [name, description] of Object.entries(shader.uniforms)) {
+      const s = "uniform " + description.type + " " + name + ";\n";
+      shader.vertexShader = s + shader.vertexShader;
+      shader.fragmentShader = s + shader.fragmentShader;
     }
 
     this._material.userData.shader = shader;
+    this._material.uniforms = shader.uniforms;
   }
 
   _onMouseMove(event) {
@@ -167,3 +228,107 @@ class Graphics {
 }
 
 export { Graphics };
+
+export function initTexturePanelStatic(material) {
+  function fileToTex(file, cb) {
+    const url = URL.createObjectURL(file);
+    const img = new Image();
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      tex.wrapS = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+      cb(tex, url);
+    };
+    img.src = url;
+  }
+
+  function setUniform(name, tex) {
+    material.uniforms = material.uniforms || {};
+    if (!material.uniforms[name])
+      material.uniforms[name] = {
+        type: "sampler2D",
+        value: null,
+        preset: true,
+      };
+    material.uniforms[name].value = tex;
+    if (name === "iChannel0") {
+      if (!material.uniforms.u_userTexture)
+        material.uniforms.u_userTexture = {
+          type: "sampler2D",
+          value: null,
+          preset: true,
+        };
+      material.uniforms.u_userTexture.value = tex;
+    }
+    if (material.userData && material.userData.shader) {
+      const su = material.userData.shader.uniforms || {};
+      if (su[name]) su[name].value = tex;
+      if (name === "iChannel0" && su.u_userTexture)
+        su.u_userTexture.value = tex;
+    }
+    material.needsUpdate = true;
+  }
+
+  document.querySelectorAll("#channels-panel .tex-slot").forEach((slot) => {
+    const name = slot.dataset.channel;
+    const thumb = slot.querySelector(".tex-thumb");
+    const load = slot.querySelector(".tex-load");
+    const clear = slot.querySelector(".tex-clear");
+    const input = slot.querySelector('input[type="file"]');
+
+    function apply(tex, url) {
+      setUniform(name, tex);
+      if (url) thumb.src = url;
+    }
+    function loadFile(file) {
+      fileToTex(file, apply);
+    }
+
+    load.onclick = () => input.click();
+    input.onchange = (e) => {
+      const f = e.target.files && e.target.files[0];
+      if (f) loadFile(f);
+    };
+
+    clear.onclick = () => {
+      if (material.uniforms && material.uniforms[name])
+        material.uniforms[name].value = null;
+      if (
+        material.userData &&
+        material.userData.shader &&
+        material.userData.shader.uniforms[name]
+      ) {
+        material.userData.shader.uniforms[name].value = null;
+      }
+      if (name === "iChannel0") {
+        if (material.uniforms && material.uniforms.u_userTexture)
+          material.uniforms.u_userTexture.value = null;
+        if (
+          material.userData &&
+          material.userData.shader &&
+          material.userData.shader.uniforms.u_userTexture
+        ) {
+          material.userData.shader.uniforms.u_userTexture.value = null;
+        }
+      }
+      thumb.removeAttribute("src");
+      material.needsUpdate = true;
+    };
+
+    slot.ondragover = (e) => {
+      e.preventDefault();
+      slot.classList.add("dragover");
+    };
+    slot.ondragleave = () => slot.classList.remove("dragover");
+    slot.ondrop = (e) => {
+      e.preventDefault();
+      slot.classList.remove("dragover");
+      const f =
+        e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
+      if (f) loadFile(f);
+    };
+  });
+}
