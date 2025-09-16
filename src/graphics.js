@@ -163,26 +163,14 @@ class Graphics {
       preset: true,
     };
 
-    shader.uniforms["iChannel0"] = {
-      type: "sampler2D",
-      value: prev("iChannel0") || null,
-      preset: true,
-    };
-    shader.uniforms["iChannel1"] = {
-      type: "sampler2D",
-      value: prev("iChannel1") || null,
-      preset: true,
-    };
-    shader.uniforms["iChannel2"] = {
-      type: "sampler2D",
-      value: prev("iChannel2") || null,
-      preset: true,
-    };
-    shader.uniforms["iChannel3"] = {
-      type: "sampler2D",
-      value: prev("iChannel3") || null,
-      preset: true,
-    };
+    for (let i = 0; i < 4; i++) {
+      const channel = "iChannel" + i;
+      shader.uniforms[channel] = {
+        type: "sampler2D",
+        value: prev(channel) || null,
+        preset: true,
+      };
+    }
 
     shader.uniforms["u_userTexture"] = {
       type: "sampler2D",
