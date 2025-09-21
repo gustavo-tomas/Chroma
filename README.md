@@ -22,7 +22,7 @@
 
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
-- [ ] Fazer o design da UI
+- [ ] Fazer o design da UI (alto contraste para deficiências visuais)
 - [x] Checagem de erro ao compilar o código
 
 ## Extras (adicione o que quiser aqui)
@@ -32,8 +32,14 @@
 - [x] Adicionar uniform de resolução da tela
 - [ ] Adicionar checagem de erro com uniformes
 - [x] Adicionar markdown para aba de teoria (sem imagem)
-- [ ] Adicionar suporte para salvar imagens na aba de teoria
+- [ ] Adicionar suporte para salvar imagens
+  - [ ] Adicionar path para recursos no arquivo proj
+  - [ ] Salvar imagens na aba de teoria
+  - [ ] Salvar texturas
 - [x] Adicionar carregamento de texturas
-- [ ] Adicionar carregamento de modelos
-- [ ] Adicionar opções de acessibilidade
+- [ ] Adicionar opções de drag n drop (e também hints)
+  - [ ] Drag n Drop para projeto
+  - [ ] Shortcut para rodar o código
 - [ ] Linkagem/highlight de blocos de código entre aba de explicação e editor
+- [ ] Gerenciador de projetos (múltiplos projetos)
+- [ ] Adicionar carregamento de modelos
