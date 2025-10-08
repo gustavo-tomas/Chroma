@@ -44,6 +44,22 @@ class Graphics {
     initTexturePanelStatic(this._material);
   }
 
+  _getShaderLog(src, tab) {
+    const glContext = this._renderer.getContext();
+    const type =
+      tab === "vertex" ? glContext.VERTEX_SHADER : glContext.FRAGMENT_SHADER;
+
+    const sh = glContext.createShader(type);
+
+    glContext.shaderSource(sh, src);
+    glContext.compileShader(sh);
+
+    const log = glContext.getShaderInfoLog(sh) || "";
+    glContext.deleteShader(sh);
+
+    return log;
+  }
+
   onVertexCodeUpdate(vertexCode) {
     this._material.vertexShader = vertexCode;
     this._material.uniforms = this._material.uniforms || {};
@@ -58,6 +74,8 @@ class Graphics {
         this._material.uniforms[n] = { value: null };
     });
     this._material.needsUpdate = true;
+
+    return this._getShaderLog(this._material.vertexShader);
   }
 
   onFragmentCodeUpdate(fragmentCode) {
@@ -74,6 +92,8 @@ class Graphics {
         this._material.uniforms[n] = { value: null };
     });
     this._material.needsUpdate = true;
+
+    return this._getShaderLog(this._material.fragmentShader);
   }
 
   onUniformUpdate(uniforms) {

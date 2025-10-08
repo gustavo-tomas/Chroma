@@ -186,11 +186,15 @@ class App {
   }
 
   onEditorUpdate(tab, code) {
+    let errorLog = "";
+
     if (tab === "vertex") {
-      this.graphics.onVertexCodeUpdate(code);
+      errorLog = this.graphics.onVertexCodeUpdate(code);
     } else {
-      this.graphics.onFragmentCodeUpdate(code);
+      errorLog = this.graphics.onFragmentCodeUpdate(code);
     }
+
+    return errorLog;
   }
 
   _convertToHtml(markdownText) {

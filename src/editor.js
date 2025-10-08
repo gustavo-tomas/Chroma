@@ -32,14 +32,16 @@ class Editor {
       const code = this.view.state.doc.toString();
 
       // Unconditionally update the shader
-      this.onUpdate(this.currentTab, code);
+      const errorLog = this.onUpdate(this.currentTab, code);
 
       // collect diagnostics only at the exact position of the token with the error
-      const diags = [];
-      const info = this._getShaderLog(code, this.currentTab)
+      const info = errorLog
         .split("\n")
         .map((l) => l.trim())
         .filter((l) => l && !/No precision specified/.test(l));
+
+      const diags = [];
+
       if (info.length) {
         const first = info[0];
         const m = first.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
@@ -71,17 +73,6 @@ class Editor {
 
     // set initial active styles
     this._updateTabStyles();
-  }
-
-  _getShaderLog(src, tab) {
-    const gl = this.gl;
-    const type = tab === "vertex" ? gl.VERTEX_SHADER : gl.FRAGMENT_SHADER;
-    const sh = gl.createShader(type);
-    gl.shaderSource(sh, src);
-    gl.compileShader(sh);
-    const log = gl.getShaderInfoLog(sh) || "";
-    gl.deleteShader(sh);
-    return log;
   }
 
   setVertexCode(vertexCode) {
