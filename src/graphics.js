@@ -1,3 +1,4 @@
+import { ShaderType } from "./common.js";
 import * as THREE from "three";
 
 class Graphics {
@@ -47,7 +48,9 @@ class Graphics {
   _getShaderLog(src, tab) {
     const glContext = this._renderer.getContext();
     const type =
-      tab === "vertex" ? glContext.VERTEX_SHADER : glContext.FRAGMENT_SHADER;
+      tab === ShaderType.Vertex
+        ? glContext.VERTEX_SHADER
+        : glContext.FRAGMENT_SHADER;
 
     const sh = glContext.createShader(type);
 
@@ -60,8 +63,13 @@ class Graphics {
     return log;
   }
 
-  onVertexCodeUpdate(vertexCode) {
-    this._material.vertexShader = vertexCode;
+  onShaderCodeUpdate(shaderType, shaderCode) {
+    if (shaderType === ShaderType.Vertex) {
+      this._material.vertexShader = shaderCode;
+    } else {
+      this._material.fragmentShader = shaderCode;
+    }
+
     this._material.uniforms = this._material.uniforms || {};
     [
       "iChannel0",
@@ -75,25 +83,7 @@ class Graphics {
     });
     this._material.needsUpdate = true;
 
-    return this._getShaderLog(this._material.vertexShader);
-  }
-
-  onFragmentCodeUpdate(fragmentCode) {
-    this._material.fragmentShader = fragmentCode;
-    this._material.uniforms = this._material.uniforms || {};
-    [
-      "iChannel0",
-      "iChannel1",
-      "iChannel2",
-      "iChannel3",
-      "u_userTexture",
-    ].forEach((n) => {
-      if (!this._material.uniforms[n])
-        this._material.uniforms[n] = { value: null };
-    });
-    this._material.needsUpdate = true;
-
-    return this._getShaderLog(this._material.fragmentShader);
+    return this._getShaderLog(shaderCode, shaderType);
   }
 
   onUniformUpdate(uniforms) {

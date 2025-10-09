@@ -1,3 +1,4 @@
+import { ShaderType } from "./common.js";
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
 import { lintGutter, linter, setDiagnostics } from "@codemirror/lint";
@@ -6,7 +7,7 @@ class Editor {
   constructor(initialVertex, initialFragment, onUpdate) {
     this.vertexCode = initialVertex;
     this.fragmentCode = initialFragment;
-    this.currentTab = "vertex";
+    this.currentTab = ShaderType.Vertex;
     this.onUpdate = onUpdate;
 
     const validationCanvas = document.createElement("canvas");
@@ -66,58 +67,53 @@ class Editor {
     });
 
     // attach click handlers to switch tabs
-    this.tabVertex.addEventListener("click", () => this.switchTab("vertex"));
+    this.tabVertex.addEventListener("click", () =>
+      this.switchTab(ShaderType.Vertex)
+    );
     this.tabFragment.addEventListener("click", () =>
-      this.switchTab("fragment")
+      this.switchTab(ShaderType.Fragment)
     );
 
     // set initial active styles
     this._updateTabStyles();
   }
 
-  setVertexCode(vertexCode) {
+  setShaderCode(tab, code) {
     // @TODO: switching tabs is a bit of a hack but works fine
-    this.switchTab("vertex");
-    this.vertexCode = vertexCode;
+    this.switchTab(tab);
+
+    if (tab === ShaderType.Vertex) {
+      this.vertexCode = code;
+    } else {
+      this.fragmentCode = code;
+    }
 
     this.view.dispatch({
       changes: {
         from: 0,
         to: this.view.state.doc.length,
-        insert: this.vertexCode,
+        insert: code,
       },
     });
   }
 
-  setFragmentCode(fragmentCode) {
-    this.switchTab("fragment");
-    this.fragmentCode = fragmentCode;
-
-    this.view.dispatch({
-      changes: {
-        from: 0,
-        to: this.view.state.doc.length,
-        insert: this.fragmentCode,
-      },
-    });
-  }
-
-  switchTab(tabName) {
-    if (tabName === this.currentTab) return;
+  switchTab(tabType) {
+    if (tabType === this.currentTab) return;
 
     // save current content
     const currentText = this.view.state.doc.toString();
-    if (this.currentTab === "vertex") {
+    if (this.currentTab === ShaderType.Vertex) {
       this.vertexCode = currentText;
     } else {
       this.fragmentCode = currentText;
     }
 
     // update state
-    this.currentTab = tabName;
+    this.currentTab = tabType;
 
     // load the new buffer into the view
-    const newText = tabName === "vertex" ? this.vertexCode : this.fragmentCode;
+    const newText =
+      tabType === ShaderType.Vertex ? this.vertexCode : this.fragmentCode;
 
     this.view.dispatch({
       changes: { from: 0, to: this.view.state.doc.length, insert: newText },
@@ -127,8 +123,14 @@ class Editor {
   }
 
   _updateTabStyles() {
-    this.tabVertex.classList.toggle("active", this.currentTab === "vertex");
-    this.tabFragment.classList.toggle("active", this.currentTab === "fragment");
+    this.tabVertex.classList.toggle(
+      "active",
+      this.currentTab === ShaderType.Vertex
+    );
+    this.tabFragment.classList.toggle(
+      "active",
+      this.currentTab === ShaderType.Fragment
+    );
   }
 }
 

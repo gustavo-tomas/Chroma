@@ -1,4 +1,5 @@
 import "./style.css";
+import { ShaderType } from "./common.js";
 import { Graphics } from "./graphics.js";
 import { Editor } from "./editor.js";
 import { Project } from "./project.js";
@@ -50,11 +51,11 @@ class App {
     const fragmentCode = json.Shaders.Fragment;
     const uniforms = json.Shaders.Uniforms;
 
-    this.editor.setVertexCode(vertexCode);
-    this.editor.setFragmentCode(fragmentCode);
+    this.editor.setShaderCode(ShaderType.Vertex, vertexCode);
+    this.editor.setShaderCode(ShaderType.Fragment, fragmentCode);
 
-    this.graphics.onVertexCodeUpdate(vertexCode);
-    this.graphics.onFragmentCodeUpdate(fragmentCode);
+    this.graphics.onShaderCodeUpdate(ShaderType.Vertex, vertexCode);
+    this.graphics.onShaderCodeUpdate(ShaderType.Fragment, fragmentCode);
     this.graphics.onUniformUpdate(uniforms);
   }
 
@@ -120,14 +121,7 @@ class App {
   }
 
   onEditorUpdate(tab, code) {
-    let errorLog = "";
-
-    if (tab === "vertex") {
-      errorLog = this.graphics.onVertexCodeUpdate(code);
-    } else {
-      errorLog = this.graphics.onFragmentCodeUpdate(code);
-    }
-
+    const errorLog = this.graphics.onShaderCodeUpdate(tab, code);
     return errorLog;
   }
 
