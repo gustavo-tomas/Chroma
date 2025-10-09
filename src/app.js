@@ -18,45 +18,29 @@ class App {
     const vertexCode = projectData.Shaders.Vertex;
     const fragmentCode = projectData.Shaders.Fragment;
 
-    this.graphics = new Graphics(vertexCode, fragmentCode);
-    this.editor = new Editor(
-      vertexCode,
-      fragmentCode,
-      this._onEditorUpdate.bind(this)
-    );
-    setupResizers(this.graphics);
+    this._graphics = new Graphics(vertexCode, fragmentCode);
+    this._editor = new Editor(vertexCode, fragmentCode);
+    setupResizers(this._graphics);
 
     this._setProject(projectData);
 
     const editProjectButton = document.getElementById("edit-button");
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
+    const updateButton = document.getElementById("update-shader-btn");
 
     editProjectButton.onclick = this._onProjectEdit.bind(this);
     saveProjectButton.onclick = this._onProjectSave.bind(this);
     loadProjectButton.onclick = this._onProjectLoad.bind(this);
+    updateButton.onclick = this._onUpdate.bind(this);
   }
 
-  // Update the divs, the editor code and the graphics code
-  _setProject(json) {
-    const tabTitle = document.getElementById("tab-title");
-    const tabContent = document.getElementById("tab-content");
-    const projectName = document.getElementById("project-name");
+  _onUpdate() {
+    const tab = this._editor.getCurrentTab();
+    const code = this._editor.getCurrentShaderCode();
+    const errorLog = this._graphics.onShaderCodeUpdate(tab, code);
 
-    tabTitle.innerHTML = this._convertToHtml(json.Section.Title);
-    tabContent.innerHTML = this._convertToHtml(json.Section.Content);
-    projectName.innerHTML = this._convertToHtml(json.ProjectName);
-
-    const vertexCode = json.Shaders.Vertex;
-    const fragmentCode = json.Shaders.Fragment;
-    const uniforms = json.Shaders.Uniforms;
-
-    this.editor.setShaderCode(ShaderType.Vertex, vertexCode);
-    this.editor.setShaderCode(ShaderType.Fragment, fragmentCode);
-
-    this.graphics.onShaderCodeUpdate(ShaderType.Vertex, vertexCode);
-    this.graphics.onShaderCodeUpdate(ShaderType.Fragment, fragmentCode);
-    this.graphics.onUniformUpdate(uniforms);
+    this._editor.onUpdate(errorLog);
   }
 
   // Create a json, retrieve section information and code from the editor
@@ -112,17 +96,34 @@ class App {
 
     projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
     projectData.Shaders = {};
-    projectData.Shaders.Vertex = this.editor.vertexCode;
-    projectData.Shaders.Fragment = this.editor.fragmentCode;
-    projectData.Shaders.Uniforms = this.graphics.getUserUniforms();
+    projectData.Shaders.Vertex = this._editor._vertexCode;
+    projectData.Shaders.Fragment = this._editor._fragmentCode;
+    projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
     projectData.Section = {};
     projectData.Section.Title = this._convertToMarkdown(tabTitle.innerHTML);
     projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
   }
 
-  _onEditorUpdate(tab, code) {
-    const errorLog = this.graphics.onShaderCodeUpdate(tab, code);
-    return errorLog;
+  // Update the divs, the editor code and the graphics code
+  _setProject(json) {
+    const tabTitle = document.getElementById("tab-title");
+    const tabContent = document.getElementById("tab-content");
+    const projectName = document.getElementById("project-name");
+
+    tabTitle.innerHTML = this._convertToHtml(json.Section.Title);
+    tabContent.innerHTML = this._convertToHtml(json.Section.Content);
+    projectName.innerHTML = this._convertToHtml(json.ProjectName);
+
+    const vertexCode = json.Shaders.Vertex;
+    const fragmentCode = json.Shaders.Fragment;
+    const uniforms = json.Shaders.Uniforms;
+
+    this._editor.setShaderCode(ShaderType.Vertex, vertexCode);
+    this._editor.setShaderCode(ShaderType.Fragment, fragmentCode);
+
+    this._graphics.onShaderCodeUpdate(ShaderType.Vertex, vertexCode);
+    this._graphics.onShaderCodeUpdate(ShaderType.Fragment, fragmentCode);
+    this._graphics.onUniformUpdate(uniforms);
   }
 
   _convertToHtml(markdownText) {
@@ -141,6 +142,8 @@ class App {
   _editMode = false;
   _markdownConverter;
   _project;
+  _graphics;
+  _editor;
 }
 
 export { App };
