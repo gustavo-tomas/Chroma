@@ -1,6 +1,7 @@
 import "./style.css";
 import { Graphics } from "./graphics.js";
 import { Editor } from "./editor.js";
+import { Project } from "./project.js";
 import { setupResizers } from "./resizer.js";
 import Showdown from "showdown";
 
@@ -8,10 +9,13 @@ class App {
   async init() {
     this._markdownConverter = new Showdown.Converter();
     this._markdownConverter.setOption("openLinksInNewWindow", true);
+    this._project = new Project();
 
-    const json = await this.loadDefaultProject();
-    const vertexCode = json.Shaders.Vertex;
-    const fragmentCode = json.Shaders.Fragment;
+    await this._project.loadDefault();
+
+    const projectData = this._project.get();
+    const vertexCode = projectData.Shaders.Vertex;
+    const fragmentCode = projectData.Shaders.Fragment;
 
     this.graphics = new Graphics(vertexCode, fragmentCode);
     this.editor = new Editor(
@@ -21,7 +25,7 @@ class App {
     );
     setupResizers(this.graphics);
 
-    this.setProject(json);
+    this.setProject(projectData);
 
     const editProjectButton = document.getElementById("edit-button");
     const saveProjectButton = document.getElementById("save-button");
@@ -30,17 +34,6 @@ class App {
     editProjectButton.onclick = this.onProjectEdit.bind(this);
     saveProjectButton.onclick = this.onProjectSave.bind(this);
     loadProjectButton.onclick = this.onProjectLoad.bind(this);
-  }
-
-  async loadDefaultProject() {
-    try {
-      const response = await fetch("./projects/brute.json");
-      const data = await response.json();
-      console.log("Loaded default project:", data);
-      return data;
-    } catch (error) {
-      console.error("Error loading default project:", error);
-    }
   }
 
   // Update the divs, the editor code and the graphics code
@@ -65,86 +58,15 @@ class App {
     this.graphics.onUniformUpdate(uniforms);
   }
 
-  // Build project from current data
-  getProject() {
-    const projectName = this._convertToMarkdown(
-      document.getElementById("project-name").innerHTML
-    );
-    const tabTitle = this._convertToMarkdown(
-      document.getElementById("tab-title").innerHTML
-    );
-    const tabContent = this._convertToMarkdown(
-      document.getElementById("tab-content").innerHTML
-    );
-
-    const project = new Object();
-    project.ProjectName = projectName;
-    project.Shaders = {};
-    project.Shaders.Vertex = this.editor.vertexCode;
-    project.Shaders.Fragment = this.editor.fragmentCode;
-    project.Shaders.Uniforms = this.graphics.getUserUniforms();
-    project.Section = {};
-    project.Section.Title = tabTitle;
-    project.Section.Content = tabContent;
-
-    return project;
-  }
-
   // Create a json, retrieve section information and code from the editor
   onProjectSave() {
-    const project = this.getProject();
-
-    // Convert object to JSON string
-    const json = JSON.stringify(project, null, 2); // null, 2 for pretty formatting
-
-    // Create a Blob with the JSON data
-    const blob = new Blob([json], { type: "application/json" });
-
-    // Create a temporary URL for the blob
-    const url = URL.createObjectURL(blob);
-
-    // Create a temporary anchor element and trigger download
-    const a = document.createElement("a");
-    a.href = url;
-    a.download = project.ProjectName;
-    document.body.appendChild(a);
-    a.click();
-
-    // Clean up
-    document.body.removeChild(a);
-    URL.revokeObjectURL(url);
-
-    console.log("Saved project: ", project);
+    this._project.save();
   }
 
   // @TODO: this can also be drag n drop
-  onProjectLoad() {
-    const input = document.createElement("input");
-    input.type = "file";
-    input.accept = ".json";
-
-    input.onchange = (event) => {
-      const file = event.target.files[0];
-
-      if (!file) {
-        return;
-      }
-
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        try {
-          const json = JSON.parse(e.target.result);
-          this.setProject(json);
-
-          console.log("Project loaded:", json);
-        } catch (error) {
-          alert("Error loading project file: " + error.message);
-        }
-      };
-      reader.readAsText(file);
-    };
-
-    input.click();
+  async onProjectLoad() {
+    await this._project.load();
+    this.setProject(this._project.get());
   }
 
   // Make fields available for editing
@@ -183,6 +105,18 @@ class App {
 
       this._editMode = false;
     }
+
+    // Update project data
+    const projectData = this._project.get();
+
+    projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
+    projectData.Shaders = {};
+    projectData.Shaders.Vertex = this.editor.vertexCode;
+    projectData.Shaders.Fragment = this.editor.fragmentCode;
+    projectData.Shaders.Uniforms = this.graphics.getUserUniforms();
+    projectData.Section = {};
+    projectData.Section.Title = this._convertToMarkdown(tabTitle.innerHTML);
+    projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
   }
 
   onEditorUpdate(tab, code) {
@@ -212,6 +146,7 @@ class App {
 
   _editMode = false;
   _markdownConverter;
+  _project;
 }
 
 export { App };
