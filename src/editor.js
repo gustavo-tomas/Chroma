@@ -68,10 +68,10 @@ class Editor {
 
     // attach click handlers to switch tabs
     this.tabVertex.addEventListener("click", () =>
-      this.switchTab(ShaderType.Vertex)
+      this._switchTab(ShaderType.Vertex)
     );
     this.tabFragment.addEventListener("click", () =>
-      this.switchTab(ShaderType.Fragment)
+      this._switchTab(ShaderType.Fragment)
     );
 
     // set initial active styles
@@ -80,7 +80,7 @@ class Editor {
 
   setShaderCode(tab, code) {
     // @TODO: switching tabs is a bit of a hack but works fine
-    this.switchTab(tab);
+    this._switchTab(tab);
 
     if (tab === ShaderType.Vertex) {
       this.vertexCode = code;
@@ -97,7 +97,7 @@ class Editor {
     });
   }
 
-  switchTab(tabType) {
+  _switchTab(tabType) {
     if (tabType === this.currentTab) return;
 
     // save current content

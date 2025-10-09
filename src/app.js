@@ -22,23 +22,23 @@ class App {
     this.editor = new Editor(
       vertexCode,
       fragmentCode,
-      this.onEditorUpdate.bind(this)
+      this._onEditorUpdate.bind(this)
     );
     setupResizers(this.graphics);
 
-    this.setProject(projectData);
+    this._setProject(projectData);
 
     const editProjectButton = document.getElementById("edit-button");
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
 
-    editProjectButton.onclick = this.onProjectEdit.bind(this);
-    saveProjectButton.onclick = this.onProjectSave.bind(this);
-    loadProjectButton.onclick = this.onProjectLoad.bind(this);
+    editProjectButton.onclick = this._onProjectEdit.bind(this);
+    saveProjectButton.onclick = this._onProjectSave.bind(this);
+    loadProjectButton.onclick = this._onProjectLoad.bind(this);
   }
 
   // Update the divs, the editor code and the graphics code
-  setProject(json) {
+  _setProject(json) {
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
     const projectName = document.getElementById("project-name");
@@ -60,18 +60,18 @@ class App {
   }
 
   // Create a json, retrieve section information and code from the editor
-  onProjectSave() {
+  _onProjectSave() {
     this._project.save();
   }
 
   // @TODO: this can also be drag n drop
-  async onProjectLoad() {
+  async _onProjectLoad() {
     await this._project.load();
-    this.setProject(this._project.get());
+    this._setProject(this._project.get());
   }
 
   // Make fields available for editing
-  onProjectEdit() {
+  _onProjectEdit() {
     const projectName = document.getElementById("project-name");
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
@@ -120,7 +120,7 @@ class App {
     projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
   }
 
-  onEditorUpdate(tab, code) {
+  _onEditorUpdate(tab, code) {
     const errorLog = this.graphics.onShaderCodeUpdate(tab, code);
     return errorLog;
   }
