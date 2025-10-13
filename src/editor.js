@@ -42,7 +42,7 @@ class Editor {
     const info = errorLog
       .split("\n")
       .map((l) => l.trim())
-      .filter((l) => l && !/No precision specified/.test(l));
+      .filter((l) => l);
 
     const diags = [];
 
@@ -88,12 +88,8 @@ class Editor {
     });
   }
 
-  getCurrentTab() {
-    return this._currentTab;
-  }
-
-  getCurrentShaderCode() {
-    if (this._currentTab === ShaderType.Vertex) {
+  getCurrentShaderCode(type) {
+    if (type === ShaderType.Vertex) {
       return this._vertexCode;
     } else {
       return this._fragmentCode;

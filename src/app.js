@@ -18,8 +18,14 @@ class App {
     const vertexCode = projectData.Shaders.Vertex;
     const fragmentCode = projectData.Shaders.Fragment;
 
-    this._graphics = new Graphics(vertexCode, fragmentCode);
+    this._graphics = new Graphics(
+      vertexCode,
+      fragmentCode,
+      this._onShaderCompile.bind(this)
+    );
+
     this._editor = new Editor(vertexCode, fragmentCode);
+
     setupResizers(this._graphics);
 
     this._setProject(projectData);
@@ -35,12 +41,16 @@ class App {
     updateButton.onclick = this._onUpdate.bind(this);
   }
 
-  _onUpdate() {
-    const tab = this._editor.getCurrentTab();
-    const code = this._editor.getCurrentShaderCode();
-    const errorLog = this._graphics.onShaderCodeUpdate(tab, code);
+  _onShaderCompile(type, log) {
+    console.log("TYPE: ", type, "\n", "LOG: ", log);
+    this._editor.onUpdate(log);
+  }
 
-    this._editor.onUpdate(errorLog);
+  _onUpdate() {
+    const vertexCode = this._editor.getCurrentShaderCode(ShaderType.Vertex);
+    const fragmentCode = this._editor.getCurrentShaderCode(ShaderType.Fragment);
+
+    this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
   }
 
   // Create a json, retrieve section information and code from the editor
@@ -121,8 +131,7 @@ class App {
     this._editor.setShaderCode(ShaderType.Vertex, vertexCode);
     this._editor.setShaderCode(ShaderType.Fragment, fragmentCode);
 
-    this._graphics.onShaderCodeUpdate(ShaderType.Vertex, vertexCode);
-    this._graphics.onShaderCodeUpdate(ShaderType.Fragment, fragmentCode);
+    this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
     this._graphics.onUniformUpdate(uniforms);
   }
 

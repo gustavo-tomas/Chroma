@@ -2,13 +2,14 @@ import { ShaderType } from "./common.js";
 import * as THREE from "three";
 
 class Graphics {
-  constructor(vertexCode, fragmentCode) {
+  constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
     const canvas = document.getElementById("canvas");
     const viewPanel = document.getElementById("view-panel");
 
     const width = viewPanel.clientWidth;
     const height = viewPanel.clientHeight;
 
+    this._onShaderCompileCallback = onShaderCompileCallback;
     this._camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
     this._camera.position.z = 1;
 
@@ -38,6 +39,11 @@ class Graphics {
     this._renderer.setSize(width, height);
     this._renderer.setAnimationLoop(this._onUpdate.bind(this));
 
+    const gl = this._renderer.getContext();
+    this._glCompileShader = gl.compileShader.bind(gl);
+
+    gl.compileShader = this._onCompile.bind(this);
+
     viewPanel.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
@@ -45,30 +51,9 @@ class Graphics {
     initTexturePanelStatic(this._material);
   }
 
-  _getShaderLog(src, tab) {
-    const glContext = this._renderer.getContext();
-    const type =
-      tab === ShaderType.Vertex
-        ? glContext.VERTEX_SHADER
-        : glContext.FRAGMENT_SHADER;
-
-    const sh = glContext.createShader(type);
-
-    glContext.shaderSource(sh, src);
-    glContext.compileShader(sh);
-
-    const log = glContext.getShaderInfoLog(sh) || "";
-    glContext.deleteShader(sh);
-
-    return log;
-  }
-
-  onShaderCodeUpdate(shaderType, shaderCode) {
-    if (shaderType === ShaderType.Vertex) {
-      this._material.vertexShader = shaderCode;
-    } else {
-      this._material.fragmentShader = shaderCode;
-    }
+  onShaderCodeUpdate(vertexShader, fragmentShader) {
+    this._material.vertexShader = vertexShader;
+    this._material.fragmentShader = fragmentShader;
 
     this._material.uniforms = this._material.uniforms || {};
     [
@@ -82,8 +67,6 @@ class Graphics {
         this._material.uniforms[n] = { value: null };
     });
     this._material.needsUpdate = true;
-
-    return this._getShaderLog(shaderCode, shaderType);
   }
 
   onUniformUpdate(uniforms) {
@@ -143,6 +126,26 @@ class Graphics {
     }
 
     this._renderer.render(this._scene, this._camera);
+  }
+
+  // @NOTE: because we can't access the full shader during compilation, we need
+  // to intercept the webgl-threejs shader before the compilation is done. Then
+  // we can send the correct logs to the editor.
+
+  _onCompile(shader) {
+    const gl = this._renderer.getContext();
+
+    this._glCompileShader(shader);
+
+    const glShaderType = gl.getShaderParameter(shader, gl.SHADER_TYPE);
+    const log = gl.getShaderInfoLog(shader);
+
+    const shaderType =
+      glShaderType === gl.VERTEX_SHADER
+        ? ShaderType.Vertex
+        : ShaderType.Fragment;
+
+    this._onShaderCompileCallback(shaderType, log);
   }
 
   _onBeforeCompile(shader) {
@@ -216,11 +219,13 @@ class Graphics {
     this._mousePositionNormalized = mousePosition;
   }
 
+  _glContext;
   _scene;
   _camera;
   _renderer;
   _material;
   _mesh;
+  _onShaderCompileCallback;
   _mousePositionNormalized; // [-1.0, 1.0]
   _screenResolution;
 }
