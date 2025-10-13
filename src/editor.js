@@ -10,13 +10,14 @@ class Editor {
     this._currentTab = ShaderType.Vertex;
 
     // tab buttons
+    this._editor = document.querySelector("#editor");
     this._tabVertex = document.getElementById("tab-vertex");
     this._tabFragment = document.getElementById("tab-fragment");
 
     // initialize CodeMirror view
     this._view = new EditorView({
       doc: this._vertexCode,
-      parent: document.querySelector("#editor"),
+      parent: this._editor,
       extensions: [basicSetup, lintGutter(), linter(() => [])],
     });
 
@@ -27,6 +28,10 @@ class Editor {
     this._tabFragment.addEventListener("click", () =>
       this._switchTab(ShaderType.Fragment)
     );
+
+    this._editor.addEventListener("keyup", (e) => {
+      this._onKeyUp(e);
+    });
 
     // set initial active styles
     this._updateTabStyles();
@@ -95,16 +100,26 @@ class Editor {
     }
   }
 
-  _switchTab(tabType) {
-    if (tabType === this._currentTab) return;
-
-    // save current content
+  _saveCurrentText() {
     const currentText = this._view.state.doc.toString();
+
     if (this._currentTab === ShaderType.Vertex) {
       this._vertexCode = currentText;
     } else {
       this._fragmentCode = currentText;
     }
+  }
+
+  _onKeyUp(e) {
+    this._saveCurrentText();
+  }
+
+  _switchTab(tabType) {
+    if (tabType === this._currentTab) {
+      return;
+    }
+
+    this._saveCurrentText();
 
     // update state
     this._currentTab = tabType;
