@@ -42,8 +42,7 @@ class App {
   }
 
   _onShaderCompile(type, log) {
-    console.log("TYPE: ", type, "\n", "LOG: ", log);
-    this._editor.onUpdate(log);
+    this._editor.onUpdate(type, log);
   }
 
   _onUpdate() {

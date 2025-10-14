@@ -37,33 +37,35 @@ class Editor {
     this._updateTabStyles();
   }
 
-  onUpdate(errorLog) {
-    // collect diagnostics only at the exact position of the token with the error
-    const info = errorLog
-      .split("\n")
-      .map((l) => l.trim())
-      .filter((l) => l);
+  onUpdate(shaderType, shaderLog) {
+    if (!shaderLog.errorMessage.length) {
+      return;
+    }
 
+    // collect diagnostics only at the exact position of the token with the error
     const diags = [];
 
-    if (info.length) {
-      const first = info[0];
-      const m = first.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
-      const lineNum = m ? parseInt(m[1], 10) : 1;
-      const token = m && m[2] ? m[2] : null;
-      const line = this._view.state.doc.line(lineNum);
-      let from = line.from,
-        to = line.to;
-      if (token) {
-        const text = this._view.state.doc.sliceString(line.from, line.to);
-        const idx = text.indexOf(token);
-        if (idx >= 0) {
-          from = line.from + idx;
-          to = from + token.length;
-        }
+    this._switchTab(shaderType);
+
+    const line = this._view.state.doc.line(shaderLog.lineNumber);
+    let from = line.from;
+    let to = line.to;
+
+    if (shaderLog.token) {
+      const text = this._view.state.doc.sliceString(line.from, line.to);
+      const idx = text.indexOf(shaderLog.token);
+      if (idx >= 0) {
+        from = line.from + idx;
+        to = from + shaderLog.token.length;
       }
-      diags.push({ from, to, severity: "error", message: first });
     }
+
+    diags.push({
+      from,
+      to,
+      severity: "error",
+      message: shaderLog.errorMessage,
+    });
 
     // Apply the diagnostics (an empty list will clear them)
     this._view.dispatch(setDiagnostics(this._view.state, diags));

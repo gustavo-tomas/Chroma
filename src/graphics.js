@@ -1,6 +1,12 @@
 import { ShaderType } from "./common.js";
 import * as THREE from "three";
 
+class ShaderCompileLog {
+  errorMessage = "";
+  lineNumber = 0;
+  token = "";
+}
+
 class Graphics {
   constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
     const canvas = document.getElementById("canvas");
@@ -135,17 +141,53 @@ class Graphics {
   _onCompile(shader) {
     const gl = this._renderer.getContext();
 
+    const glShaderSource = gl.getShaderSource(shader);
+
     this._glCompileShader(shader);
 
     const glShaderType = gl.getShaderParameter(shader, gl.SHADER_TYPE);
-    const log = gl.getShaderInfoLog(shader);
+    const glShaderLog = gl.getShaderInfoLog(shader);
 
     const shaderType =
       glShaderType === gl.VERTEX_SHADER
         ? ShaderType.Vertex
         : ShaderType.Fragment;
 
-    this._onShaderCompileCallback(shaderType, log);
+    const numLinesFullCode = glShaderSource.split(/\r\n|\r|\n/).length;
+
+    const numLinesVisibleCode =
+      shaderType === ShaderType.Vertex
+        ? this._material.vertexShader.split(/\r\n|\r|\n/).length
+        : this._material.fragmentShader.split(/\r\n|\r|\n/).length;
+
+    const diff = numLinesFullCode - numLinesVisibleCode;
+
+    let shaderLog = new ShaderCompileLog();
+
+    if (glShaderLog.length > 0) {
+      const info = glShaderLog
+        .split("\n")
+        .map((l) => l.trim())
+        .filter((l) => l);
+
+      const first = info[0];
+      const m = first.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
+      const fullCodeLineNumber = m ? parseInt(m[1], 10) : 1;
+      const lineNumber = fullCodeLineNumber - diff;
+      const token = m && m[2] ? m[2] : null;
+
+      // Don't forget to also update the error message
+      const visibleErrorMessage = glShaderLog.replace(
+        /0:\d+/,
+        "0:".concat(lineNumber)
+      );
+
+      shaderLog.errorMessage = visibleErrorMessage;
+      shaderLog.lineNumber = lineNumber;
+      shaderLog.token = token;
+    }
+
+    this._onShaderCompileCallback(shaderType, shaderLog);
   }
 
   _onBeforeCompile(shader) {
@@ -230,7 +272,7 @@ class Graphics {
   _screenResolution;
 }
 
-export { Graphics };
+export { Graphics, ShaderCompileLog };
 
 export function initTexturePanelStatic(material) {
   function fileToTex(file, cb) {
