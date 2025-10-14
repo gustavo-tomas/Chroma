@@ -162,32 +162,36 @@ class Graphics {
 
     const diff = numLinesFullCode - numLinesVisibleCode;
 
-    let shaderLog = new ShaderCompileLog();
+    let shaderLogs = [];
 
     if (glShaderLog.length > 0) {
-      const info = glShaderLog
+      const infos = glShaderLog
         .split("\n")
         .map((l) => l.trim())
-        .filter((l) => l);
+        .filter((l) => l != "\x00"); // junk
 
-      const first = info[0];
-      const m = first.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
-      const fullCodeLineNumber = m ? parseInt(m[1], 10) : 1;
-      const lineNumber = fullCodeLineNumber - diff;
-      const token = m && m[2] ? m[2] : null;
+      infos.forEach((info) => {
+        const m = info.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
+        const fullCodeLineNumber = m ? parseInt(m[1], 10) : 1;
+        const lineNumber = fullCodeLineNumber - diff;
+        const token = m && m[2] ? m[2] : null;
 
-      // Don't forget to also update the error message
-      const visibleErrorMessage = glShaderLog.replace(
-        /0:\d+/,
-        "0:".concat(lineNumber)
-      );
+        // Don't forget to also update the error message
+        const visibleErrorMessage = info.replace(
+          /0:\d+/,
+          "0:".concat(lineNumber)
+        );
 
-      shaderLog.errorMessage = visibleErrorMessage;
-      shaderLog.lineNumber = lineNumber;
-      shaderLog.token = token;
+        const shaderLog = new ShaderCompileLog();
+        shaderLog.errorMessage = visibleErrorMessage;
+        shaderLog.lineNumber = lineNumber;
+        shaderLog.token = token;
+
+        shaderLogs.push(shaderLog);
+      });
     }
 
-    this._onShaderCompileCallback(shaderType, shaderLog);
+    this._onShaderCompileCallback(shaderType, shaderLogs);
   }
 
   _onBeforeCompile(shader) {

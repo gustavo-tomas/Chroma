@@ -41,8 +41,8 @@ class App {
     updateButton.onclick = this._onUpdate.bind(this);
   }
 
-  _onShaderCompile(type, log) {
-    this._editor.onUpdate(type, log);
+  _onShaderCompile(type, logs) {
+    this._editor.onUpdate(type, logs);
   }
 
   _onUpdate() {
