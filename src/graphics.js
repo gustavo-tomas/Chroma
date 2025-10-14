@@ -62,6 +62,7 @@ class Graphics {
     this._material.fragmentShader = fragmentShader;
 
     this._material.uniforms = this._material.uniforms || {};
+
     [
       "iChannel0",
       "iChannel1",
@@ -72,7 +73,9 @@ class Graphics {
       if (!this._material.uniforms[n])
         this._material.uniforms[n] = { value: null };
     });
-    this._material.needsUpdate = true;
+
+    // Force shader recompilation
+    this._material.dispose();
   }
 
   onUniformUpdate(uniforms) {
