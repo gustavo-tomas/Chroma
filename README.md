@@ -30,7 +30,7 @@
 - [x] Adicionar funcionalidades de input (mouse, teclado)
 - [x] Adicionar variável de tempo (time)
 - [x] Adicionar uniform de resolução da tela
-- [ ] Adicionar checagem de erro com uniformes
+- [x] Adicionar checagem de erro com uniformes
 - [x] Adicionar markdown para aba de teoria (sem imagem)
 - [ ] Adicionar suporte para salvar imagens
   - [ ] Adicionar path para recursos no arquivo proj

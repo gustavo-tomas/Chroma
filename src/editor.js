@@ -41,6 +41,11 @@ class Editor {
   }
 
   onUpdate(shaderType, shaderLogs) {
+    const oldTab = this._currentTab;
+
+    // Switch tabs to get diagnostics for this shader. If everything is ok, we
+    // go back to the old tab. If not, we display the error in the current tab.
+
     this._switchTab(shaderType);
 
     // collect diagnostics only at the exact position of the token with the error
@@ -72,6 +77,10 @@ class Editor {
       this._diagnosticsVertex = diagnostics;
     } else {
       this._diagnosticsFragment = diagnostics;
+    }
+
+    if (diagnostics.length === 0) {
+      this._switchTab(oldTab);
     }
 
     this._updateTabStyles();
