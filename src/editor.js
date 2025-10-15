@@ -1,7 +1,7 @@
 import { ShaderType } from "./common.js";
 import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
-import { lintGutter, linter, setDiagnostics } from "@codemirror/lint";
+import { lintGutter, setDiagnostics } from "@codemirror/lint";
 
 class Editor {
   constructor(initialVertex, initialFragment) {
@@ -18,7 +18,7 @@ class Editor {
     this._view = new EditorView({
       doc: this._vertexCode,
       parent: this._editor,
-      extensions: [basicSetup, lintGutter(), linter(() => [])],
+      extensions: [basicSetup, lintGutter()],
     });
 
     // attach click handlers to switch tabs
@@ -33,15 +33,14 @@ class Editor {
       this._onKeyUp(e);
     });
 
+    this._diagnosticsVertex = [];
+    this._diagnosticsFragment = [];
+
     // set initial active styles
     this._updateTabStyles();
   }
 
   onUpdate(shaderType, shaderLogs) {
-    if (!shaderLogs.length) {
-      return;
-    }
-
     this._switchTab(shaderType);
 
     // collect diagnostics only at the exact position of the token with the error
@@ -69,8 +68,13 @@ class Editor {
       });
     });
 
-    // Apply the diagnostics (an empty list will clear them)
-    this._view.dispatch(setDiagnostics(this._view.state, diagnostics));
+    if (this._currentTab === ShaderType.Vertex) {
+      this._diagnosticsVertex = diagnostics;
+    } else {
+      this._diagnosticsFragment = diagnostics;
+    }
+
+    this._updateTabStyles();
   }
 
   setShaderCode(tab, code) {
@@ -144,6 +148,17 @@ class Editor {
       "active",
       this._currentTab === ShaderType.Fragment
     );
+
+    // Apply the diagnostics (an empty list will clear them)
+    if (this._currentTab === ShaderType.Vertex) {
+      this._view.dispatch(
+        setDiagnostics(this._view.state, this._diagnosticsVertex)
+      );
+    } else {
+      this._view.dispatch(
+        setDiagnostics(this._view.state, this._diagnosticsFragment)
+      );
+    }
   }
 }
 
