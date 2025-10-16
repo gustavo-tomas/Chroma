@@ -36,12 +36,22 @@
       <div id="editor-tab">
         <!-- tabs above the editor/view -->
         <div id="editor-buttons">
+          <button id="tab-geometry">Input Geometry</button>
           <button id="tab-vertex" class="active">Vertex Shader</button>
           <button id="tab-fragment">Fragment Shader</button>
         </div>
         <!-- code editor panel -->
         <div id="code-panel">
-          <div id="editor"></div>
+          <div id="geometry">
+            <div class="geometry-btn-group">
+              Input Geometry
+              <label class="btn active"
+                ><input type="radio" checked />Plane</label
+              >
+            </div>
+          </div>
+
+          <div id="shader"></div>
         </div>
         <div id="shader-controls">
           <button id="update-shader-btn">Run code</button>

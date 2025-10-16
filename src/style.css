@@ -69,6 +69,10 @@ body {
   overflow: auto;
 }
 
+#geometry {
+  display: none;
+}
+
 /* Horizontal resizer bar */
 #v-resizer {
   height: 5px;
