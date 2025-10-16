@@ -9,44 +9,53 @@ const TabType = {
   Fragment: ShaderType.Fragment,
 };
 
+class Tab {
+  type;
+  button;
+  display;
+}
+
 class Editor {
   constructor(initialVertex, initialFragment) {
     this._vertexCode = initialVertex;
     this._fragmentCode = initialFragment;
     this._currentTab = TabType.Vertex;
 
+    this._shaderDisplay = document.querySelector("#shader");
+    this._geometryDisplay = document.querySelector("#geometry");
+
     // tabs
-    this._tabs = {
-      buttons: {
-        geometry: document.getElementById("tab-geometry"),
-        vertex: document.getElementById("tab-vertex"),
-        fragment: document.getElementById("tab-fragment"),
-      },
-      displays: {
-        geometry: document.querySelector("#geometry"),
-        shader: document.querySelector("#shader"),
-      },
-    };
+    const geometryTab = new Tab();
+    geometryTab.type = TabType.Geometry;
+    geometryTab.button = document.getElementById("tab-geometry");
+    geometryTab.display = this._geometryDisplay;
+
+    const vertexTab = new Tab();
+    vertexTab.type = TabType.Vertex;
+    vertexTab.button = document.getElementById("tab-vertex");
+    vertexTab.display = this._shaderDisplay;
+
+    const fragmentTab = new Tab();
+    fragmentTab.type = TabType.Fragment;
+    fragmentTab.button = document.getElementById("tab-fragment");
+    fragmentTab.display = this._shaderDisplay;
+
+    // We can also access this as a map using indices if necessary
+    this._tabs = [geometryTab, vertexTab, fragmentTab];
 
     // initialize CodeMirror view
     this._view = new EditorView({
       doc: this._vertexCode,
-      parent: this._tabs.displays.shader,
+      parent: this._shaderDisplay,
       extensions: [basicSetup, lintGutter()],
     });
 
     // attach click handlers to switch tabs
-    this._tabs.buttons.geometry.addEventListener("click", () =>
-      this._switchTab(TabType.Geometry)
-    );
-    this._tabs.buttons.vertex.addEventListener("click", () =>
-      this._switchTab(TabType.Vertex)
-    );
-    this._tabs.buttons.fragment.addEventListener("click", () =>
-      this._switchTab(TabType.Fragment)
-    );
+    this._tabs.forEach((tab) => {
+      tab.button.addEventListener("click", () => this._switchTab(tab.type));
+    });
 
-    this._tabs.displays.shader.addEventListener("keyup", (e) => {
+    this._shaderDisplay.addEventListener("keyup", (e) => {
       this._onKeyUp(e);
     });
 
@@ -167,39 +176,33 @@ class Editor {
     this._updateTabStyles();
   }
 
-  // @TODO: DRY
+  _toggleGeometryTab(visible) {
+    if (visible) {
+      this._shaderDisplay.style.visibility = "hidden";
+      this._geometryDisplay.style.display = "block";
+    } else {
+      this._shaderDisplay.style.visibility = "visible";
+      this._geometryDisplay.style.display = "none";
+    }
+  }
+
   _updateTabStyles() {
-    this._tabs.buttons.vertex.classList.toggle(
-      "active",
-      this._currentTab === TabType.Vertex
-    );
-    this._tabs.buttons.fragment.classList.toggle(
-      "active",
-      this._currentTab === TabType.Fragment
-    );
-    this._tabs.buttons.geometry.classList.toggle(
-      "active",
-      this._currentTab === TabType.Geometry
-    );
+    // buttons
+    this._tabs.forEach((tab) => {
+      tab.button.classList.toggle("active", this._currentTab === tab.type);
+    });
+
+    this._toggleGeometryTab(this._currentTab === TabType.Geometry);
 
     // Apply the diagnostics (an empty list will clear them)
     if (this._currentTab === TabType.Vertex) {
       this._view.dispatch(
         setDiagnostics(this._view.state, this._diagnosticsVertex)
       );
-
-      this._tabs.displays.shader.style.visibility = "visible";
-      this._tabs.displays.geometry.style.display = "none";
     } else if (this._currentTab === TabType.Fragment) {
       this._view.dispatch(
         setDiagnostics(this._view.state, this._diagnosticsFragment)
       );
-
-      this._tabs.displays.shader.style.visibility = "visible";
-      this._tabs.displays.geometry.style.display = "none";
-    } else {
-      this._tabs.displays.shader.style.visibility = "hidden";
-      this._tabs.displays.geometry.style.display = "block";
     }
   }
 }
