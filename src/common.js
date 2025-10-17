@@ -9,4 +9,9 @@ const InputGeometryTypes = {
   Box: "box",
 };
 
-export { ShaderType, InputGeometryTypes };
+const CameraTypes = {
+  Perspective: "perspective",
+  Orthographic: "orthographic",
+};
+
+export { ShaderType, InputGeometryTypes, CameraTypes };

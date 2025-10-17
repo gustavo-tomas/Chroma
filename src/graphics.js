@@ -1,4 +1,4 @@
-import { InputGeometryTypes, ShaderType } from "./common.js";
+import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -10,14 +10,16 @@ class ShaderCompileLog {
 class Graphics {
   constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
     const canvas = document.getElementById("canvas");
-    const viewPanel = document.getElementById("view-panel");
     const wireframeInputButton = document.getElementById("wireframe");
+    this._viewPanel = document.getElementById("view-panel");
 
     const geometryInputButtons =
       document.getElementsByClassName("geometry-btn");
 
-    const width = viewPanel.clientWidth;
-    const height = viewPanel.clientHeight;
+    const cameraInputButtons = document.getElementsByClassName("camera-btn");
+
+    const width = this._getWidth();
+    const height = this._getHeight();
 
     this._onShaderCompileCallback = onShaderCompileCallback;
     this._camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
@@ -54,7 +56,7 @@ class Graphics {
 
     gl.compileShader = this._onCompile.bind(this);
 
-    viewPanel.addEventListener("resize", this.onResize.bind(this));
+    this._viewPanel.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
 
@@ -69,6 +71,11 @@ class Graphics {
         "change",
         this._onInputGeometrySelected.bind(this)
       );
+    }
+
+    for (let i = 0; i < cameraInputButtons.length; i++) {
+      const button = cameraInputButtons[i];
+      button.addEventListener("change", this._onCameraInputSelected.bind(this));
     }
 
     initTexturePanelStatic(this._material);
@@ -112,10 +119,8 @@ class Graphics {
   }
 
   onResize() {
-    const viewPanel = document.getElementById("view-panel");
-
-    const width = viewPanel.clientWidth;
-    const height = viewPanel.clientHeight;
+    const width = this._getWidth();
+    const height = this._getHeight();
 
     this._camera.aspect = width / height;
     this._camera.updateProjectionMatrix();
@@ -139,6 +144,29 @@ class Graphics {
     }
 
     return uniforms;
+  }
+
+  _onCameraInputSelected(e) {
+    const button = e.target;
+    if (!button.checked) {
+      return;
+    }
+
+    let camera;
+
+    switch (button.id) {
+      case CameraTypes.Perspective:
+        const width = this._getWidth();
+        const height = this._getHeight();
+        camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
+        camera.position.z = 1;
+        break;
+      case CameraTypes.Orthographic:
+        camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        break;
+    }
+
+    this._camera = camera;
   }
 
   _onInputGeometrySelected(e) {
@@ -308,6 +336,14 @@ class Graphics {
     mousePosition.y = mousePosition.y * -2.0 + 1.0;
 
     this._mousePositionNormalized = mousePosition;
+  }
+
+  _getWidth() {
+    return this._viewPanel.clientWidth;
+  }
+
+  _getHeight() {
+    return this._viewPanel.clientHeight;
   }
 
   _glContext;
