@@ -11,6 +11,10 @@ class Graphics {
   constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
     const canvas = document.getElementById("canvas");
     const viewPanel = document.getElementById("view-panel");
+    const wireframeInputButton = document.getElementById("wireframe");
+
+    const geometryInputButtons =
+      document.getElementsByClassName("geometry-btn");
 
     const width = viewPanel.clientWidth;
     const height = viewPanel.clientHeight;
@@ -54,26 +58,20 @@ class Graphics {
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
 
-    initTexturePanelStatic(this._material);
-  }
+    wireframeInputButton.addEventListener(
+      "change",
+      this._onWireframeSelected.bind(this)
+    );
 
-  onWireframeUpdate(active) {
-    this._material.wireframe = active;
-  }
-
-  onInputGeometryUpdate(geometryType) {
-    let geometry;
-
-    switch (geometryType) {
-      case InputGeometryTypes.Box:
-        geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
-        break;
-      case InputGeometryTypes.Plane:
-        geometry = new THREE.PlaneGeometry(0.5, 0.5);
-        break;
+    for (let i = 0; i < geometryInputButtons.length; i++) {
+      const button = geometryInputButtons[i];
+      button.addEventListener(
+        "change",
+        this._onInputGeometrySelected.bind(this)
+      );
     }
 
-    this._mesh.geometry = geometry;
+    initTexturePanelStatic(this._material);
   }
 
   onShaderCodeUpdate(vertexShader, fragmentShader) {
@@ -141,6 +139,31 @@ class Graphics {
     }
 
     return uniforms;
+  }
+
+  _onInputGeometrySelected(e) {
+    const button = e.target;
+    if (!button.checked) {
+      return;
+    }
+
+    let geometry;
+
+    switch (button.id) {
+      case InputGeometryTypes.Box:
+        geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+        break;
+      case InputGeometryTypes.Plane:
+        geometry = new THREE.PlaneGeometry(0.5, 0.5);
+        break;
+    }
+
+    this._mesh.geometry = geometry;
+  }
+
+  _onWireframeSelected(e) {
+    const button = e.target;
+    this._material.wireframe = button.checked;
   }
 
   _onUpdate(time) {

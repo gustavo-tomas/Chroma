@@ -24,12 +24,7 @@ class App {
       this._onShaderCompile.bind(this)
     );
 
-    this._editor = new Editor(
-      vertexCode,
-      fragmentCode,
-      this._onInputGeometrySelected.bind(this),
-      this._onWireframeSelected.bind(this)
-    );
+    this._editor = new Editor(vertexCode, fragmentCode);
 
     setupResizers(this._graphics);
 
@@ -66,14 +61,6 @@ class App {
   async _onProjectLoad() {
     await this._project.load();
     this._setProject(this._project.get());
-  }
-
-  _onInputGeometrySelected(buttonID) {
-    this._graphics.onInputGeometryUpdate(buttonID);
-  }
-
-  _onWireframeSelected(checked) {
-    this._graphics.onWireframeUpdate(checked);
   }
 
   // Make fields available for editing
