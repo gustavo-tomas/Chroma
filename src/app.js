@@ -27,7 +27,8 @@ class App {
     this._editor = new Editor(
       vertexCode,
       fragmentCode,
-      this._onInputGeometrySelected.bind(this)
+      this._onInputGeometrySelected.bind(this),
+      this._onWireframeSelected.bind(this)
     );
 
     setupResizers(this._graphics);
@@ -69,6 +70,10 @@ class App {
 
   _onInputGeometrySelected(buttonID) {
     this._graphics.onInputGeometryUpdate(buttonID);
+  }
+
+  _onWireframeSelected(checked) {
+    this._graphics.onWireframeUpdate(checked);
   }
 
   // Make fields available for editing

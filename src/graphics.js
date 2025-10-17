@@ -57,6 +57,10 @@ class Graphics {
     initTexturePanelStatic(this._material);
   }
 
+  onWireframeUpdate(active) {
+    this._material.wireframe = active;
+  }
+
   onInputGeometryUpdate(geometryType) {
     let geometry;
 
