@@ -4,4 +4,9 @@ const ShaderType = {
   Fragment: "fragment",
 };
 
-export { ShaderType };
+const InputGeometryTypes = {
+  Plane: "plane",
+  Box: "box",
+};
+
+export { ShaderType, InputGeometryTypes };

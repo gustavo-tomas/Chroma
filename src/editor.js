@@ -16,13 +16,18 @@ class Tab {
 }
 
 class Editor {
-  constructor(initialVertex, initialFragment) {
+  constructor(initialVertex, initialFragment, onInputGeometrySelectedCallback) {
     this._vertexCode = initialVertex;
     this._fragmentCode = initialFragment;
     this._currentTab = TabType.Vertex;
+    this._onInputGeometrySelectedCallback = onInputGeometrySelectedCallback;
 
     this._shaderDisplay = document.querySelector("#shader");
     this._geometryDisplay = document.querySelector("#geometry");
+    this._geometryInputs = document.querySelector("#geometry-btn-group");
+
+    this._geometryInputButtons =
+      document.getElementsByClassName("geometry-btn");
 
     // tabs
     const geometryTab = new Tab();
@@ -54,6 +59,14 @@ class Editor {
     this._tabs.forEach((tab) => {
       tab.button.addEventListener("click", () => this._switchTab(tab.type));
     });
+
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+      button.addEventListener(
+        "change",
+        this._onInputGeometrySelected.bind(this)
+      );
+    }
 
     this._shaderDisplay.addEventListener("keyup", (e) => {
       this._onKeyUp(e);
@@ -151,6 +164,13 @@ class Editor {
 
   _onKeyUp(e) {
     this._saveCurrentText();
+  }
+
+  _onInputGeometrySelected(e) {
+    const button = e.target;
+    if (button.checked) {
+      this._onInputGeometrySelectedCallback(button.id);
+    }
   }
 
   _switchTab(tabType) {

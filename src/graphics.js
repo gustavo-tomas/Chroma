@@ -1,4 +1,4 @@
-import { ShaderType } from "./common.js";
+import { InputGeometryTypes, ShaderType } from "./common.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -22,7 +22,6 @@ class Graphics {
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
-    // const geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
     const geometry = new THREE.PlaneGeometry(0.5, 0.5);
     this._material = new THREE.ShaderMaterial({
       vertexShader: vertexCode,
@@ -33,6 +32,7 @@ class Graphics {
     this._material.onBeforeCompile = this._onBeforeCompile.bind(this);
 
     this._mesh = new THREE.Mesh(geometry, this._material);
+
     this._scene.add(this._mesh);
 
     this._mousePositionNormalized = new THREE.Vector2();
@@ -55,6 +55,21 @@ class Graphics {
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
 
     initTexturePanelStatic(this._material);
+  }
+
+  onInputGeometryUpdate(geometryType) {
+    let geometry;
+
+    switch (geometryType) {
+      case InputGeometryTypes.Box:
+        geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
+        break;
+      case InputGeometryTypes.Plane:
+        geometry = new THREE.PlaneGeometry(0.5, 0.5);
+        break;
+    }
+
+    this._mesh.geometry = geometry;
   }
 
   onShaderCodeUpdate(vertexShader, fragmentShader) {

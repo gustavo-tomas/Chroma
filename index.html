@@ -43,10 +43,25 @@
         <!-- code editor panel -->
         <div id="code-panel">
           <div id="geometry">
-            <div class="geometry-btn-group">
+            <!-- @NOTE: If you change the id of these inputs, also change the names in InputGeometryTypes-->
+            <div id="geometry-btn-group">
               Input Geometry
-              <label class="btn active"
-                ><input type="radio" checked />Plane</label
+              <label
+                ><input
+                  type="radio"
+                  id="plane"
+                  class="geometry-btn"
+                  name="geometry-input"
+                  checked
+                />Plane</label
+              >
+              <label
+                ><input
+                  type="radio"
+                  id="box"
+                  class="geometry-btn"
+                  name="geometry-input"
+                />Box</label
               >
             </div>
           </div>
