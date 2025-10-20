@@ -22,7 +22,7 @@
 
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
-- [ ] Fazer o design da UI (alto contraste para deficiências visuais)
+- [ ] Fazer o design da UI (alto contraste para deficiências visuais https://webaim.org/resources/contrastchecker/)
 - [x] Checagem de erro ao compilar o código
 
 ## Extras (adicione o que quiser aqui)
@@ -32,14 +32,17 @@
 - [x] Adicionar uniform de resolução da tela
 - [x] Adicionar checagem de erro com uniformes
 - [x] Adicionar markdown para aba de teoria (sem imagem)
-- [ ] Adicionar suporte para salvar imagens
-  - [ ] Adicionar path para recursos no arquivo proj
-  - [ ] Salvar imagens na aba de teoria
-  - [ ] Salvar texturas
 - [x] Adicionar carregamento de texturas
-- [ ] Adicionar opções de drag n drop (e também hints)
+- [ ] Adicionar opções de geometria e câmera
+- [ ] Expandir escopo ao salvar o projeto
+  - [ ] Adicionar suporte para salvar imagens
+    - [ ] Adicionar path para recursos no arquivo proj
+    - [ ] Salvar imagens na aba de teoria
+    - [ ] Salvar texturas
+- [ ] Adicionar opções de Quality Of Life (QoL)
   - [ ] Drag n Drop para projeto
-  - [ ] Shortcut para rodar o código
-- [ ] Linkagem/highlight de blocos de código entre aba de explicação e editor
-- [ ] Gerenciador de projetos (múltiplos projetos)
+  - [ ] Hints
+  - [ ] Shortcut para rodar o código (Alt + Enter)
+  - [ ] Shortcuts ao editar (select all, tab, etc)
 - [ ] Adicionar carregamento de modelos
+- [ ] Gerenciador de projetos (múltiplos projetos)
