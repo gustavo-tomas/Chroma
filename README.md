@@ -33,7 +33,7 @@
 - [x] Adicionar checagem de erro com uniformes
 - [x] Adicionar markdown para aba de teoria (sem imagem)
 - [x] Adicionar carregamento de texturas
-- [ ] Adicionar opções de geometria e câmera
+- [x] Adicionar opções de geometria e câmera
 - [ ] Expandir escopo ao salvar o projeto
   - [ ] Adicionar suporte para salvar imagens
     - [ ] Adicionar path para recursos no arquivo proj
