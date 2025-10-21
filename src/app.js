@@ -17,12 +17,14 @@ class App {
     const projectData = this._project.get();
     const vertexCode = projectData.Shaders.Vertex;
     const fragmentCode = projectData.Shaders.Fragment;
+    const inputGeometryType = projectData.Shaders.InputGeometry.type;
+    const inputGeometryValues = projectData.Shaders.InputGeometry.values;
 
     const graphicsParams = new GraphicsConstructorParams();
     graphicsParams.vertexCode = vertexCode;
     graphicsParams.fragmentCode = fragmentCode;
-    graphicsParams.inputGeometry = InputGeometryTypes.Box;
-    graphicsParams.inputGeometryValues = [0.4, 0.5, 0.6];
+    graphicsParams.inputGeometryType = inputGeometryType;
+    graphicsParams.inputGeometryValues = inputGeometryValues;
     graphicsParams.onShaderCompileCallback = this._onShaderCompile.bind(this);
 
     this._graphics = new Graphics(graphicsParams);
@@ -57,6 +59,26 @@ class App {
 
   // Create a json, retrieve section information and code from the editor
   _onProjectSave() {
+    const projectData = this._project.get();
+
+    const projectName = document.getElementById("project-name");
+    const tabTitle = document.getElementById("tab-title");
+    const tabContent = document.getElementById("tab-content");
+    const geometryType = this._graphics.getActiveInputGeometryType();
+    const geometryValues = this._graphics.getInputGeometryValues(geometryType);
+
+    projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
+    projectData.Shaders = {};
+    projectData.Shaders.InputGeometry = {};
+    projectData.Shaders.InputGeometry.type = geometryType;
+    projectData.Shaders.InputGeometry.values = geometryValues;
+    projectData.Shaders.Vertex = this._editor._vertexCode;
+    projectData.Shaders.Fragment = this._editor._fragmentCode;
+    projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
+    projectData.Section = {};
+    projectData.Section.Title = this._convertToMarkdown(tabTitle.innerHTML);
+    projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
+
     this._project.save();
   }
 
@@ -102,18 +124,6 @@ class App {
 
       this._editMode = false;
     }
-
-    // Update project data
-    const projectData = this._project.get();
-
-    projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
-    projectData.Shaders = {};
-    projectData.Shaders.Vertex = this._editor._vertexCode;
-    projectData.Shaders.Fragment = this._editor._fragmentCode;
-    projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
-    projectData.Section = {};
-    projectData.Section.Title = this._convertToMarkdown(tabTitle.innerHTML);
-    projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
   }
 
   // Update the divs, the editor code and the graphics code

@@ -10,7 +10,7 @@ class ShaderCompileLog {
 class GraphicsConstructorParams {
   vertexCode = "";
   fragmentCode = "";
-  inputGeometry = InputGeometryTypes.Box;
+  inputGeometryType = InputGeometryTypes.Box;
   inputGeometryValues = [];
   onShaderCompileCallback = null;
 }
@@ -36,22 +36,42 @@ class Graphics {
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
+    this._planeX = document.getElementById("plane-input-x");
+    this._planeY = document.getElementById("plane-input-y");
+
+    this._boxX = document.getElementById("box-input-x");
+    this._boxY = document.getElementById("box-input-y");
+    this._boxZ = document.getElementById("box-input-z");
+
+    this._selectGeometry(params.inputGeometryType);
+
     let geometry = null;
 
-    switch (params.inputGeometry) {
+    switch (params.inputGeometryType) {
       case InputGeometryTypes.Plane:
-        geometry = new THREE.PlaneGeometry(
-          params.inputGeometryValues[0],
-          params.inputGeometryValues[1]
-        );
+        {
+          geometry = new THREE.PlaneGeometry(
+            params.inputGeometryValues[0],
+            params.inputGeometryValues[1]
+          );
+
+          this._planeX.value = params.inputGeometryValues[0];
+          this._planeY.value = params.inputGeometryValues[1];
+        }
         break;
 
       case InputGeometryTypes.Box:
-        geometry = new THREE.BoxGeometry(
-          params.inputGeometryValues[0],
-          params.inputGeometryValues[1],
-          params.inputGeometryValues[2]
-        );
+        {
+          geometry = new THREE.BoxGeometry(
+            params.inputGeometryValues[0],
+            params.inputGeometryValues[1],
+            params.inputGeometryValues[2]
+          );
+
+          this._boxX.value = params.inputGeometryValues[0];
+          this._boxY.value = params.inputGeometryValues[1];
+          this._boxZ.value = params.inputGeometryValues[2];
+        }
         break;
     }
 
@@ -104,12 +124,6 @@ class Graphics {
       button.addEventListener("change", this._onCameraInputSelected.bind(this));
     }
 
-    // Geometry values
-
-    // Plane
-    this._planeX = document.getElementById("plane-input-x");
-    this._planeY = document.getElementById("plane-input-y");
-
     this._planeX.addEventListener(
       "change",
       this._onPlaneGeometryUpdate.bind(this)
@@ -118,11 +132,6 @@ class Graphics {
       "change",
       this._onPlaneGeometryUpdate.bind(this)
     );
-
-    // Box
-    this._boxX = document.getElementById("box-input-x");
-    this._boxY = document.getElementById("box-input-y");
-    this._boxZ = document.getElementById("box-input-z");
 
     this._boxX.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
     this._boxY.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
@@ -181,6 +190,36 @@ class Graphics {
     this._screenResolution.y = height;
   }
 
+  getActiveInputGeometryType() {
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+
+      if (button.checked) {
+        return button.id;
+      }
+    }
+
+    console.error("No active geometry");
+  }
+
+  getInputGeometryValues(geometryType) {
+    switch (geometryType) {
+      case InputGeometryTypes.Plane:
+        return [parseFloat(this._planeX.value), parseFloat(this._planeY.value)];
+        break;
+
+      case InputGeometryTypes.Box:
+        return [
+          parseFloat(this._boxX.value),
+          parseFloat(this._boxY.value),
+          parseFloat(this._boxZ.value),
+        ];
+        break;
+    }
+
+    console.error("Invalid geometry type: ", geometryType);
+  }
+
   getUserUniforms() {
     let uniforms = {};
 
@@ -226,7 +265,7 @@ class Graphics {
     }
 
     let geometry = null;
-    const values = this._getGeometryValues(button.id);
+    const values = this.getInputGeometryValues(button.id);
 
     switch (button.id) {
       case InputGeometryTypes.Box:
@@ -245,7 +284,7 @@ class Graphics {
       return;
     }
 
-    const values = this._getGeometryValues(InputGeometryTypes.Plane);
+    const values = this.getInputGeometryValues(InputGeometryTypes.Plane);
 
     this._mesh.geometry = new THREE.PlaneGeometry(values[0], values[1]);
   }
@@ -255,7 +294,7 @@ class Graphics {
       return;
     }
 
-    const values = this._getGeometryValues(InputGeometryTypes.Box);
+    const values = this.getInputGeometryValues(InputGeometryTypes.Box);
 
     this._mesh.geometry = new THREE.BoxGeometry(
       values[0],
@@ -413,6 +452,16 @@ class Graphics {
     this._mousePositionNormalized = mousePosition;
   }
 
+  _selectGeometry(geometryType) {
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+      if (button.id === geometryType) {
+        button.checked = true;
+        return;
+      }
+    }
+  }
+
   _isGeometrySelected(geometryType) {
     for (let i = 0; i < this._geometryInputButtons.length; i++) {
       const button = this._geometryInputButtons[i];
@@ -422,20 +471,6 @@ class Graphics {
     }
 
     return false;
-  }
-
-  _getGeometryValues(geometryType) {
-    switch (geometryType) {
-      case InputGeometryTypes.Plane:
-        return [this._planeX.value, this._planeY.value];
-        break;
-
-      case InputGeometryTypes.Box:
-        return [this._boxX.value, this._boxY.value, this._boxZ.value];
-        break;
-    }
-
-    console.error("Invalid geometry type: ", geometryType);
   }
 
   _getWidth() {
