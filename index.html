@@ -20,13 +20,17 @@
         <div id="tab-content"></div>
 
         <!-- Load a project -->
-        <button id="load-button">Load</button>
+        <button id="load-button" title="Load a project (Ctrl+O)">Load</button>
 
         <!-- Save current project -->
-        <button id="save-button">Save</button>
+        <button id="save-button" title="Save current project (Ctrl+S)">
+          Save
+        </button>
 
         <!-- Edit current project -->
-        <button id="edit-button">Edit</button>
+        <button id="edit-button" title="Edit current project (Ctrl+E)">
+          Edit
+        </button>
       </div>
 
       <!-- Horizontal resizer between theory and editor -->
@@ -149,7 +153,12 @@
           <div id="shader"></div>
         </div>
         <div id="shader-controls">
-          <button id="update-shader-btn">Run code</button>
+          <button
+            id="update-shader-btn"
+            title="Recompile shader code (Alt+Enter)"
+          >
+            Run code
+          </button>
         </div>
         <div id="v-resizer"></div>
         <!-- shader view panel -->

@@ -45,20 +45,41 @@ class App {
     loadProjectButton.onclick = this._onProjectLoad.bind(this);
     updateButton.onclick = this._onUpdate.bind(this);
 
-    document.addEventListener("keyup", this._onKeyUp.bind(this));
+    document.addEventListener("keydown", this._onKeyDown.bind(this));
   }
 
   _onShaderCompile(type, logs) {
     this._editor.onUpdate(type, logs);
   }
 
-  _onKeyUp(e) {
+  _onKeyDown(e) {
     const enterPressed = e.code === "NumpadEnter" || e.code === "Enter";
     const altPressed = e.altKey || e.code === "AltLeft";
+    const ctrlPressed =
+      e.ctrlKey || e.code === "ControlLeft" || e.code === "ControlRight";
 
-    // Recompile shortcut
+    // Recompile code shortcut
     if (altPressed && enterPressed) {
+      e.preventDefault();
       this._onUpdate();
+    }
+
+    // Save project shortcut
+    else if (ctrlPressed && e.code === "KeyS") {
+      e.preventDefault();
+      this._onProjectSave();
+    }
+
+    // Load project shortcut
+    else if (ctrlPressed && e.code === "KeyO") {
+      e.preventDefault();
+      this._onProjectLoad();
+    }
+
+    // Edit project shortcut
+    else if (ctrlPressed && e.code === "KeyE") {
+      e.preventDefault();
+      this._onProjectEdit();
     }
   }
 

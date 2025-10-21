@@ -41,7 +41,7 @@
     - [ ] Salvar texturas
 - [ ] Adicionar opções de Quality Of Life (QoL)
   - [ ] Drag n Drop para projeto
-  - [ ] Hints
+  - [x] Hints
   - [x] Shortcut para rodar o código (Alt + Enter)
   - [x] Shortcuts ao editar (select all, tab, etc)
 - [ ] Adicionar carregamento de modelos
