@@ -46,23 +46,82 @@
             <!-- @NOTE: If you change the id of these inputs, also change the names in InputGeometryTypes-->
             <div id="geometry-btn-group">
               Input Geometry
-              <label
-                ><input
-                  type="radio"
-                  id="plane"
-                  class="geometry-btn"
-                  name="geometry-input"
-                  checked
-                />Plane</label
-              >
-              <label
-                ><input
-                  type="radio"
-                  id="box"
-                  class="geometry-btn"
-                  name="geometry-input"
-                />Box</label
-              >
+              <div id="plane-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="plane"
+                    class="geometry-btn"
+                    name="geometry-input"
+                    checked
+                  />Plane</label
+                >
+                <div class="vec-component">
+                  <label
+                    >X
+                    <input
+                      type="number"
+                      id="plane-input-x"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Y
+                    <input
+                      type="number"
+                      id="plane-input-y"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div id="box-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="box"
+                    class="geometry-btn"
+                    name="geometry-input"
+                  />Box</label
+                >
+                <div class="vec-component">
+                  <label
+                    >X
+                    <input
+                      type="number"
+                      id="box-input-x"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Y
+                    <input
+                      type="number"
+                      id="box-input-y"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Z
+                    <input
+                      type="number"
+                      id="box-input-z"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
 
               <label>Wireframe<input type="checkbox" id="wireframe" /></label>
 
