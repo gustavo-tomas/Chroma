@@ -4,4 +4,14 @@ const ShaderType = {
   Fragment: "fragment",
 };
 
-export { ShaderType };
+const InputGeometryTypes = {
+  Plane: "plane",
+  Box: "box",
+};
+
+const CameraTypes = {
+  Perspective: "perspective",
+  Orthographic: "orthographic",
+};
+
+export { ShaderType, InputGeometryTypes, CameraTypes };

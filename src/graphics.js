@@ -1,4 +1,4 @@
-import { ShaderType } from "./common.js";
+import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -7,32 +7,84 @@ class ShaderCompileLog {
   token = "";
 }
 
+class GraphicsConstructorParams {
+  vertexCode = "";
+  fragmentCode = "";
+  inputGeometryType = InputGeometryTypes.Box;
+  inputGeometryValues = [];
+  onShaderCompileCallback = null;
+}
+
 class Graphics {
-  constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
+  constructor(params) {
     const canvas = document.getElementById("canvas");
-    const viewPanel = document.getElementById("view-panel");
+    const wireframeInputButton = document.getElementById("wireframe");
+    this._viewPanel = document.getElementById("view-panel");
 
-    const width = viewPanel.clientWidth;
-    const height = viewPanel.clientHeight;
+    this._geometryInputButtons =
+      document.getElementsByClassName("geometry-btn");
 
-    this._onShaderCompileCallback = onShaderCompileCallback;
+    const cameraInputButtons = document.getElementsByClassName("camera-btn");
+
+    const width = this._getWidth();
+    const height = this._getHeight();
+
+    this._onShaderCompileCallback = params.onShaderCompileCallback;
     this._camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
     this._camera.position.z = 1;
 
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
-    // const geometry = new THREE.BoxGeometry(0.2, 0.7, 0.2);
-    const geometry = new THREE.PlaneGeometry(0.5, 0.5);
+    this._planeX = document.getElementById("plane-input-x");
+    this._planeY = document.getElementById("plane-input-y");
+
+    this._boxX = document.getElementById("box-input-x");
+    this._boxY = document.getElementById("box-input-y");
+    this._boxZ = document.getElementById("box-input-z");
+
+    this._selectGeometry(params.inputGeometryType);
+
+    let geometry = null;
+
+    switch (params.inputGeometryType) {
+      case InputGeometryTypes.Plane:
+        {
+          geometry = new THREE.PlaneGeometry(
+            params.inputGeometryValues[0],
+            params.inputGeometryValues[1]
+          );
+
+          this._planeX.value = params.inputGeometryValues[0];
+          this._planeY.value = params.inputGeometryValues[1];
+        }
+        break;
+
+      case InputGeometryTypes.Box:
+        {
+          geometry = new THREE.BoxGeometry(
+            params.inputGeometryValues[0],
+            params.inputGeometryValues[1],
+            params.inputGeometryValues[2]
+          );
+
+          this._boxX.value = params.inputGeometryValues[0];
+          this._boxY.value = params.inputGeometryValues[1];
+          this._boxZ.value = params.inputGeometryValues[2];
+        }
+        break;
+    }
+
     this._material = new THREE.ShaderMaterial({
-      vertexShader: vertexCode,
-      fragmentShader: fragmentCode,
+      vertexShader: params.vertexCode,
+      fragmentShader: params.fragmentCode,
       side: THREE.DoubleSide,
     });
 
     this._material.onBeforeCompile = this._onBeforeCompile.bind(this);
 
     this._mesh = new THREE.Mesh(geometry, this._material);
+
     this._scene.add(this._mesh);
 
     this._mousePositionNormalized = new THREE.Vector2();
@@ -50,9 +102,40 @@ class Graphics {
 
     gl.compileShader = this._onCompile.bind(this);
 
-    viewPanel.addEventListener("resize", this.onResize.bind(this));
+    this._viewPanel.addEventListener("resize", this.onResize.bind(this));
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
+
+    wireframeInputButton.addEventListener(
+      "change",
+      this._onWireframeSelected.bind(this)
+    );
+
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+      button.addEventListener(
+        "change",
+        this._onInputGeometrySelected.bind(this)
+      );
+    }
+
+    for (let i = 0; i < cameraInputButtons.length; i++) {
+      const button = cameraInputButtons[i];
+      button.addEventListener("change", this._onCameraInputSelected.bind(this));
+    }
+
+    this._planeX.addEventListener(
+      "change",
+      this._onPlaneGeometryUpdate.bind(this)
+    );
+    this._planeY.addEventListener(
+      "change",
+      this._onPlaneGeometryUpdate.bind(this)
+    );
+
+    this._boxX.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
+    this._boxY.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
+    this._boxZ.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
 
     initTexturePanelStatic(this._material);
   }
@@ -95,10 +178,8 @@ class Graphics {
   }
 
   onResize() {
-    const viewPanel = document.getElementById("view-panel");
-
-    const width = viewPanel.clientWidth;
-    const height = viewPanel.clientHeight;
+    const width = this._getWidth();
+    const height = this._getHeight();
 
     this._camera.aspect = width / height;
     this._camera.updateProjectionMatrix();
@@ -107,6 +188,36 @@ class Graphics {
 
     this._screenResolution.x = width;
     this._screenResolution.y = height;
+  }
+
+  getActiveInputGeometryType() {
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+
+      if (button.checked) {
+        return button.id;
+      }
+    }
+
+    console.error("No active geometry");
+  }
+
+  getInputGeometryValues(geometryType) {
+    switch (geometryType) {
+      case InputGeometryTypes.Plane:
+        return [parseFloat(this._planeX.value), parseFloat(this._planeY.value)];
+        break;
+
+      case InputGeometryTypes.Box:
+        return [
+          parseFloat(this._boxX.value),
+          parseFloat(this._boxY.value),
+          parseFloat(this._boxZ.value),
+        ];
+        break;
+    }
+
+    console.error("Invalid geometry type: ", geometryType);
   }
 
   getUserUniforms() {
@@ -122,6 +233,79 @@ class Graphics {
     }
 
     return uniforms;
+  }
+
+  _onCameraInputSelected(e) {
+    const button = e.target;
+    if (!button.checked) {
+      return;
+    }
+
+    let camera;
+
+    switch (button.id) {
+      case CameraTypes.Perspective:
+        const width = this._getWidth();
+        const height = this._getHeight();
+        camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
+        camera.position.z = 1;
+        break;
+      case CameraTypes.Orthographic:
+        camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        break;
+    }
+
+    this._camera = camera;
+  }
+
+  _onInputGeometrySelected(e) {
+    const button = e.target;
+    if (!button.checked) {
+      return;
+    }
+
+    let geometry = null;
+    const values = this.getInputGeometryValues(button.id);
+
+    switch (button.id) {
+      case InputGeometryTypes.Box:
+        geometry = new THREE.BoxGeometry(values[0], values[1], values[2]);
+        break;
+      case InputGeometryTypes.Plane:
+        geometry = new THREE.PlaneGeometry(values[0], values[1]);
+        break;
+    }
+
+    this._mesh.geometry = geometry;
+  }
+
+  _onPlaneGeometryUpdate(e) {
+    if (!this._isGeometrySelected(InputGeometryTypes.Plane)) {
+      return;
+    }
+
+    const values = this.getInputGeometryValues(InputGeometryTypes.Plane);
+
+    this._mesh.geometry = new THREE.PlaneGeometry(values[0], values[1]);
+  }
+
+  _onBoxGeometryUpdate(e) {
+    if (!this._isGeometrySelected(InputGeometryTypes.Box)) {
+      return;
+    }
+
+    const values = this.getInputGeometryValues(InputGeometryTypes.Box);
+
+    this._mesh.geometry = new THREE.BoxGeometry(
+      values[0],
+      values[1],
+      values[2]
+    );
+  }
+
+  _onWireframeSelected(e) {
+    const button = e.target;
+    this._material.wireframe = button.checked;
   }
 
   _onUpdate(time) {
@@ -268,6 +452,35 @@ class Graphics {
     this._mousePositionNormalized = mousePosition;
   }
 
+  _selectGeometry(geometryType) {
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+      if (button.id === geometryType) {
+        button.checked = true;
+        return;
+      }
+    }
+  }
+
+  _isGeometrySelected(geometryType) {
+    for (let i = 0; i < this._geometryInputButtons.length; i++) {
+      const button = this._geometryInputButtons[i];
+      if (button.id === geometryType) {
+        return button.checked;
+      }
+    }
+
+    return false;
+  }
+
+  _getWidth() {
+    return this._viewPanel.clientWidth;
+  }
+
+  _getHeight() {
+    return this._viewPanel.clientHeight;
+  }
+
   _glContext;
   _scene;
   _camera;
@@ -279,7 +492,7 @@ class Graphics {
   _screenResolution;
 }
 
-export { Graphics, ShaderCompileLog };
+export { Graphics, GraphicsConstructorParams, ShaderCompileLog };
 
 export function initTexturePanelStatic(material) {
   function fileToTex(file, cb) {

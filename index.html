@@ -36,12 +36,117 @@
       <div id="editor-tab">
         <!-- tabs above the editor/view -->
         <div id="editor-buttons">
+          <button id="tab-geometry">Input Geometry</button>
           <button id="tab-vertex" class="active">Vertex Shader</button>
           <button id="tab-fragment">Fragment Shader</button>
         </div>
         <!-- code editor panel -->
         <div id="code-panel">
-          <div id="editor"></div>
+          <div id="geometry">
+            <!-- @NOTE: If you change the id of these inputs, also change the names in InputGeometryTypes-->
+            <div id="geometry-btn-group">
+              Input Geometry
+              <div id="plane-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="plane"
+                    class="geometry-btn"
+                    name="geometry-input"
+                    checked
+                  />Plane</label
+                >
+                <div class="vec-component">
+                  <label
+                    >X
+                    <input
+                      type="number"
+                      id="plane-input-x"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Y
+                    <input
+                      type="number"
+                      id="plane-input-y"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div id="box-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="box"
+                    class="geometry-btn"
+                    name="geometry-input"
+                  />Box</label
+                >
+                <div class="vec-component">
+                  <label
+                    >X
+                    <input
+                      type="number"
+                      id="box-input-x"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Y
+                    <input
+                      type="number"
+                      id="box-input-y"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Z
+                    <input
+                      type="number"
+                      id="box-input-z"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <label>Wireframe<input type="checkbox" id="wireframe" /></label>
+
+              Camera
+              <label
+                ><input
+                  type="radio"
+                  id="perspective"
+                  class="camera-btn"
+                  name="camera-input"
+                  checked
+                />Perspective</label
+              >
+              <label
+                ><input
+                  type="radio"
+                  id="orthographic"
+                  class="camera-btn"
+                  name="camera-input"
+                />Orthographic</label
+              >
+            </div>
+          </div>
+
+          <div id="shader"></div>
         </div>
         <div id="shader-controls">
           <button id="update-shader-btn">Run code</button>

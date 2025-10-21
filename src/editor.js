@@ -3,33 +3,60 @@ import { basicSetup } from "codemirror";
 import { EditorView } from "@codemirror/view";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
 
+const TabType = {
+  Geometry: "geometry",
+  Vertex: ShaderType.Vertex, // keep parity with shader types
+  Fragment: ShaderType.Fragment,
+};
+
+class Tab {
+  type;
+  button;
+  display;
+}
+
 class Editor {
   constructor(initialVertex, initialFragment) {
     this._vertexCode = initialVertex;
     this._fragmentCode = initialFragment;
-    this._currentTab = ShaderType.Vertex;
+    this._currentTab = TabType.Vertex;
 
-    // tab buttons
-    this._editor = document.querySelector("#editor");
-    this._tabVertex = document.getElementById("tab-vertex");
-    this._tabFragment = document.getElementById("tab-fragment");
+    this._shaderDisplay = document.querySelector("#shader");
+    this._geometryDisplay = document.querySelector("#geometry");
+    this._geometryInputs = document.querySelector("#geometry-btn-group");
+
+    // tabs
+    const geometryTab = new Tab();
+    geometryTab.type = TabType.Geometry;
+    geometryTab.button = document.getElementById("tab-geometry");
+    geometryTab.display = this._geometryDisplay;
+
+    const vertexTab = new Tab();
+    vertexTab.type = TabType.Vertex;
+    vertexTab.button = document.getElementById("tab-vertex");
+    vertexTab.display = this._shaderDisplay;
+
+    const fragmentTab = new Tab();
+    fragmentTab.type = TabType.Fragment;
+    fragmentTab.button = document.getElementById("tab-fragment");
+    fragmentTab.display = this._shaderDisplay;
+
+    // We can also access this as a map using indices if necessary
+    this._tabs = [geometryTab, vertexTab, fragmentTab];
 
     // initialize CodeMirror view
     this._view = new EditorView({
       doc: this._vertexCode,
-      parent: this._editor,
+      parent: this._shaderDisplay,
       extensions: [basicSetup, lintGutter()],
     });
 
     // attach click handlers to switch tabs
-    this._tabVertex.addEventListener("click", () =>
-      this._switchTab(ShaderType.Vertex)
-    );
-    this._tabFragment.addEventListener("click", () =>
-      this._switchTab(ShaderType.Fragment)
-    );
+    this._tabs.forEach((tab) => {
+      tab.button.addEventListener("click", () => this._switchTab(tab.type));
+    });
 
-    this._editor.addEventListener("keyup", (e) => {
+    this._shaderDisplay.addEventListener("keyup", (e) => {
       this._onKeyUp(e);
     });
 
@@ -73,9 +100,9 @@ class Editor {
       });
     });
 
-    if (this._currentTab === ShaderType.Vertex) {
+    if (this._currentTab === TabType.Vertex) {
       this._diagnosticsVertex = diagnostics;
-    } else {
+    } else if (this._currentTab === TabType.Fragment) {
       this._diagnosticsFragment = diagnostics;
     }
 
@@ -90,9 +117,9 @@ class Editor {
     // @TODO: switching tabs is a bit of a hack but works fine
     this._switchTab(tab);
 
-    if (tab === ShaderType.Vertex) {
+    if (tab === TabType.Vertex) {
       this._vertexCode = code;
-    } else {
+    } else if (tab === TabType.Fragment) {
       this._fragmentCode = code;
     }
 
@@ -106,9 +133,9 @@ class Editor {
   }
 
   getCurrentShaderCode(type) {
-    if (type === ShaderType.Vertex) {
+    if (type === TabType.Vertex) {
       return this._vertexCode;
-    } else {
+    } else if (type === TabType.Fragment) {
       return this._fragmentCode;
     }
   }
@@ -116,9 +143,9 @@ class Editor {
   _saveCurrentText() {
     const currentText = this._view.state.doc.toString();
 
-    if (this._currentTab === ShaderType.Vertex) {
+    if (this._currentTab === TabType.Vertex) {
       this._vertexCode = currentText;
-    } else {
+    } else if (this._currentTab === TabType.Fragment) {
       this._fragmentCode = currentText;
     }
   }
@@ -138,32 +165,42 @@ class Editor {
     this._currentTab = tabType;
 
     // load the new buffer into the view
-    const newText =
-      tabType === ShaderType.Vertex ? this._vertexCode : this._fragmentCode;
+    if (tabType === TabType.Vertex || tabType === TabType.Fragment) {
+      const newText =
+        tabType === TabType.Vertex ? this._vertexCode : this._fragmentCode;
 
-    this._view.dispatch({
-      changes: { from: 0, to: this._view.state.doc.length, insert: newText },
-    });
+      this._view.dispatch({
+        changes: { from: 0, to: this._view.state.doc.length, insert: newText },
+      });
+    }
 
     this._updateTabStyles();
   }
 
+  _toggleGeometryTab(visible) {
+    if (visible) {
+      this._shaderDisplay.style.visibility = "hidden";
+      this._geometryDisplay.style.display = "block";
+    } else {
+      this._shaderDisplay.style.visibility = "visible";
+      this._geometryDisplay.style.display = "none";
+    }
+  }
+
   _updateTabStyles() {
-    this._tabVertex.classList.toggle(
-      "active",
-      this._currentTab === ShaderType.Vertex
-    );
-    this._tabFragment.classList.toggle(
-      "active",
-      this._currentTab === ShaderType.Fragment
-    );
+    // buttons
+    this._tabs.forEach((tab) => {
+      tab.button.classList.toggle("active", this._currentTab === tab.type);
+    });
+
+    this._toggleGeometryTab(this._currentTab === TabType.Geometry);
 
     // Apply the diagnostics (an empty list will clear them)
-    if (this._currentTab === ShaderType.Vertex) {
+    if (this._currentTab === TabType.Vertex) {
       this._view.dispatch(
         setDiagnostics(this._view.state, this._diagnosticsVertex)
       );
-    } else {
+    } else if (this._currentTab === TabType.Fragment) {
       this._view.dispatch(
         setDiagnostics(this._view.state, this._diagnosticsFragment)
       );
