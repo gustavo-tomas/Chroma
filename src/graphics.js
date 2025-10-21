@@ -7,8 +7,16 @@ class ShaderCompileLog {
   token = "";
 }
 
+class GraphicsConstructorParams {
+  vertexCode = "";
+  fragmentCode = "";
+  inputGeometry = InputGeometryTypes.Box;
+  inputGeometryValues = [];
+  onShaderCompileCallback = null;
+}
+
 class Graphics {
-  constructor(vertexCode, fragmentCode, onShaderCompileCallback) {
+  constructor(params) {
     const canvas = document.getElementById("canvas");
     const wireframeInputButton = document.getElementById("wireframe");
     this._viewPanel = document.getElementById("view-panel");
@@ -21,17 +29,35 @@ class Graphics {
     const width = this._getWidth();
     const height = this._getHeight();
 
-    this._onShaderCompileCallback = onShaderCompileCallback;
+    this._onShaderCompileCallback = params.onShaderCompileCallback;
     this._camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
     this._camera.position.z = 1;
 
     this._scene = new THREE.Scene();
     this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
 
-    const geometry = new THREE.PlaneGeometry(0.5, 0.5);
+    let geometry = null;
+
+    switch (params.inputGeometry) {
+      case InputGeometryTypes.Plane:
+        geometry = new THREE.PlaneGeometry(
+          params.inputGeometryValues[0],
+          params.inputGeometryValues[1]
+        );
+        break;
+
+      case InputGeometryTypes.Box:
+        geometry = new THREE.BoxGeometry(
+          params.inputGeometryValues[0],
+          params.inputGeometryValues[1],
+          params.inputGeometryValues[2]
+        );
+        break;
+    }
+
     this._material = new THREE.ShaderMaterial({
-      vertexShader: vertexCode,
-      fragmentShader: fragmentCode,
+      vertexShader: params.vertexCode,
+      fragmentShader: params.fragmentCode,
       side: THREE.DoubleSide,
     });
 
@@ -431,7 +457,7 @@ class Graphics {
   _screenResolution;
 }
 
-export { Graphics, ShaderCompileLog };
+export { Graphics, GraphicsConstructorParams, ShaderCompileLog };
 
 export function initTexturePanelStatic(material) {
   function fileToTex(file, cb) {

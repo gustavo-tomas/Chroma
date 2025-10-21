@@ -1,6 +1,6 @@
 import "./style.css";
-import { ShaderType } from "./common.js";
-import { Graphics } from "./graphics.js";
+import { ShaderType, InputGeometryTypes } from "./common.js";
+import { Graphics, GraphicsConstructorParams } from "./graphics.js";
 import { Editor } from "./editor.js";
 import { Project } from "./project.js";
 import { setupResizers } from "./resizer.js";
@@ -18,11 +18,14 @@ class App {
     const vertexCode = projectData.Shaders.Vertex;
     const fragmentCode = projectData.Shaders.Fragment;
 
-    this._graphics = new Graphics(
-      vertexCode,
-      fragmentCode,
-      this._onShaderCompile.bind(this)
-    );
+    const graphicsParams = new GraphicsConstructorParams();
+    graphicsParams.vertexCode = vertexCode;
+    graphicsParams.fragmentCode = fragmentCode;
+    graphicsParams.inputGeometry = InputGeometryTypes.Box;
+    graphicsParams.inputGeometryValues = [0.4, 0.5, 0.6];
+    graphicsParams.onShaderCompileCallback = this._onShaderCompile.bind(this);
+
+    this._graphics = new Graphics(graphicsParams);
 
     this._editor = new Editor(vertexCode, fragmentCode);
 
