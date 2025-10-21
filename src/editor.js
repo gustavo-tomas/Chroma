@@ -1,6 +1,7 @@
 import { ShaderType } from "./common.js";
 import { basicSetup } from "codemirror";
-import { EditorView } from "@codemirror/view";
+import { EditorView, keymap } from "@codemirror/view";
+import { indentWithTab } from "@codemirror/commands";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
 
 const TabType = {
@@ -48,7 +49,7 @@ class Editor {
     this._view = new EditorView({
       doc: this._vertexCode,
       parent: this._shaderDisplay,
-      extensions: [basicSetup, lintGutter()],
+      extensions: [basicSetup, lintGutter(), keymap.of([indentWithTab])],
     });
 
     // attach click handlers to switch tabs

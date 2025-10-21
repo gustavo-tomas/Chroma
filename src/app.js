@@ -44,10 +44,22 @@ class App {
     saveProjectButton.onclick = this._onProjectSave.bind(this);
     loadProjectButton.onclick = this._onProjectLoad.bind(this);
     updateButton.onclick = this._onUpdate.bind(this);
+
+    document.addEventListener("keyup", this._onKeyUp.bind(this));
   }
 
   _onShaderCompile(type, logs) {
     this._editor.onUpdate(type, logs);
+  }
+
+  _onKeyUp(e) {
+    const enterPressed = e.code === "NumpadEnter" || e.code === "Enter";
+    const altPressed = e.altKey || e.code === "AltLeft";
+
+    // Recompile shortcut
+    if (altPressed && enterPressed) {
+      this._onUpdate();
+    }
   }
 
   _onUpdate() {

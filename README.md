@@ -42,7 +42,7 @@
 - [ ] Adicionar opções de Quality Of Life (QoL)
   - [ ] Drag n Drop para projeto
   - [ ] Hints
-  - [ ] Shortcut para rodar o código (Alt + Enter)
-  - [ ] Shortcuts ao editar (select all, tab, etc)
+  - [x] Shortcut para rodar o código (Alt + Enter)
+  - [x] Shortcuts ao editar (select all, tab, etc)
 - [ ] Adicionar carregamento de modelos
 - [ ] Gerenciador de projetos (múltiplos projetos)
