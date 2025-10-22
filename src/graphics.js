@@ -53,7 +53,7 @@ function arrayToColor(array) {
 class Graphics {
   constructor(params) {
     const canvas = document.getElementById("canvas");
-    const wireframeInputButton = document.getElementById("wireframe");
+    this._wireframeInputButton = document.getElementById("wireframe");
     this._viewPanel = document.getElementById("view-panel");
 
     this._geometryInputButtons =
@@ -94,68 +94,9 @@ class Graphics {
     this._backgroundColorG = document.getElementById("background-input-g");
     this._backgroundColorB = document.getElementById("background-input-b");
 
-    this._backgroundColorR.value = params.backgroundColor[0];
-    this._backgroundColorG.value = params.backgroundColor[1];
-    this._backgroundColorB.value = params.backgroundColor[2];
-
-    wireframeInputButton.checked = params.wireframe;
-
-    const width = this._getWidth();
-    const height = this._getHeight();
-
-    this._onShaderCompileCallback = params.onShaderCompileCallback;
-
-    switch (params.cameraType) {
-      case CameraTypes.Perspective:
-        this._camera = new THREE.PerspectiveCamera(
-          params.perspectiveCamera.fov,
-          width / height,
-          params.perspectiveCamera.near,
-          params.perspectiveCamera.far
-        );
-        break;
-
-      case CameraTypes.Orthographic:
-        this._camera = new THREE.OrthographicCamera(
-          params.orthographicCamera.left,
-          params.orthographicCamera.right,
-          params.orthographicCamera.top,
-          params.orthographicCamera.bottom,
-          params.orthographicCamera.near,
-          params.orthographicCamera.far
-        );
-        break;
-    }
-
-    this._cameraPerspectiveFov.value = params.perspectiveCamera.fov;
-    this._cameraPerspectiveNear.value = params.perspectiveCamera.near;
-    this._cameraPerspectiveFar.value = params.perspectiveCamera.far;
-
-    this._cameraOrthographicLeft.value = params.orthographicCamera.left;
-    this._cameraOrthographicRight.value = params.orthographicCamera.right;
-    this._cameraOrthographicTop.value = params.orthographicCamera.top;
-    this._cameraOrthographicBottom.value = params.orthographicCamera.bottom;
-    this._cameraOrthographicNear.value = params.orthographicCamera.near;
-    this._cameraOrthographicFar.value = params.orthographicCamera.far;
-
-    this._camera.position.set(
-      params.cameraPosition[0],
-      params.cameraPosition[1],
-      params.cameraPosition[2]
-    );
-
     this._cameraX = document.getElementById("camera-position-x");
     this._cameraY = document.getElementById("camera-position-y");
     this._cameraZ = document.getElementById("camera-position-z");
-
-    this._cameraX.value = params.cameraPosition[0];
-    this._cameraY.value = params.cameraPosition[1];
-    this._cameraZ.value = params.cameraPosition[2];
-
-    this._selectCamera(params.cameraType);
-
-    this._scene = new THREE.Scene();
-    this._scene.background = arrayToColor(params.backgroundColor);
 
     this._planeX = document.getElementById("plane-input-x");
     this._planeY = document.getElementById("plane-input-y");
@@ -164,37 +105,21 @@ class Graphics {
     this._boxY = document.getElementById("box-input-y");
     this._boxZ = document.getElementById("box-input-z");
 
-    this._selectGeometry(params.inputGeometryType);
+    const width = this._getWidth();
+    const height = this._getHeight();
 
-    let geometry = null;
+    this._onShaderCompileCallback = params.onShaderCompileCallback;
 
-    switch (params.inputGeometryType) {
-      case InputGeometryTypes.Plane:
-        {
-          geometry = new THREE.PlaneGeometry(
-            params.inputGeometryValues[0],
-            params.inputGeometryValues[1]
-          );
+    this._camera = new THREE.PerspectiveCamera(
+      params.perspectiveCamera.fov,
+      width / height,
+      params.perspectiveCamera.near,
+      params.perspectiveCamera.far
+    );
 
-          this._planeX.value = params.inputGeometryValues[0];
-          this._planeY.value = params.inputGeometryValues[1];
-        }
-        break;
+    this._scene = new THREE.Scene();
 
-      case InputGeometryTypes.Box:
-        {
-          geometry = new THREE.BoxGeometry(
-            params.inputGeometryValues[0],
-            params.inputGeometryValues[1],
-            params.inputGeometryValues[2]
-          );
-
-          this._boxX.value = params.inputGeometryValues[0];
-          this._boxY.value = params.inputGeometryValues[1];
-          this._boxZ.value = params.inputGeometryValues[2];
-        }
-        break;
-    }
+    const geometry = new THREE.PlaneGeometry();
 
     this._material = new THREE.ShaderMaterial({
       vertexShader: params.vertexCode,
@@ -228,7 +153,7 @@ class Graphics {
     window.addEventListener("resize", this.onResize.bind(this));
     canvas.addEventListener("mousemove", this._onMouseMove.bind(this));
 
-    wireframeInputButton.addEventListener(
+    this._wireframeInputButton.addEventListener(
       "change",
       this._onWireframeSelected.bind(this)
     );
@@ -331,6 +256,18 @@ class Graphics {
     this._boxY.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
     this._boxZ.addEventListener("change", this._onBoxGeometryUpdate.bind(this));
 
+    this.setInputGeometryType(params.inputGeometryType);
+    this.setInputGeometryValues(params.inputGeometryValues);
+    this.setWireframe(params.wireframe);
+    this.setBackgroundColor(params.backgroundColor);
+    this.setCameraPosition(params.cameraPosition);
+    this.setCameraType(params.cameraType);
+    this.setCameraValues(
+      params.cameraType === CameraTypes.Perspective
+        ? params.perspectiveCamera
+        : params.orthographicCamera
+    );
+
     initTexturePanelStatic(this._material);
   }
 
@@ -382,6 +319,22 @@ class Graphics {
 
     this._screenResolution.x = width;
     this._screenResolution.y = height;
+  }
+
+  getWireframe() {
+    return this._wireframeInputButton.checked;
+  }
+
+  getActiveCameraType() {
+    for (let i = 0; i < this._cameraInputButtons.length; i++) {
+      const button = this._cameraInputButtons[i];
+
+      if (button.checked) {
+        return button.id;
+      }
+    }
+
+    console.error("No active camera");
   }
 
   getActiveInputGeometryType() {
@@ -468,26 +421,31 @@ class Graphics {
     return uniforms;
   }
 
-  _onBackgroundColorUpdate(e) {
-    const values = this.getBackgroundColor();
+  setBackgroundColor(color) {
+    this._scene.background = arrayToColor(color);
 
-    this._scene.background = arrayToColor(values);
+    this._backgroundColorR.value = color[0];
+    this._backgroundColorG.value = color[1];
+    this._backgroundColorB.value = color[2];
   }
 
-  _onCameraInputSelected(e) {
-    const button = e.target;
-    if (!button.checked) {
-      return;
-    }
+  setWireframe(wireframe) {
+    this._material.wireframe = wireframe;
+    this._wireframeInputButton.checked = wireframe;
+  }
 
-    let camera;
+  setCameraType(cameraType) {
+    this._selectCamera(cameraType);
+  }
+
+  setCameraValues(values) {
+    let camera = null;
     const position = this.getCameraPosition();
 
-    switch (button.id) {
+    switch (this.getActiveCameraType()) {
       case CameraTypes.Perspective:
         {
           const aspect = this._getWidth() / this._getHeight();
-          const values = this.getPerspectiveCameraValues();
           camera = new THREE.PerspectiveCamera(
             values.fov,
             aspect,
@@ -495,11 +453,14 @@ class Graphics {
             values.far
           );
           camera.position.set(position[0], position[1], position[2]);
+
+          this._cameraPerspectiveFov.value = camera.fov;
+          this._cameraPerspectiveNear.value = camera.near;
+          this._cameraPerspectiveFar.value = camera.far;
         }
         break;
       case CameraTypes.Orthographic:
         {
-          const values = this.getOrthographicCameraValues();
           camera = new THREE.OrthographicCamera(
             values.left,
             values.right,
@@ -509,11 +470,68 @@ class Graphics {
             values.far
           );
           camera.position.set(position[0], position[1], position[2]);
+
+          this._cameraOrthographicLeft.value = camera.left;
+          this._cameraOrthographicRight.value = camera.right;
+          this._cameraOrthographicTop.value = camera.top;
+          this._cameraOrthographicBottom.value = camera.bottom;
+          this._cameraOrthographicNear.value = camera.near;
+          this._cameraOrthographicFar.value = camera.far;
         }
         break;
     }
 
     this._camera = camera;
+  }
+
+  setCameraPosition(position) {
+    this._camera.position.set(position[0], position[1], position[2]);
+
+    this._cameraX.value = position[0];
+    this._cameraY.value = position[1];
+    this._cameraZ.value = position[2];
+  }
+
+  setInputGeometryType(geometryType) {
+    this._selectGeometry(geometryType);
+  }
+
+  setInputGeometryValues(values) {
+    let geometry = null;
+
+    switch (this.getActiveInputGeometryType()) {
+      case InputGeometryTypes.Box:
+        {
+          geometry = new THREE.BoxGeometry(values[0], values[1], values[2]);
+          this._boxX.value = values[0];
+          this._boxY.value = values[1];
+          this._boxZ.value = values[2];
+        }
+        break;
+      case InputGeometryTypes.Plane:
+        {
+          geometry = new THREE.PlaneGeometry(values[0], values[1]);
+          this._planeX.value = values[0];
+          this._planeY.value = values[1];
+        }
+        break;
+    }
+
+    this._mesh.geometry = geometry;
+  }
+
+  _onBackgroundColorUpdate(e) {
+    const values = this.getBackgroundColor();
+    this.setBackgroundColor(values);
+  }
+
+  _onCameraInputSelected(e) {
+    const button = e.target;
+    if (!button.checked) {
+      return;
+    }
+
+    this.setCameraType(button.id);
   }
 
   _onInputGeometrySelected(e) {
@@ -522,19 +540,8 @@ class Graphics {
       return;
     }
 
-    let geometry = null;
     const values = this.getInputGeometryValues(button.id);
-
-    switch (button.id) {
-      case InputGeometryTypes.Box:
-        geometry = new THREE.BoxGeometry(values[0], values[1], values[2]);
-        break;
-      case InputGeometryTypes.Plane:
-        geometry = new THREE.PlaneGeometry(values[0], values[1]);
-        break;
-    }
-
-    this._mesh.geometry = geometry;
+    this.setInputGeometryValues(values);
   }
 
   _onPlaneGeometryUpdate(e) {
@@ -599,7 +606,7 @@ class Graphics {
 
   _onWireframeSelected(e) {
     const button = e.target;
-    this._material.wireframe = button.checked;
+    this.setWireframe(button.checked);
   }
 
   _onUpdate(time) {

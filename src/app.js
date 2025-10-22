@@ -1,5 +1,5 @@
 import "./style.css";
-import { ShaderType, InputGeometryTypes } from "./common.js";
+import { ShaderType, InputGeometryTypes, CameraTypes } from "./common.js";
 import { Graphics, GraphicsConstructorParams } from "./graphics.js";
 import { Editor } from "./editor.js";
 import { Project } from "./project.js";
@@ -19,13 +19,43 @@ class App {
     const fragmentCode = projectData.Shaders.Fragment;
     const inputGeometryType = projectData.Shaders.InputGeometry.type;
     const inputGeometryValues = projectData.Shaders.InputGeometry.values;
+    const wireframe = projectData.Shaders.Wireframe;
+    const backgroundColor = projectData.Shaders.BackgroundColor;
+    const cameraPosition = projectData.Shaders.Camera.position;
+    const cameraType = projectData.Shaders.Camera.type;
+    const cameraValues = projectData.Shaders.Camera.values;
 
     const graphicsParams = new GraphicsConstructorParams();
     graphicsParams.vertexCode = vertexCode;
     graphicsParams.fragmentCode = fragmentCode;
     graphicsParams.inputGeometryType = inputGeometryType;
     graphicsParams.inputGeometryValues = inputGeometryValues;
+    graphicsParams.wireframe = wireframe;
+    graphicsParams.backgroundColor = backgroundColor;
+    graphicsParams.cameraPosition = cameraPosition;
+    graphicsParams.cameraType = cameraType;
     graphicsParams.onShaderCompileCallback = this._onShaderCompile.bind(this);
+
+    switch (cameraType) {
+      case CameraTypes.Perspective:
+        {
+          graphicsParams.perspectiveCamera.fov = cameraValues.fov;
+          graphicsParams.perspectiveCamera.near = cameraValues.near;
+          graphicsParams.perspectiveCamera.far = cameraValues.far;
+        }
+        break;
+
+      case CameraTypes.Orthographic:
+        {
+          graphicsParams.orthographicCamera.left = cameraValues.left;
+          graphicsParams.orthographicCamera.right = cameraValues.right;
+          graphicsParams.orthographicCamera.top = cameraValues.top;
+          graphicsParams.orthographicCamera.bottom = cameraValues.bottom;
+          graphicsParams.orthographicCamera.near = cameraValues.near;
+          graphicsParams.orthographicCamera.far = cameraValues.far;
+        }
+        break;
+    }
 
     this._graphics = new Graphics(graphicsParams);
 
@@ -99,12 +129,26 @@ class App {
     const tabContent = document.getElementById("tab-content");
     const geometryType = this._graphics.getActiveInputGeometryType();
     const geometryValues = this._graphics.getInputGeometryValues(geometryType);
+    const wireframe = this._graphics.getWireframe();
+    const backgroundColor = this._graphics.getBackgroundColor();
+    const cameraPosition = this._graphics.getCameraPosition();
+    const cameraType = this._graphics.getActiveCameraType();
+    const cameraValues =
+      cameraType === CameraTypes.Perspective
+        ? this._graphics.getPerspectiveCameraValues()
+        : this._graphics.getOrthographicCameraValues();
 
     projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
     projectData.Shaders = {};
     projectData.Shaders.InputGeometry = {};
     projectData.Shaders.InputGeometry.type = geometryType;
     projectData.Shaders.InputGeometry.values = geometryValues;
+    projectData.Shaders.Wireframe = wireframe;
+    projectData.Shaders.BackgroundColor = backgroundColor;
+    projectData.Shaders.Camera = {};
+    projectData.Shaders.Camera.position = cameraPosition;
+    projectData.Shaders.Camera.type = cameraType;
+    projectData.Shaders.Camera.values = cameraValues;
     projectData.Shaders.Vertex = this._editor._vertexCode;
     projectData.Shaders.Fragment = this._editor._fragmentCode;
     projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
@@ -176,6 +220,13 @@ class App {
     this._editor.setShaderCode(ShaderType.Vertex, vertexCode);
     this._editor.setShaderCode(ShaderType.Fragment, fragmentCode);
 
+    this._graphics.setCameraPosition(json.Shaders.Camera.position);
+    this._graphics.setCameraType(json.Shaders.Camera.type);
+    this._graphics.setCameraValues(json.Shaders.Camera.values);
+    this._graphics.setWireframe(json.Shaders.Wireframe);
+    this._graphics.setBackgroundColor(json.Shaders.BackgroundColor);
+    this._graphics.setInputGeometryType(json.Shaders.InputGeometry.type);
+    this._graphics.setInputGeometryValues(json.Shaders.InputGeometry.values);
     this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
     this._graphics.onUniformUpdate(uniforms);
   }
