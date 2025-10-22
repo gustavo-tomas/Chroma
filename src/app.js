@@ -1,7 +1,7 @@
 import "./style.css";
 import { ShaderType, InputGeometryTypes, CameraTypes } from "./common.js";
 import { Graphics, GraphicsConstructorParams } from "./graphics.js";
-import { Editor } from "./editor.js";
+import { Editor, EditorConstructorParams } from "./editor.js";
 import { Project } from "./project.js";
 import { setupResizers } from "./resizer.js";
 import Showdown from "showdown";
@@ -59,7 +59,11 @@ class App {
 
     this._graphics = new Graphics(graphicsParams);
 
-    this._editor = new Editor(vertexCode, fragmentCode);
+    const editorParams = new EditorConstructorParams();
+    editorParams.initialVertex = vertexCode;
+    editorParams.initialFragment = fragmentCode;
+
+    this._editor = new Editor(editorParams);
 
     setupResizers(this._graphics);
 

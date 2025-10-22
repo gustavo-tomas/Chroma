@@ -16,10 +16,15 @@ class Tab {
   display;
 }
 
+class EditorConstructorParams {
+  initialVertex = "";
+  initialFragment = "";
+}
+
 class Editor {
-  constructor(initialVertex, initialFragment) {
-    this._vertexCode = initialVertex;
-    this._fragmentCode = initialFragment;
+  constructor(params) {
+    this._vertexCode = params.initialVertex;
+    this._fragmentCode = params.initialFragment;
     this._currentTab = TabType.Vertex;
 
     this._shaderDisplay = document.querySelector("#shader");
@@ -209,4 +214,4 @@ class Editor {
   }
 }
 
-export { Editor };
+export { Editor, EditorConstructorParams };
