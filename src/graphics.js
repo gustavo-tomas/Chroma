@@ -90,6 +90,14 @@ class Graphics {
       "camera-orthographic-far"
     );
 
+    this._backgroundColorR = document.getElementById("background-input-r");
+    this._backgroundColorG = document.getElementById("background-input-g");
+    this._backgroundColorB = document.getElementById("background-input-b");
+
+    this._backgroundColorR.value = params.backgroundColor[0];
+    this._backgroundColorG.value = params.backgroundColor[1];
+    this._backgroundColorB.value = params.backgroundColor[2];
+
     wireframeInputButton.checked = params.wireframe;
 
     const width = this._getWidth();
@@ -294,6 +302,22 @@ class Graphics {
       this._onCameraOrthographicUpdate.bind(this)
     );
 
+    // Background color
+    this._backgroundColorR.addEventListener(
+      "change",
+      this._onBackgroundColorUpdate.bind(this)
+    );
+
+    this._backgroundColorG.addEventListener(
+      "change",
+      this._onBackgroundColorUpdate.bind(this)
+    );
+
+    this._backgroundColorB.addEventListener(
+      "change",
+      this._onBackgroundColorUpdate.bind(this)
+    );
+
     this._planeX.addEventListener(
       "change",
       this._onPlaneGeometryUpdate.bind(this)
@@ -421,6 +445,14 @@ class Graphics {
     ];
   }
 
+  getBackgroundColor() {
+    return [
+      parseFloat(this._backgroundColorR.value),
+      parseFloat(this._backgroundColorG.value),
+      parseFloat(this._backgroundColorB.value),
+    ];
+  }
+
   getUserUniforms() {
     let uniforms = {};
 
@@ -434,6 +466,12 @@ class Graphics {
     }
 
     return uniforms;
+  }
+
+  _onBackgroundColorUpdate(e) {
+    const values = this.getBackgroundColor();
+
+    this._scene.background = arrayToColor(values);
   }
 
   _onCameraInputSelected(e) {
