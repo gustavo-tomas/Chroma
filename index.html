@@ -128,25 +128,165 @@
               </div>
 
               <label>Wireframe<input type="checkbox" id="wireframe" /></label>
-
+              <hr />
               Camera
-              <label
-                ><input
-                  type="radio"
-                  id="perspective"
-                  class="camera-btn"
-                  name="camera-input"
-                  checked
-                />Perspective</label
-              >
-              <label
-                ><input
-                  type="radio"
-                  id="orthographic"
-                  class="camera-btn"
-                  name="camera-input"
-                />Orthographic</label
-              >
+              <div id="camera-position-vec">
+                Position
+                <div class="vec-component">
+                  <label
+                    >X
+                    <input
+                      type="number"
+                      id="camera-position-x"
+                      value="0"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Y
+                    <input
+                      type="number"
+                      id="camera-position-y"
+                      value="0"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Z
+                    <input
+                      type="number"
+                      id="camera-position-z"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
+
+              <div id="camera-perspective-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="perspective"
+                    class="camera-btn"
+                    name="camera-input"
+                    checked
+                  />Perspective</label
+                >
+                <div class="vec-component">
+                  <label
+                    >Fov
+                    <input
+                      type="number"
+                      id="camera-perspective-fov"
+                      value="60"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Near
+                    <input
+                      type="number"
+                      id="camera-perspective-near"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Far
+                    <input
+                      type="number"
+                      id="camera-perspective-far"
+                      value="100"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
+              <div id="camera-orthographic-vec">
+                <label
+                  ><input
+                    type="radio"
+                    id="orthographic"
+                    class="camera-btn"
+                    name="camera-input"
+                  />Orthographic</label
+                >
+                <div class="vec-component">
+                  <label
+                    >Left
+                    <input
+                      type="number"
+                      id="camera-orthographic-left"
+                      value="-1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Right
+                    <input
+                      type="number"
+                      id="camera-orthographic-right"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Top
+                    <input
+                      type="number"
+                      id="camera-orthographic-top"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Bottom
+                    <input
+                      type="number"
+                      id="camera-orthographic-bottom"
+                      value="-1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Near
+                    <input
+                      type="number"
+                      id="camera-orthographic-near"
+                      value="0"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+                <div class="vec-component">
+                  <label
+                    >Far
+                    <input
+                      type="number"
+                      id="camera-orthographic-far"
+                      value="1"
+                      step="0.1"
+                    />
+                  </label>
+                </div>
+              </div>
             </div>
           </div>
 

@@ -7,12 +7,47 @@ class ShaderCompileLog {
   token = "";
 }
 
+class PerspectiveCamera {
+  fov = 60;
+  near = 0.01;
+  far = 10;
+}
+
+class OrthographicCamera {
+  left = -1;
+  right = 1;
+  top = 1;
+  bottom = -1;
+  near = 0;
+  far = 1;
+}
+
 class GraphicsConstructorParams {
   vertexCode = "";
   fragmentCode = "";
-  inputGeometryType = InputGeometryTypes.Box;
-  inputGeometryValues = [];
+  inputGeometryType = InputGeometryTypes.Plane;
+  inputGeometryValues = [0.5, 0.5];
+  wireframe = false;
+  backgroundColor = [0.5, 0.5, 0.5];
+  cameraType = CameraTypes.Perspective;
+  cameraPosition = [0.0, 0.0, 1.0];
+  perspectiveCamera = new PerspectiveCamera();
+  orthographicCamera = new OrthographicCamera();
   onShaderCompileCallback = null;
+}
+
+function arrayToColor(array) {
+  const color = new THREE.Color();
+
+  if (array.length < 3) {
+    return color;
+  }
+
+  color.r = array[0];
+  color.g = array[1];
+  color.b = array[2];
+
+  return color;
 }
 
 class Graphics {
@@ -24,17 +59,95 @@ class Graphics {
     this._geometryInputButtons =
       document.getElementsByClassName("geometry-btn");
 
-    const cameraInputButtons = document.getElementsByClassName("camera-btn");
+    this._cameraInputButtons = document.getElementsByClassName("camera-btn");
+
+    this._cameraPerspectiveFov = document.getElementById(
+      "camera-perspective-fov"
+    );
+    this._cameraPerspectiveNear = document.getElementById(
+      "camera-perspective-near"
+    );
+    this._cameraPerspectiveFar = document.getElementById(
+      "camera-perspective-far"
+    );
+
+    this._cameraOrthographicLeft = document.getElementById(
+      "camera-orthographic-left"
+    );
+    this._cameraOrthographicRight = document.getElementById(
+      "camera-orthographic-right"
+    );
+    this._cameraOrthographicTop = document.getElementById(
+      "camera-orthographic-top"
+    );
+    this._cameraOrthographicBottom = document.getElementById(
+      "camera-orthographic-bottom"
+    );
+    this._cameraOrthographicNear = document.getElementById(
+      "camera-orthographic-near"
+    );
+    this._cameraOrthographicFar = document.getElementById(
+      "camera-orthographic-far"
+    );
+
+    wireframeInputButton.checked = params.wireframe;
 
     const width = this._getWidth();
     const height = this._getHeight();
 
     this._onShaderCompileCallback = params.onShaderCompileCallback;
-    this._camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
-    this._camera.position.z = 1;
+
+    switch (params.cameraType) {
+      case CameraTypes.Perspective:
+        this._camera = new THREE.PerspectiveCamera(
+          params.perspectiveCamera.fov,
+          width / height,
+          params.perspectiveCamera.near,
+          params.perspectiveCamera.far
+        );
+        break;
+
+      case CameraTypes.Orthographic:
+        this._camera = new THREE.OrthographicCamera(
+          params.orthographicCamera.left,
+          params.orthographicCamera.right,
+          params.orthographicCamera.top,
+          params.orthographicCamera.bottom,
+          params.orthographicCamera.near,
+          params.orthographicCamera.far
+        );
+        break;
+    }
+
+    this._cameraPerspectiveFov.value = params.perspectiveCamera.fov;
+    this._cameraPerspectiveNear.value = params.perspectiveCamera.near;
+    this._cameraPerspectiveFar.value = params.perspectiveCamera.far;
+
+    this._cameraOrthographicLeft.value = params.orthographicCamera.left;
+    this._cameraOrthographicRight.value = params.orthographicCamera.right;
+    this._cameraOrthographicTop.value = params.orthographicCamera.top;
+    this._cameraOrthographicBottom.value = params.orthographicCamera.bottom;
+    this._cameraOrthographicNear.value = params.orthographicCamera.near;
+    this._cameraOrthographicFar.value = params.orthographicCamera.far;
+
+    this._camera.position.set(
+      params.cameraPosition[0],
+      params.cameraPosition[1],
+      params.cameraPosition[2]
+    );
+
+    this._cameraX = document.getElementById("camera-position-x");
+    this._cameraY = document.getElementById("camera-position-y");
+    this._cameraZ = document.getElementById("camera-position-z");
+
+    this._cameraX.value = params.cameraPosition[0];
+    this._cameraY.value = params.cameraPosition[1];
+    this._cameraZ.value = params.cameraPosition[2];
+
+    this._selectCamera(params.cameraType);
 
     this._scene = new THREE.Scene();
-    this._scene.background = new THREE.Color(0.5, 0.5, 0.5);
+    this._scene.background = arrayToColor(params.backgroundColor);
 
     this._planeX = document.getElementById("plane-input-x");
     this._planeY = document.getElementById("plane-input-y");
@@ -79,6 +192,7 @@ class Graphics {
       vertexShader: params.vertexCode,
       fragmentShader: params.fragmentCode,
       side: THREE.DoubleSide,
+      wireframe: params.wireframe,
     });
 
     this._material.onBeforeCompile = this._onBeforeCompile.bind(this);
@@ -119,10 +233,66 @@ class Graphics {
       );
     }
 
-    for (let i = 0; i < cameraInputButtons.length; i++) {
-      const button = cameraInputButtons[i];
+    for (let i = 0; i < this._cameraInputButtons.length; i++) {
+      const button = this._cameraInputButtons[i];
       button.addEventListener("change", this._onCameraInputSelected.bind(this));
     }
+
+    // Camera position
+    this._cameraX.addEventListener(
+      "change",
+      this._onCameraPositionUpdate.bind(this)
+    );
+    this._cameraY.addEventListener(
+      "change",
+      this._onCameraPositionUpdate.bind(this)
+    );
+    this._cameraZ.addEventListener(
+      "change",
+      this._onCameraPositionUpdate.bind(this)
+    );
+
+    // Perspective camera
+    this._cameraPerspectiveFov.addEventListener(
+      "change",
+      this._onCameraPerspectiveUpdate.bind(this)
+    );
+
+    this._cameraPerspectiveNear.addEventListener(
+      "change",
+      this._onCameraPerspectiveUpdate.bind(this)
+    );
+
+    this._cameraPerspectiveFar.addEventListener(
+      "change",
+      this._onCameraPerspectiveUpdate.bind(this)
+    );
+
+    // Orthographic camera
+    this._cameraOrthographicLeft.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
+    this._cameraOrthographicRight.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
+    this._cameraOrthographicTop.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
+    this._cameraOrthographicBottom.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
+    this._cameraOrthographicNear.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
+    this._cameraOrthographicFar.addEventListener(
+      "change",
+      this._onCameraOrthographicUpdate.bind(this)
+    );
 
     this._planeX.addEventListener(
       "change",
@@ -220,6 +390,37 @@ class Graphics {
     console.error("Invalid geometry type: ", geometryType);
   }
 
+  getPerspectiveCameraValues() {
+    const camera = new PerspectiveCamera();
+
+    camera.fov = parseFloat(this._cameraPerspectiveFov.value);
+    camera.near = parseFloat(this._cameraPerspectiveNear.value);
+    camera.far = parseFloat(this._cameraPerspectiveFar.value);
+
+    return camera;
+  }
+
+  getOrthographicCameraValues() {
+    const camera = new OrthographicCamera();
+
+    camera.left = parseFloat(this._cameraOrthographicLeft.value);
+    camera.right = parseFloat(this._cameraOrthographicRight.value);
+    camera.top = parseFloat(this._cameraOrthographicTop.value);
+    camera.bottom = parseFloat(this._cameraOrthographicBottom.value);
+    camera.near = parseFloat(this._cameraOrthographicNear.value);
+    camera.far = parseFloat(this._cameraOrthographicFar.value);
+
+    return camera;
+  }
+
+  getCameraPosition() {
+    return [
+      parseFloat(this._cameraX.value),
+      parseFloat(this._cameraY.value),
+      parseFloat(this._cameraZ.value),
+    ];
+  }
+
   getUserUniforms() {
     let uniforms = {};
 
@@ -242,16 +443,35 @@ class Graphics {
     }
 
     let camera;
+    const position = this.getCameraPosition();
 
     switch (button.id) {
       case CameraTypes.Perspective:
-        const width = this._getWidth();
-        const height = this._getHeight();
-        camera = new THREE.PerspectiveCamera(70, width / height, 0.01, 10);
-        camera.position.z = 1;
+        {
+          const aspect = this._getWidth() / this._getHeight();
+          const values = this.getPerspectiveCameraValues();
+          camera = new THREE.PerspectiveCamera(
+            values.fov,
+            aspect,
+            values.near,
+            values.far
+          );
+          camera.position.set(position[0], position[1], position[2]);
+        }
         break;
       case CameraTypes.Orthographic:
-        camera = new THREE.OrthographicCamera(-1, 1, 1, -1, 0, 1);
+        {
+          const values = this.getOrthographicCameraValues();
+          camera = new THREE.OrthographicCamera(
+            values.left,
+            values.right,
+            values.top,
+            values.bottom,
+            values.near,
+            values.far
+          );
+          camera.position.set(position[0], position[1], position[2]);
+        }
         break;
     }
 
@@ -301,6 +521,42 @@ class Graphics {
       values[1],
       values[2]
     );
+  }
+
+  _onCameraPositionUpdate(e) {
+    const values = this.getCameraPosition();
+    this._camera.position.set(values[0], values[1], values[2]);
+  }
+
+  _onCameraPerspectiveUpdate(e) {
+    if (!this._isCameraSelected(CameraTypes.Perspective)) {
+      return;
+    }
+
+    const values = this.getPerspectiveCameraValues();
+
+    this._camera.fov = values.fov;
+    this._camera.near = values.near;
+    this._camera.far = values.far;
+
+    this._camera.updateProjectionMatrix();
+  }
+
+  _onCameraOrthographicUpdate(e) {
+    if (!this._isCameraSelected(CameraTypes.Orthographic)) {
+      return;
+    }
+
+    const values = this.getOrthographicCameraValues();
+
+    this._camera.left = values.left;
+    this._camera.right = values.right;
+    this._camera.top = values.top;
+    this._camera.bottom = values.bottom;
+    this._camera.near = values.near;
+    this._camera.far = values.far;
+
+    this._camera.updateProjectionMatrix();
   }
 
   _onWireframeSelected(e) {
@@ -452,12 +708,31 @@ class Graphics {
     this._mousePositionNormalized = mousePosition;
   }
 
+  _selectCamera(cameraType) {
+    for (let i = 0; i < this._cameraInputButtons.length; i++) {
+      const button = this._cameraInputButtons[i];
+      if (button.id === cameraType) {
+        button.checked = true;
+        return;
+      }
+    }
+  }
+
   _selectGeometry(geometryType) {
     for (let i = 0; i < this._geometryInputButtons.length; i++) {
       const button = this._geometryInputButtons[i];
       if (button.id === geometryType) {
         button.checked = true;
         return;
+      }
+    }
+  }
+
+  _isCameraSelected(cameraType) {
+    for (let i = 0; i < this._cameraInputButtons.length; i++) {
+      const button = this._cameraInputButtons[i];
+      if (button.id === cameraType) {
+        return button.checked;
       }
     }
   }
