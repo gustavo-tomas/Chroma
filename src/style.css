@@ -1,8 +1,9 @@
 :root {
   --bg-color: #c9c9c9ff;
   --fg-color: white;
-  --border-radius: 25px;
-  --outer-margin: 20px;
+  --div-border-radius: 25px;
+  --button-border-radius: 25px;
+  --button-border: 1px solid #00000099;
   --inner-margin: 10px;
   --box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 5px;
 }
@@ -18,6 +19,15 @@ body {
   padding: 0;
   background-color: var(--bg-color);
   font-family: "RedHatText", monospace;
+}
+
+button {
+  padding: 0.5rem 1rem;
+  border: var(--button-border);
+  border-radius: var(--div-border-radius);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
 }
 
 #app {
@@ -38,7 +48,7 @@ body {
   padding: 30px;
   margin: var(--inner-margin);
   background-color: var(--fg-color);
-  border-radius: var(--border-radius);
+  border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
@@ -60,6 +70,10 @@ body {
   justify-content: flex-end;
 }
 
+#project-buttons button {
+  padding: 0.25rem 0.5rem;
+}
+
 /* Editor tab on the right, arranged vertically */
 #editor-tab {
   flex: 1;
@@ -74,46 +88,38 @@ body {
   height: 55%;
   margin: var(--inner-margin);
   background-color: var(--fg-color);
-  border-radius: var(--border-radius);
+  border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
 #editor-buttons {
   display: flex;
-  background: #f0f0f0;
-  border-bottom: 1px solid #ccc;
-  border-radius: var(--border-radius) var(--border-radius) 0 0;
+  background: var(--fg-color);
+  padding: 5px;
+  border-radius: var(--div-border-radius) var(--div-border-radius) 0 0;
 }
 
 #editor-buttons button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-weight: bold;
+  border: var(--button-border);
+  border-color: transparent;
 }
 
 #editor-buttons button.active {
-  border-bottom: 2px solid #007acc;
-  color: #007acc;
+  border: var(--button-border);
+  border-radius: var(--button-border-radius);
 }
 
 #update-shader-btn {
-  padding: 0.5rem 1rem;
-  background: #007acc;
-  color: #fff;
 }
 
 #update-shader-btn:hover {
-  background: #005fa3;
 }
 
 /* Code editor panel (top) */
 #code-panel {
   overflow: auto;
   height: 100%;
-
-  border-radius: 0 0 var(--border-radius) var(--border-radius);
+  border-radius: 0 0 var(--div-border-radius) var(--div-border-radius);
 }
 
 #shader {
@@ -141,7 +147,7 @@ body {
   width: 100%;
   padding: 0;
   margin: var(--inner-margin);
-  border-radius: var(--border-radius);
+  border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
@@ -184,14 +190,11 @@ div[contenteditable="true"] {
 
 .tex-actions {
   display: flex;
-  gap: 6px;
+  /* gap: 4px; */
 }
 
 .tex-btn {
-  font: 12px system-ui;
-  padding: 4px 6px;
-  border: 1px solid #ccc;
-  background: #fff;
+  padding: 0.25rem 0.5rem;
   cursor: pointer;
 }
 
@@ -202,7 +205,7 @@ div[contenteditable="true"] {
   padding: 6px;
   border: 1px solid #ccc;
   background-color: var(--fg-color);
-  border-radius: var(--border-radius);
+  border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
@@ -215,7 +218,6 @@ div[contenteditable="true"] {
 }
 
 .tex-label {
-  font: 12px system-ui;
   min-width: 84px;
 }
 
