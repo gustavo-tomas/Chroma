@@ -207,24 +207,19 @@ div[contenteditable="true"] {
 .tex-slot {
   display: flex;
   align-items: flex-end;
-  /* gap: 8px; */
+  background-size: cover;
+  background-image: none;
+  background-position: center;
+  background-repeat: no-repeat;
   background-color: var(--fg-color);
   border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
-.tex-thumb {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  background: #eee;
-  border: 1px solid #bbb;
-}
-
 .tex-label {
   align-self: flex-start;
   padding: 0.25rem 1.25rem;
-  background-color: inherit;
+  background-color: var(--fg-color);
   border: inherit;
   border-top: 0;
   border-radius: inherit;

@@ -859,15 +859,17 @@ export function initTexturePanelStatic(material) {
 
   document.querySelectorAll("#channels-panel .tex-slot").forEach((slot) => {
     const name = slot.dataset.channel;
-    const thumb = slot.querySelector(".tex-thumb");
     const load = slot.querySelector(".tex-load");
     const clear = slot.querySelector(".tex-clear");
     const input = slot.querySelector('input[type="file"]');
 
     function apply(tex, url) {
       setUniform(name, tex);
-      if (url) thumb.src = url;
+      if (url) {
+        slot.style.backgroundImage = "url(" + url + ")";
+      }
     }
+
     function loadFile(file) {
       fileToTex(file, apply);
     }
@@ -899,7 +901,7 @@ export function initTexturePanelStatic(material) {
           material.userData.shader.uniforms.u_userTexture.value = null;
         }
       }
-      thumb.removeAttribute("src");
+      slot.style.backgroundImage = "none";
       material.needsUpdate = true;
     };
 
