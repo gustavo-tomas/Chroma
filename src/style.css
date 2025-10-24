@@ -1,5 +1,5 @@
 :root {
-  --bg-color: #c9c9c9ff;
+  --bg-color: #e9e9e9ff;
   --fg-color: white;
   --div-border-radius: 25px;
   --button-border-radius: 25px;
@@ -110,6 +110,9 @@ button {
 }
 
 #update-shader-btn {
+  background-color: var(--bg-color);
+  border: none;
+  box-shadow: var(--box-shadow);
 }
 
 #update-shader-btn:hover {
@@ -190,20 +193,21 @@ div[contenteditable="true"] {
 
 .tex-actions {
   display: flex;
-  /* gap: 4px; */
+  gap: 5px;
 }
 
 .tex-btn {
   padding: 0.25rem 0.5rem;
   cursor: pointer;
+  border: none;
+  box-shadow: var(--box-shadow);
+  background-color: var(--bg-color);
 }
 
 .tex-slot {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border: 1px solid #ccc;
+  align-items: flex-end;
+  /* gap: 8px; */
   background-color: var(--fg-color);
   border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
@@ -218,7 +222,15 @@ div[contenteditable="true"] {
 }
 
 .tex-label {
-  min-width: 84px;
+  align-self: flex-start;
+  padding: 0.25rem 1.25rem;
+  background-color: inherit;
+  border: inherit;
+  border-top: 0;
+  border-radius: inherit;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: var(--box-shadow);
 }
 
 .tex-slot .tex-actions {
