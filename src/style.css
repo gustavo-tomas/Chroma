@@ -189,6 +189,7 @@ div[contenteditable="true"] {
 .tex-actions {
   display: flex;
   gap: 5px;
+  margin: 10px 15px 10px auto;
 }
 
 .tex-btn {
@@ -221,10 +222,6 @@ div[contenteditable="true"] {
   border-top-right-radius: 0;
   border-bottom-left-radius: 0;
   box-shadow: var(--box-shadow);
-}
-
-.tex-slot .tex-actions {
-  margin-left: auto;
 }
 
 .tex-slot.dragover {
