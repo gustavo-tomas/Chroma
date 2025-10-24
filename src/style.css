@@ -22,6 +22,7 @@ body {
 }
 
 button {
+  width: fit-content;
   padding: 0.5rem 1rem;
   border: var(--button-border);
   border-radius: var(--div-border-radius);
@@ -56,9 +57,6 @@ button {
   display: none;
 }
 
-#tab-title {
-}
-
 #tab-content {
   display: flex;
   flex-direction: column;
@@ -68,10 +66,12 @@ button {
 #project-buttons {
   display: flex;
   justify-content: flex-end;
+  margin-top: 30px;
+  gap: 10px;
 }
 
 #project-buttons button {
-  padding: 0.25rem 0.5rem;
+  padding: 0.25rem 0.75rem;
 }
 
 /* Editor tab on the right, arranged vertically */
@@ -96,7 +96,7 @@ button {
 #editor-buttons {
   display: flex;
   background: var(--fg-color);
-  padding: 5px;
+  padding: 5px 5px 5px 40px;
   border-radius: var(--div-border-radius) var(--div-border-radius) 0 0;
 }
 
@@ -128,15 +128,6 @@ button {
   box-shadow: var(--box-shadow);
 }
 
-#update-shader-btn:hover {
-}
-
-.cm-editor {
-}
-
-.cm-gutters {
-}
-
 .cm-lineNumbers {
   width: 100%;
   align-items: center;
@@ -152,9 +143,6 @@ button {
   overflow: auto;
   height: 100%;
   border-radius: 0 0 var(--div-border-radius) var(--div-border-radius);
-}
-
-#shader {
 }
 
 #geometry {
@@ -192,25 +180,10 @@ div[contenteditable="true"] {
   margin: var(--inner-margin);
 }
 
-.channels-lib {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
 .channels-grid {
   display: grid;
   gap: 8px;
   flex: 1;
-}
-
-.tex-preview {
-  width: 112px;
-  height: 112px;
-  border: 1px dashed #999;
-  background: rgba(255, 255, 255, 0.6);
-  object-fit: cover;
-  cursor: grab;
 }
 
 .tex-actions {
