@@ -65,7 +65,7 @@ class App {
 
     this._editor = new Editor(editorParams);
 
-    setupResizers(this._graphics);
+    // setupResizers(this._graphics);
 
     this._setProject(projectData);
 

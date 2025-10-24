@@ -1,28 +1,63 @@
+:root {
+  --bg-color: #c9c9c9ff;
+  --fg-color: white;
+  --border-radius: 25px;
+  --outer-margin: 20px;
+  --inner-margin: 10px;
+  --box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 5px;
+}
+
+@font-face {
+  font-family: "RedHatText";
+  src: url("public/fonts/Red_Hat_Text/static/RedHatText-Regular.ttf")
+    format("truetype");
+}
+
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--bg-color);
+  font-family: "RedHatText", monospace;
 }
 
 #app {
   display: flex;
+  position: fixed;
+  width: 100vw;
   height: 100vh;
-  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: var(--inner-margin);
 }
 
 /* Theory tab on the left */
 #theory-tab {
-  flex: none;
-  width: 300px;
+  display: flex;
+  flex-direction: column;
+  min-width: 20%;
+  padding: 30px;
+  margin: var(--inner-margin);
+  background-color: var(--fg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+#project-name {
+  display: none;
+}
+
+#tab-title {
+}
+
+#tab-content {
+  display: flex;
+  flex-direction: column;
   overflow: auto;
 }
 
-/* Horizontal resizer bar */
-#h-resizer {
-  width: 5px;
-  cursor: ew-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
-  align-self: stretch;
+#project-buttons {
+  display: flex;
+  justify-content: flex-end;
 }
 
 /* Editor tab on the right, arranged vertically */
@@ -30,13 +65,24 @@ body {
   flex: 1;
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+}
+
+#editor-panel {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  height: 55%;
+  margin: var(--inner-margin);
+  background-color: var(--fg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 #editor-buttons {
   display: flex;
   background: #f0f0f0;
   border-bottom: 1px solid #ccc;
+  border-radius: var(--border-radius) var(--border-radius) 0 0;
 }
 
 #editor-buttons button {
@@ -64,36 +110,45 @@ body {
 
 /* Code editor panel (top) */
 #code-panel {
-  flex: none;
-  height: 200px;
   overflow: auto;
+  height: 100%;
+
+  border-radius: 0 0 var(--border-radius) var(--border-radius);
+}
+
+#shader {
+}
+
+#shader-controls {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: fit-content;
 }
 
 #geometry {
   display: none;
 }
 
-/* Horizontal resizer bar */
-#v-resizer {
-  height: 5px;
-  cursor: ns-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
+#gfx-panel {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
 }
 
 /* Shader view panel (bottom) */
 #view-panel {
-  flex: 1;
-  overflow: hidden;
-  position: relative;
+  width: 100%;
+  padding: 0;
+  margin: var(--inner-margin);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 /* Canvas element styling - makes the canvas fit its container */
 #canvas {
   display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
+  border-radius: inherit;
 }
 
 /* Makes editable fields easier to see */
@@ -103,11 +158,7 @@ div[contenteditable="true"] {
 
 #channels-panel {
   display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 8px;
-  border-top: 1px solid #ddd;
-  background: #fff;
+  margin: var(--inner-margin);
 }
 
 .channels-lib {
@@ -118,7 +169,6 @@ div[contenteditable="true"] {
 
 .channels-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(240px, 1fr));
   gap: 8px;
   flex: 1;
 }
@@ -151,7 +201,9 @@ div[contenteditable="true"] {
   gap: 8px;
   padding: 6px;
   border: 1px solid #ccc;
-  background: rgba(255, 255, 255, 0.85);
+  background-color: var(--fg-color);
+  border-radius: var(--border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 .tex-thumb {
@@ -173,4 +225,19 @@ div[contenteditable="true"] {
 
 .tex-slot.dragover {
   outline: 2px dashed #007acc;
+}
+
+#h-resizer {
+  width: 5px;
+  cursor: ew-resize;
+  background: rgba(0, 0, 0, 0.1);
+  user-select: none;
+  align-self: stretch;
+}
+
+#v-resizer {
+  height: 5px;
+  cursor: ns-resize;
+  background: rgba(0, 0, 0, 0.1);
+  user-select: none;
 }
