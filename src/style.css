@@ -10,7 +10,7 @@
 
 @font-face {
   font-family: "RedHatText";
-  src: url("public/fonts/Red_Hat_Text/static/RedHatText-Regular.ttf")
+  src: url("fonts/Red_Hat_Text/static/RedHatText-Regular.ttf")
     format("truetype");
 }
 
@@ -30,6 +30,14 @@ button {
   cursor: pointer;
   font-family: inherit;
 }
+
+/* Centralize and fit the container */
+img {
+  display: flex;
+  margin: auto;
+  max-width: 100%;
+}
+
 ::-webkit-scrollbar {
   width: 0.75em;
   height: 0.75em;
@@ -45,7 +53,7 @@ button {
 ::-webkit-scrollbar-thumb {
   border-radius: 100vw;
   background: var(--bg-color);
-  box-shadow: rgba(0, 0, 0, 0.34) 0px 1px 3px;
+  border: var(--button-border);
 }
 
 #app {
@@ -62,7 +70,7 @@ button {
 #theory-tab {
   display: flex;
   flex-direction: column;
-  min-width: 20%;
+  min-width: 25%;
   padding: 30px;
   margin: var(--inner-margin);
   background-color: var(--fg-color);
@@ -78,6 +86,7 @@ button {
   display: flex;
   flex-direction: column;
   overflow: auto;
+  padding: 1em;
 }
 
 #project-buttons {
