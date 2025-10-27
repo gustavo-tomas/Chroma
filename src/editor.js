@@ -54,7 +54,12 @@ class Editor {
     this._view = new EditorView({
       doc: this._vertexCode,
       parent: this._shaderDisplay,
-      extensions: [basicSetup, lintGutter(), keymap.of([indentWithTab])],
+      extensions: [
+        basicSetup,
+        lintGutter(),
+        keymap.of([indentWithTab]),
+        EditorView.lineWrapping,
+      ],
     });
 
     // attach click handlers to switch tabs
