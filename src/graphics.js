@@ -436,6 +436,12 @@ class Graphics {
 
   setCameraType(cameraType) {
     this._selectCamera(cameraType);
+
+    this.setCameraValues(
+      cameraType === CameraTypes.Perspective
+        ? this.getPerspectiveCameraValues()
+        : this.getOrthographicCameraValues()
+    );
   }
 
   setCameraValues(values) {
