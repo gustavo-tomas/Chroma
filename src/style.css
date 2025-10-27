@@ -10,8 +10,13 @@
 
 @font-face {
   font-family: "RedHatText";
-  src: url("fonts/Red_Hat_Text/static/RedHatText-Regular.ttf")
+  src: url("fonts/Red_Hat_Text/RedHatText-VariableFont_wght.ttf")
     format("truetype");
+}
+
+@font-face {
+  font-family: "FiraCode";
+  src: url("fonts/Fira_Code/FiraCode-VariableFont_wght.ttf") format("truetype");
 }
 
 body {
@@ -251,6 +256,11 @@ img {
 }
 
 /* Codemirror style */
+
+.cm-editor * {
+  font-family: "FiraCode", monospace;
+  font-size: 0.95em;
+}
 
 .cm-lineNumbers {
   width: 100%;
