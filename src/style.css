@@ -169,16 +169,6 @@ img {
   z-index: 1;
 }
 
-.cm-lineNumbers {
-  width: 100%;
-  align-items: center;
-  color: black;
-}
-
-.cm-activeLineGutter {
-  background-color: inherit !important;
-}
-
 /* Code editor panel (top) */
 #code-panel {
   overflow: auto;
@@ -209,11 +199,6 @@ img {
 #canvas {
   display: block;
   border-radius: inherit;
-}
-
-/* Makes editable fields easier to see */
-div[contenteditable="true"] {
-  background-color: aliceblue;
 }
 
 #channels-panel {
@@ -263,6 +248,24 @@ div[contenteditable="true"] {
 
 .tex-slot.dragover {
   outline: 2px dashed #007acc;
+}
+
+/* Codemirror style */
+
+.cm-lineNumbers {
+  width: 100%;
+  align-items: center;
+  color: black;
+}
+
+.cm-activeLineGutter {
+  background-color: inherit !important;
+}
+
+.cm-activeLine {
+}
+
+.cm-selectionMatch {
 }
 
 #h-resizer {
