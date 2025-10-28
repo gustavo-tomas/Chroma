@@ -207,14 +207,10 @@ img {
 }
 
 #channels-panel {
-  display: flex;
-  margin: var(--inner-margin);
-}
-
-.channels-grid {
   display: grid;
   gap: 8px;
   flex: 1;
+  margin: var(--inner-margin);
 }
 
 .tex-actions {
