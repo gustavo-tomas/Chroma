@@ -183,6 +183,7 @@ img {
 
 #geometry {
   display: none;
+  width: 100%;
 }
 
 #gfx-panel {

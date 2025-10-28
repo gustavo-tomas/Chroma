@@ -191,9 +191,11 @@ class Editor {
   _toggleGeometryTab(visible) {
     if (visible) {
       this._shaderDisplay.style.visibility = "hidden";
+      this._shaderDisplay.style.display = "none";
       this._geometryDisplay.style.display = "block";
     } else {
       this._shaderDisplay.style.visibility = "visible";
+      this._shaderDisplay.style.display = "block";
       this._geometryDisplay.style.display = "none";
     }
   }
