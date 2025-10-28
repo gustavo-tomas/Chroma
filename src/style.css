@@ -274,6 +274,19 @@ img {
 .cm-selectionMatch {
 }
 
+/* Vec components style */
+
+.vec-components {
+  display: flex;
+}
+
+.vec-component label {
+}
+
+.vec-component input {
+  max-width: 50px;
+}
+
 #h-resizer {
   width: 5px;
   cursor: ew-resize;
