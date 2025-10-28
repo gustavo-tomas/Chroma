@@ -1,4 +1,5 @@
 import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
+import { appendTexSlot } from "./components/tex_slot.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -55,6 +56,10 @@ class Graphics {
     const canvas = document.getElementById("canvas");
     this._wireframeInputButton = document.getElementById("wireframe");
     this._viewPanel = document.getElementById("view-panel");
+
+    for (let i = 0; i < 4; i++) {
+      appendTexSlot("iChannel" + i);
+    }
 
     this._geometryInputButtons =
       document.getElementsByClassName("geometry-btn");
