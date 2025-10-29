@@ -268,10 +268,15 @@ img {
   height: 100%;
 }
 
-.cm-lineNumbers {
-  width: 100%;
-  align-items: center;
+.cm-gutters {
+}
+
+.cm-gutter.cm-lineNumbers {
   color: black;
+}
+
+.cm-gutterElement {
+  text-align: right !important;
 }
 
 .cm-activeLineGutter {
