@@ -65,15 +65,16 @@ img {
 }
 
 ::-webkit-scrollbar {
-  width: 0.75em;
-  height: 0.75em;
+  /* Code mirror gets wonky if we use em */
+  width: 12px;
+  height: 12px;
 }
 
 ::-webkit-scrollbar-track {
   border-radius: 100vw;
   background: var(--fg-color);
   border: var(--button-border);
-  margin-block: 0.8em;
+  margin-block: 16px;
 }
 
 ::-webkit-scrollbar-thumb {
@@ -181,9 +182,13 @@ img {
   border-radius: 0 0 var(--div-border-radius) var(--div-border-radius);
 }
 
+#shader {
+  height: 100%;
+}
+
 #geometry {
   display: none;
-  width: 100%;
+  padding: 20px;
 }
 
 #gfx-panel {
@@ -257,6 +262,10 @@ img {
 .cm-editor * {
   font-family: "FiraCode", monospace;
   font-size: 0.95em;
+}
+
+.cm-editor {
+  height: 100%;
 }
 
 .cm-lineNumbers {
