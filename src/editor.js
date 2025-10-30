@@ -3,6 +3,8 @@ import { basicSetup } from "codemirror";
 import { EditorView, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
+import { LRLanguage } from "@codemirror/language";
+import { parser } from "lezer-glsl";
 
 const TabType = {
   Geometry: "geometry",
@@ -59,6 +61,7 @@ class Editor {
         lintGutter(),
         keymap.of([indentWithTab]),
         EditorView.lineWrapping,
+        LRLanguage.define({ parser: parser }), // glsl syntax highlighting
       ],
     });
 
