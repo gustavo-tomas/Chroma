@@ -97,7 +97,7 @@ img {
 #theory-tab {
   display: flex;
   flex-direction: column;
-  min-width: 25%;
+  max-width: 25%;
   padding: 30px;
   margin: var(--inner-margin);
   background-color: var(--fg-color);
@@ -197,24 +197,27 @@ img {
   height: 100%;
 }
 
-/* Shader view panel (bottom) */
 #view-panel {
-  width: 100%;
+  flex: 1;
+  display: flex;
   padding: 0;
   margin: var(--inner-margin);
   border-radius: var(--div-border-radius);
   box-shadow: var(--box-shadow);
 }
 
-/* Canvas element styling - makes the canvas fit its container */
 #canvas {
+  flex: 1;
   display: block;
+  max-width: 100%;
+  max-height: 100%;
   border-radius: inherit;
 }
 
 #channels-panel {
   display: grid;
   gap: 8px;
+  max-width: fit-content;
   flex: 1;
   margin: var(--inner-margin);
 }
