@@ -130,8 +130,8 @@ img {
 /* Editor tab on the right, arranged vertically */
 #editor-tab {
   flex: 1;
-  display: flex;
-  flex-direction: column;
+  display: grid;
+  grid-template-rows: 45% 55%;
 }
 
 #editor-panel {
@@ -139,7 +139,6 @@ img {
   flex-direction: column;
   position: relative;
   overflow: auto;
-  height: 55%;
   margin: var(--inner-margin);
   background-color: var(--fg-color);
   border-radius: var(--div-border-radius);
