@@ -308,18 +308,3 @@ img {
   margin: 0;
   display: none;
 }
-
-#h-resizer {
-  width: 5px;
-  cursor: ew-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
-  align-self: stretch;
-}
-
-#v-resizer {
-  height: 5px;
-  cursor: ns-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
-}
