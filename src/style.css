@@ -64,6 +64,15 @@ img {
   color: white;
 }
 
+.button-type-3 {
+  width: 100%;
+  text-align: start;
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  /* border: none; */
+  /* background-image: linear-gradient(to right, var(--bg-color), var(--fg-color)); */
+}
+
 ::-webkit-scrollbar {
   /* Code mirror gets wonky if we use em */
   width: 12px;
@@ -148,7 +157,7 @@ img {
 #editor-buttons {
   display: flex;
   background: var(--fg-color);
-  padding: 5px 5px 5px 40px;
+  padding: 10px 10px 10px 40px;
   border-radius: var(--div-border-radius) var(--div-border-radius) 0 0;
 }
 
@@ -288,6 +297,17 @@ img {
 }
 
 .cm-selectionMatch {
+}
+
+/* Dropwdown */
+
+.dropdown {
+  display: none;
+  padding: 10px;
+}
+
+.dropdown-show {
+  display: block;
 }
 
 /* Vec components style */

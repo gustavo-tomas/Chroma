@@ -70,290 +70,302 @@
             <div id="geometry">
               <!-- @NOTE: If you change the id of these inputs, also change the names in InputGeometryTypes-->
               <div id="geometry-btn-group">
-                Input Geometry
-                <div id="plane-vec">
-                  <label
-                    ><input
-                      type="radio"
-                      id="plane"
-                      class="geometry-btn"
-                      name="geometry-input"
-                      checked
-                    />Plane</label
-                  >
-                  <div class="vec-components">
-                    <div class="vec-component">
-                      <label
-                        >X
-                        <input
-                          type="number"
-                          id="plane-input-x"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Y
-                        <input
-                          type="number"
-                          id="plane-input-y"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                  </div>
-                </div>
-                <div id="box-vec">
-                  <label
-                    ><input
-                      type="radio"
-                      id="box"
-                      class="geometry-btn"
-                      name="geometry-input"
-                    />Box</label
-                  >
-                  <div class="vec-components">
-                    <div class="vec-component">
-                      <label
-                        >X
-                        <input
-                          type="number"
-                          id="box-input-x"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Y
-                        <input
-                          type="number"
-                          id="box-input-y"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Z
-                        <input
-                          type="number"
-                          id="box-input-z"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
+                <button id="input-geometry-btn" class="button-type-3">
+                  Input Geometry
+                </button>
+                <div id="input-geometry-dropdown" class="dropdown">
+                  <div id="plane-vec">
+                    <label
+                      ><input
+                        type="radio"
+                        id="plane"
+                        class="geometry-btn"
+                        name="geometry-input"
+                        checked
+                      />Plane</label
+                    >
+                    <div class="vec-components">
+                      <div class="vec-component">
+                        <label
+                          >X
+                          <input
+                            type="number"
+                            id="plane-input-x"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Y
+                          <input
+                            type="number"
+                            id="plane-input-y"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div>
+                  <div id="box-vec">
+                    <label
+                      ><input
+                        type="radio"
+                        id="box"
+                        class="geometry-btn"
+                        name="geometry-input"
+                      />Box</label
+                    >
+                    <div class="vec-components">
+                      <div class="vec-component">
+                        <label
+                          >X
+                          <input
+                            type="number"
+                            id="box-input-x"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Y
+                          <input
+                            type="number"
+                            id="box-input-y"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Z
+                          <input
+                            type="number"
+                            id="box-input-z"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                    </div>
+                  </div>
 
-                <label>Wireframe<input type="checkbox" id="wireframe" /></label>
-                <hr />
-
-                Background Color
-                <div id="background-vec" class="vec-components">
-                  <div class="vec-component">
-                    <label
-                      >R
-                      <input
-                        type="number"
-                        id="background-input-r"
-                        value="0.5"
-                        step="0.1"
-                      />
-                    </label>
-                  </div>
-                  <div class="vec-component">
-                    <label
-                      >G
-                      <input
-                        type="number"
-                        id="background-input-g"
-                        value="0.5"
-                        step="0.1"
-                      />
-                    </label>
-                  </div>
-                  <div class="vec-component">
-                    <label
-                      >B
-                      <input
-                        type="number"
-                        id="background-input-b"
-                        value="0.5"
-                        step="0.1"
-                      />
-                    </label>
-                  </div>
+                  <label
+                    >Wireframe<input type="checkbox" id="wireframe"
+                  /></label>
                 </div>
                 <hr />
 
-                Camera
-                <div id="camera-position-vec">
-                  Position
-                  <div class="vec-components">
+                <button id="background-color-btn" class="button-type-3">
+                  Background Color
+                </button>
+                <div id="background-color-dropdown" class="dropdown">
+                  <div id="background-vec" class="vec-components">
                     <div class="vec-component">
                       <label
-                        >X
+                        >R
                         <input
                           type="number"
-                          id="camera-position-x"
-                          value="0"
+                          id="background-input-r"
+                          value="0.5"
                           step="0.1"
                         />
                       </label>
                     </div>
                     <div class="vec-component">
                       <label
-                        >Y
+                        >G
                         <input
                           type="number"
-                          id="camera-position-y"
-                          value="0"
+                          id="background-input-g"
+                          value="0.5"
                           step="0.1"
                         />
                       </label>
                     </div>
                     <div class="vec-component">
                       <label
-                        >Z
+                        >B
                         <input
                           type="number"
-                          id="camera-position-z"
-                          value="1"
+                          id="background-input-b"
+                          value="0.5"
                           step="0.1"
                         />
                       </label>
                     </div>
                   </div>
                 </div>
+                <hr />
 
-                <div id="camera-perspective-vec">
-                  <label
-                    ><input
-                      type="radio"
-                      id="perspective"
-                      class="camera-btn"
-                      name="camera-input"
-                      checked
-                    />Perspective</label
-                  >
-                  <div class="cam-components">
-                    <div class="vec-component">
-                      <label
-                        >Fov
-                        <input
-                          type="number"
-                          id="camera-perspective-fov"
-                          value="60"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Near
-                        <input
-                          type="number"
-                          id="camera-perspective-near"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Far
-                        <input
-                          type="number"
-                          id="camera-perspective-far"
-                          value="100"
-                          step="0.1"
-                        />
-                      </label>
+                <button id="camera-btn" class="button-type-3">Camera</button>
+                <div id="camera-dropdown" class="dropdown">
+                  <div id="camera-position-vec">
+                    Position
+                    <div class="vec-components">
+                      <div class="vec-component">
+                        <label
+                          >X
+                          <input
+                            type="number"
+                            id="camera-position-x"
+                            value="0"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Y
+                          <input
+                            type="number"
+                            id="camera-position-y"
+                            value="0"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Z
+                          <input
+                            type="number"
+                            id="camera-position-z"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
-                </div>
-                <div id="camera-orthographic-vec">
-                  <label
-                    ><input
-                      type="radio"
-                      id="orthographic"
-                      class="camera-btn"
-                      name="camera-input"
-                    />Orthographic</label
-                  >
-                  <div class="cam-components">
-                    <div class="vec-component">
-                      <label
-                        >Left
-                        <input
-                          type="number"
-                          id="camera-orthographic-left"
-                          value="-1"
-                          step="0.1"
-                        />
-                      </label>
+
+                  <div id="camera-perspective-vec">
+                    <label
+                      ><input
+                        type="radio"
+                        id="perspective"
+                        class="camera-btn"
+                        name="camera-input"
+                        checked
+                      />Perspective</label
+                    >
+                    <div class="cam-components">
+                      <div class="vec-component">
+                        <label
+                          >Fov
+                          <input
+                            type="number"
+                            id="camera-perspective-fov"
+                            value="60"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Near
+                          <input
+                            type="number"
+                            id="camera-perspective-near"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Far
+                          <input
+                            type="number"
+                            id="camera-perspective-far"
+                            value="100"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
                     </div>
-                    <div class="vec-component">
-                      <label
-                        >Right
-                        <input
-                          type="number"
-                          id="camera-orthographic-right"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Top
-                        <input
-                          type="number"
-                          id="camera-orthographic-top"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Bottom
-                        <input
-                          type="number"
-                          id="camera-orthographic-bottom"
-                          value="-1"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Near
-                        <input
-                          type="number"
-                          id="camera-orthographic-near"
-                          value="0"
-                          step="0.1"
-                        />
-                      </label>
-                    </div>
-                    <div class="vec-component">
-                      <label
-                        >Far
-                        <input
-                          type="number"
-                          id="camera-orthographic-far"
-                          value="1"
-                          step="0.1"
-                        />
-                      </label>
+                  </div>
+                  <div id="camera-orthographic-vec">
+                    <label
+                      ><input
+                        type="radio"
+                        id="orthographic"
+                        class="camera-btn"
+                        name="camera-input"
+                      />Orthographic</label
+                    >
+                    <div class="cam-components">
+                      <div class="vec-component">
+                        <label
+                          >Left
+                          <input
+                            type="number"
+                            id="camera-orthographic-left"
+                            value="-1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Right
+                          <input
+                            type="number"
+                            id="camera-orthographic-right"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Top
+                          <input
+                            type="number"
+                            id="camera-orthographic-top"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Bottom
+                          <input
+                            type="number"
+                            id="camera-orthographic-bottom"
+                            value="-1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Near
+                          <input
+                            type="number"
+                            id="camera-orthographic-near"
+                            value="0"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
+                      <div class="vec-component">
+                        <label
+                          >Far
+                          <input
+                            type="number"
+                            id="camera-orthographic-far"
+                            value="1"
+                            step="0.1"
+                          />
+                        </label>
+                      </div>
                     </div>
                   </div>
                 </div>

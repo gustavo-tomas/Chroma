@@ -1,5 +1,6 @@
 import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
 import { appendTexSlot } from "./components/tex_slot.js";
+import { setupDropdowns } from "./components/dropdown.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -60,6 +61,8 @@ class Graphics {
     for (let i = 0; i < 4; i++) {
       appendTexSlot("iChannel" + i);
     }
+
+    setupDropdowns();
 
     this._geometryInputButtons =
       document.getElementsByClassName("geometry-btn");
