@@ -22,7 +22,7 @@
 
 ## Tasks 2 (encorpar e desenvolver as features mais a fundo)
 
-- [ ] Fazer o design da UI (alto contraste para deficiências visuais https://webaim.org/resources/contrastchecker/)
+- [x] Fazer o design da UI (alto contraste para deficiências visuais https://webaim.org/resources/contrastchecker/)
 - [x] Checagem de erro ao compilar o código
 
 ## Extras (adicione o que quiser aqui)
