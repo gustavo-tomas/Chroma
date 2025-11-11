@@ -106,6 +106,7 @@ img {
 #theory-tab {
   display: flex;
   flex-direction: column;
+  width: 25%;
   max-width: 25%;
   padding: 30px;
   margin: var(--inner-margin);
@@ -123,6 +124,7 @@ img {
   flex-direction: column;
   overflow: auto;
   padding: 1em;
+  height: 100%;
 }
 
 #project-buttons {
