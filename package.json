@@ -12,7 +12,9 @@
     "vite": "^6.3.5"
   },
   "dependencies": {
+    "@codemirror/language": "^6.11.3",
     "codemirror": "^6.0.1",
+    "lezer-glsl": "^0.6.0",
     "showdown": "^2.1.0",
     "three": "^0.176.0"
   }

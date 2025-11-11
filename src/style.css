@@ -1,176 +1,347 @@
+:root {
+  --bg-color: #e9e9e9ff;
+  --fg-color: white;
+  --div-border-radius: 25px;
+  --button-border-radius: 100vw;
+  --button-border: 1px solid #00000099;
+  --inner-margin: 10px;
+  --box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 5px;
+}
+
+@font-face {
+  font-family: "RedHatText";
+  src: url("fonts/Red_Hat_Text/RedHatText-VariableFont_wght.ttf")
+    format("truetype");
+}
+
+@font-face {
+  font-family: "FiraCode";
+  src: url("fonts/Fira_Code/FiraCode-VariableFont_wght.ttf") format("truetype");
+}
+
 body {
   margin: 0;
   padding: 0;
+  background-color: var(--bg-color);
+  font-family: "RedHatText", monospace;
+}
+
+button {
+  width: fit-content;
+  padding: 0.5rem 1rem;
+  border: var(--button-border);
+  border-radius: var(--div-border-radius);
+  background: none;
+  cursor: pointer;
+  font-family: inherit;
+}
+
+/* Centralize and fit the container */
+img {
+  display: flex;
+  margin: auto;
+  max-width: 100%;
+}
+
+.button-type-1 {
+  transition: 0.3s;
+}
+
+.button-type-1:hover {
+  color: white;
+  background-color: black;
+}
+
+.button-type-2 {
+  border: none;
+  background-color: var(--bg-color);
+  box-shadow: var(--box-shadow);
+  transition: 0.3s;
+}
+
+.button-type-2:hover {
+  background-color: black;
+  color: white;
+}
+
+.button-type-3 {
+  width: 100%;
+  text-align: start;
+  border-radius: 5px;
+  background-color: var(--bg-color);
+  /* border: none; */
+  /* background-image: linear-gradient(to right, var(--bg-color), var(--fg-color)); */
+}
+
+::-webkit-scrollbar {
+  /* Code mirror gets wonky if we use em */
+  width: 12px;
+  height: 12px;
+}
+
+::-webkit-scrollbar-track {
+  border-radius: 100vw;
+  background: var(--fg-color);
+  border: var(--button-border);
+  margin-block: 16px;
+}
+
+::-webkit-scrollbar-thumb {
+  border-radius: 100vw;
+  background: var(--bg-color);
+  border: var(--button-border);
 }
 
 #app {
   display: flex;
+  position: fixed;
+  width: 100vw;
   height: 100vh;
-  margin: 0;
+  box-sizing: border-box;
+  overflow: hidden;
+  padding: var(--inner-margin);
 }
 
 /* Theory tab on the left */
 #theory-tab {
-  flex: none;
-  width: 300px;
-  overflow: auto;
+  display: flex;
+  flex-direction: column;
+  width: 25%;
+  max-width: 25%;
+  padding: 30px;
+  margin: var(--inner-margin);
+  background-color: var(--fg-color);
+  border-radius: var(--div-border-radius);
+  box-shadow: var(--box-shadow);
 }
 
-/* Horizontal resizer bar */
-#h-resizer {
-  width: 5px;
-  cursor: ew-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
-  align-self: stretch;
+#project-name {
+  display: none;
+}
+
+#tab-content {
+  display: flex;
+  flex-direction: column;
+  overflow: auto;
+  padding: 1em;
+  height: 100%;
+}
+
+#project-buttons {
+  display: flex;
+  justify-content: flex-end;
+  margin-top: 30px;
+  gap: 10px;
+}
+
+#project-buttons button {
+  padding: 0.25rem 0.75rem;
 }
 
 /* Editor tab on the right, arranged vertically */
 #editor-tab {
   flex: 1;
+  display: grid;
+  grid-template-rows: 45% 55%;
+}
+
+#editor-panel {
   display: flex;
   flex-direction: column;
-  overflow: hidden;
+  position: relative;
+  overflow: auto;
+  margin: var(--inner-margin);
+  background-color: var(--fg-color);
+  border-radius: var(--div-border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 #editor-buttons {
   display: flex;
-  background: #f0f0f0;
-  border-bottom: 1px solid #ccc;
+  background: var(--fg-color);
+  padding: 10px 10px 10px 40px;
+  border-radius: var(--div-border-radius) var(--div-border-radius) 0 0;
 }
 
 #editor-buttons button {
-  padding: 0.5rem 1rem;
-  border: none;
-  background: none;
-  cursor: pointer;
-  font-weight: bold;
+  border: var(--button-border);
+  border-color: transparent;
 }
 
 #editor-buttons button.active {
-  border-bottom: 2px solid #007acc;
-  color: #007acc;
+  border: var(--button-border);
+  border-radius: var(--button-border-radius);
 }
 
-#update-shader-btn {
-  padding: 0.5rem 1rem;
-  background: #007acc;
-  color: #fff;
-}
-
-#update-shader-btn:hover {
-  background: #005fa3;
+#shader-controls {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  height: fit-content;
+  position: absolute;
+  margin: 20px 40px;
+  bottom: 0;
+  right: 0;
+  z-index: 1;
 }
 
 /* Code editor panel (top) */
 #code-panel {
-  flex: none;
-  height: 200px;
   overflow: auto;
+  height: 100%;
+  border-radius: 0 0 var(--div-border-radius) var(--div-border-radius);
+}
+
+#shader {
+  height: 100%;
 }
 
 #geometry {
   display: none;
+  padding: 20px;
 }
 
-/* Horizontal resizer bar */
-#v-resizer {
-  height: 5px;
-  cursor: ns-resize;
-  background: rgba(0, 0, 0, 0.1);
-  user-select: none;
+#gfx-panel {
+  display: flex;
+  flex-direction: row;
+  height: 100%;
 }
 
-/* Shader view panel (bottom) */
 #view-panel {
   flex: 1;
-  overflow: hidden;
-  position: relative;
+  display: flex;
+  padding: 0;
+  margin: var(--inner-margin);
+  border-radius: var(--div-border-radius);
+  box-shadow: var(--box-shadow);
 }
 
-/* Canvas element styling - makes the canvas fit its container */
 #canvas {
+  flex: 1;
   display: block;
-  width: 100%;
-  height: 100%;
-  position: absolute;
-}
-
-/* Makes editable fields easier to see */
-div[contenteditable="true"] {
-  background-color: aliceblue;
+  max-width: 100%;
+  max-height: 100%;
+  border-radius: inherit;
 }
 
 #channels-panel {
-  display: flex;
-  gap: 12px;
-  align-items: flex-start;
-  padding: 8px;
-  border-top: 1px solid #ddd;
-  background: #fff;
-}
-
-.channels-lib {
-  display: flex;
-  flex-direction: column;
-  gap: 8px;
-}
-
-.channels-grid {
   display: grid;
-  grid-template-columns: repeat(2, minmax(240px, 1fr));
   gap: 8px;
+  max-width: fit-content;
   flex: 1;
-}
-
-.tex-preview {
-  width: 112px;
-  height: 112px;
-  border: 1px dashed #999;
-  background: rgba(255, 255, 255, 0.6);
-  object-fit: cover;
-  cursor: grab;
+  margin: var(--inner-margin);
 }
 
 .tex-actions {
   display: flex;
-  gap: 6px;
+  gap: 5px;
+  margin: 10px 15px 10px auto;
 }
 
 .tex-btn {
-  font: 12px system-ui;
-  padding: 4px 6px;
-  border: 1px solid #ccc;
-  background: #fff;
-  cursor: pointer;
+  padding: 0.25rem 0.5rem;
 }
 
 .tex-slot {
   display: flex;
-  align-items: center;
-  gap: 8px;
-  padding: 6px;
-  border: 1px solid #ccc;
-  background: rgba(255, 255, 255, 0.85);
-}
-
-.tex-thumb {
-  width: 56px;
-  height: 56px;
-  object-fit: cover;
-  background: #eee;
-  border: 1px solid #bbb;
+  align-items: flex-end;
+  background-size: cover;
+  background-image: none;
+  background-position: center;
+  background-repeat: no-repeat;
+  background-color: var(--fg-color);
+  border-radius: var(--div-border-radius);
+  box-shadow: var(--box-shadow);
 }
 
 .tex-label {
-  font: 12px system-ui;
-  min-width: 84px;
-}
-
-.tex-slot .tex-actions {
-  margin-left: auto;
+  align-self: flex-start;
+  padding: 0.25rem 1.25rem;
+  background-color: var(--fg-color);
+  border: inherit;
+  border-top: 0;
+  border-radius: inherit;
+  border-top-right-radius: 0;
+  border-bottom-left-radius: 0;
+  box-shadow: var(--box-shadow);
 }
 
 .tex-slot.dragover {
   outline: 2px dashed #007acc;
+}
+
+/* Codemirror style */
+
+.cm-editor * {
+  font-family: "FiraCode", monospace;
+  font-size: 0.95em;
+}
+
+.cm-editor {
+  height: 100%;
+}
+
+.cm-gutters {
+}
+
+.cm-gutter.cm-lineNumbers {
+  color: black;
+}
+
+.cm-gutterElement {
+  text-align: right !important;
+}
+
+.cm-activeLineGutter {
+}
+
+.cm-activeLine {
+}
+
+.cm-selectionMatch {
+}
+
+/* Dropwdown */
+
+.dropdown {
+  display: none;
+  padding: 10px;
+}
+
+.dropdown-show {
+  display: flex;
+  flex-direction: column;
+  gap: 20px;
+}
+
+/* Vec components style */
+
+.vec-components {
+  display: flex;
+  gap: 8px;
+}
+
+.cam-components {
+  display: flex;
+  flex-direction: column;
+  width: fit-content;
+  gap: 4px;
+}
+
+.vec-component label {
+  display: flex;
+  gap: 5px;
+}
+
+.vec-component input {
+  max-width: 50px;
+  margin-left: auto;
+  border-radius: 3px;
+  border: 1px solid black;
+}
+
+.vec-component input::-webkit-inner-spin-button,
+.vec-component input::-webkit-inner-spin-button {
+  margin: 0;
+  display: none;
 }

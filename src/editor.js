@@ -3,6 +3,8 @@ import { basicSetup } from "codemirror";
 import { EditorView, keymap } from "@codemirror/view";
 import { indentWithTab } from "@codemirror/commands";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
+import { LRLanguage } from "@codemirror/language";
+import { parser } from "lezer-glsl";
 
 const TabType = {
   Geometry: "geometry",
@@ -54,7 +56,13 @@ class Editor {
     this._view = new EditorView({
       doc: this._vertexCode,
       parent: this._shaderDisplay,
-      extensions: [basicSetup, lintGutter(), keymap.of([indentWithTab])],
+      extensions: [
+        basicSetup,
+        lintGutter(),
+        keymap.of([indentWithTab]),
+        EditorView.lineWrapping,
+        LRLanguage.define({ parser: parser }), // glsl syntax highlighting
+      ],
     });
 
     // attach click handlers to switch tabs
@@ -186,9 +194,11 @@ class Editor {
   _toggleGeometryTab(visible) {
     if (visible) {
       this._shaderDisplay.style.visibility = "hidden";
+      this._shaderDisplay.style.display = "none";
       this._geometryDisplay.style.display = "block";
     } else {
       this._shaderDisplay.style.visibility = "visible";
+      this._shaderDisplay.style.display = "block";
       this._geometryDisplay.style.display = "none";
     }
   }

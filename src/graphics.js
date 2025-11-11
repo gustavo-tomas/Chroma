@@ -1,4 +1,6 @@
 import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
+import { appendTexSlot } from "./components/tex_slot.js";
+import { setupDropdowns } from "./components/dropdown.js";
 import * as THREE from "three";
 
 class ShaderCompileLog {
@@ -55,6 +57,12 @@ class Graphics {
     const canvas = document.getElementById("canvas");
     this._wireframeInputButton = document.getElementById("wireframe");
     this._viewPanel = document.getElementById("view-panel");
+
+    for (let i = 0; i < 4; i++) {
+      appendTexSlot("iChannel" + i);
+    }
+
+    setupDropdowns();
 
     this._geometryInputButtons =
       document.getElementsByClassName("geometry-btn");
@@ -436,6 +444,12 @@ class Graphics {
 
   setCameraType(cameraType) {
     this._selectCamera(cameraType);
+
+    this.setCameraValues(
+      cameraType === CameraTypes.Perspective
+        ? this.getPerspectiveCameraValues()
+        : this.getOrthographicCameraValues()
+    );
   }
 
   setCameraValues(values) {
@@ -859,15 +873,17 @@ export function initTexturePanelStatic(material) {
 
   document.querySelectorAll("#channels-panel .tex-slot").forEach((slot) => {
     const name = slot.dataset.channel;
-    const thumb = slot.querySelector(".tex-thumb");
     const load = slot.querySelector(".tex-load");
     const clear = slot.querySelector(".tex-clear");
     const input = slot.querySelector('input[type="file"]');
 
     function apply(tex, url) {
       setUniform(name, tex);
-      if (url) thumb.src = url;
+      if (url) {
+        slot.style.backgroundImage = "url(" + url + ")";
+      }
     }
+
     function loadFile(file) {
       fileToTex(file, apply);
     }
@@ -899,7 +915,7 @@ export function initTexturePanelStatic(material) {
           material.userData.shader.uniforms.u_userTexture.value = null;
         }
       }
-      thumb.removeAttribute("src");
+      slot.style.backgroundImage = "none";
       material.needsUpdate = true;
     };
 
