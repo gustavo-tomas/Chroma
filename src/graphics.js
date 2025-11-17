@@ -276,7 +276,30 @@ class Graphics {
         : params.orthographicCamera
     );
 
-    initTexturePanelStatic(this._material);
+    this._iChannelMeta = {}; // i0..i3 -> {src, mimeType, name}
+
+    initTexturePanelStatic(this._material, (channel, meta) => {
+      const ch = (channel || "").toLowerCase();
+      const key =
+        ch === "ichannel0"
+          ? "i0"
+          : ch === "ichannel1"
+          ? "i1"
+          : ch === "ichannel2"
+          ? "i2"
+          : ch === "ichannel3"
+          ? "i3"
+          : null;
+
+      if (!key) return;
+      this._iChannelMeta[key] = meta
+        ? {
+            src: meta.src || null,
+            name: meta.name || key,
+            mimeType: meta.mimeType || undefined,
+          }
+        : null;
+    });
   }
 
   onShaderCodeUpdate(vertexShader, fragmentShader) {
@@ -305,12 +328,10 @@ class Graphics {
     this._material.uniforms = {};
 
     for (const [name, description] of Object.entries(uniforms)) {
-      let uniform = {
+      this._material.uniforms[name] = {
         type: description.type,
         value: description.value,
       };
-
-      this._material.uniforms[name] = uniform;
     }
 
     this._material.needsUpdate = true;
@@ -361,7 +382,6 @@ class Graphics {
     switch (geometryType) {
       case InputGeometryTypes.Plane:
         return [parseFloat(this._planeX.value), parseFloat(this._planeY.value)];
-        break;
 
       case InputGeometryTypes.Box:
         return [
@@ -369,7 +389,6 @@ class Graphics {
           parseFloat(this._boxY.value),
           parseFloat(this._boxZ.value),
         ];
-        break;
     }
 
     console.error("Invalid geometry type: ", geometryType);
@@ -749,6 +768,137 @@ class Graphics {
     this._material.uniforms = shader.uniforms;
   }
 
+  getTextureSlotsMeta() {
+    const out = {};
+    ["i0", "i1", "i2", "i3"].forEach((ch) => {
+      out[ch] = this._iChannelMeta[ch] ? { ...this._iChannelMeta[ch] } : null;
+    });
+    return out;
+  }
+
+  restoreTextureFromObjectUrl(ch, url, mime, pathHint) {
+    const name =
+      ch === "i0"
+        ? "iChannel0"
+        : ch === "i1"
+        ? "iChannel1"
+        : ch === "i2"
+        ? "iChannel2"
+        : ch === "i3"
+        ? "iChannel3"
+        : null;
+    if (!name || !url) return;
+
+    const img = new Image();
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      tex.wrapS = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+
+      this._material.uniforms = this._material.uniforms || {};
+      if (!this._material.uniforms[name])
+        this._material.uniforms[name] = {
+          type: "sampler2D",
+          value: null,
+          preset: true,
+        };
+      this._material.uniforms[name].value = tex;
+
+      if (name === "iChannel0") {
+        if (!this._material.uniforms.u_userTexture)
+          this._material.uniforms.u_userTexture = {
+            type: "sampler2D",
+            value: null,
+            preset: true,
+          };
+        this._material.uniforms.u_userTexture.value = tex;
+      }
+
+      if (this._material.userData && this._material.userData.shader) {
+        const su = this._material.userData.shader.uniforms || {};
+        if (su[name]) su[name].value = tex;
+        if (name === "iChannel0" && su.u_userTexture)
+          su.u_userTexture.value = tex;
+      }
+
+      const slot = document.querySelector(
+        `#channels-panel .tex-slot[data-channel="${name}"]`
+      );
+      if (slot) slot.style.backgroundImage = "url(" + url + ")";
+
+      this._material.needsUpdate = true;
+
+      this._iChannelMeta = this._iChannelMeta || {};
+      const key =
+        name === "iChannel0"
+          ? "i0"
+          : name === "iChannel1"
+          ? "i1"
+          : name === "iChannel2"
+          ? "i2"
+          : "i3";
+      this._iChannelMeta[key] = {
+        src: url,
+        name: pathHint || key,
+        mimeType: mime,
+      };
+    };
+    img.src = url;
+  }
+
+  clearTextureChannel(ch) {
+    const name =
+      ch === "i0"
+        ? "iChannel0"
+        : ch === "i1"
+        ? "iChannel1"
+        : ch === "i2"
+        ? "iChannel2"
+        : ch === "i3"
+        ? "iChannel3"
+        : null;
+    if (!name) return;
+
+    // materials uniforms
+    if (this._material.uniforms && this._material.uniforms[name]) {
+      this._material.uniforms[name].value = null;
+    }
+    if (this._material.userData && this._material.userData.shader) {
+      const su = this._material.userData.shader.uniforms || {};
+      if (su[name]) su[name].value = null;
+    }
+    if (name === "iChannel0") {
+      if (this._material.uniforms && this._material.uniforms.u_userTexture) {
+        this._material.uniforms.u_userTexture.value = null;
+      }
+      if (this._material.userData && this._material.userData.shader) {
+        const su = this._material.userData.shader.uniforms || {};
+        if (su.u_userTexture) su.u_userTexture.value = null;
+      }
+    }
+
+    const slot = document.querySelector(
+      `#channels-panel .tex-slot[data-channel="${name}"]`
+    );
+    if (slot) slot.style.backgroundImage = "none";
+
+    // clears meta
+    const key =
+      name === "iChannel0"
+        ? "i0"
+        : name === "iChannel1"
+        ? "i1"
+        : name === "iChannel2"
+        ? "i2"
+        : "i3";
+    this._iChannelMeta[key] = null;
+
+    this._material.needsUpdate = true;
+  }
+
   _onMouseMove(event) {
     const canvas = document.getElementById("canvas");
     const boundingRect = canvas.getBoundingClientRect();
@@ -824,11 +974,12 @@ class Graphics {
   _onShaderCompileCallback;
   _mousePositionNormalized; // [-1.0, 1.0]
   _screenResolution;
+  _iChannelMeta;
 }
 
 export { Graphics, GraphicsConstructorParams, ShaderCompileLog };
 
-export function initTexturePanelStatic(material) {
+export function initTexturePanelStatic(material, onMetaUpdate) {
   function fileToTex(file, cb) {
     const url = URL.createObjectURL(file);
     const img = new Image();
@@ -839,7 +990,7 @@ export function initTexturePanelStatic(material) {
       tex.wrapT = THREE.ClampToEdgeWrapping;
       tex.minFilter = THREE.LinearFilter;
       tex.magFilter = THREE.LinearFilter;
-      cb(tex, url);
+      cb(tex, url, file);
     };
     img.src = url;
   }
@@ -872,15 +1023,20 @@ export function initTexturePanelStatic(material) {
   }
 
   document.querySelectorAll("#channels-panel .tex-slot").forEach((slot) => {
-    const name = slot.dataset.channel;
+    const name = slot.dataset.channel; // iChannel0..3
     const load = slot.querySelector(".tex-load");
     const clear = slot.querySelector(".tex-clear");
     const input = slot.querySelector('input[type="file"]');
 
-    function apply(tex, url) {
+    function apply(tex, url, file) {
       setUniform(name, tex);
-      if (url) {
-        slot.style.backgroundImage = "url(" + url + ")";
+      if (url) slot.style.backgroundImage = "url(" + url + ")";
+      if (typeof onMetaUpdate === "function") {
+        onMetaUpdate(name, {
+          src: url,
+          mimeType: (file && file.type) || undefined,
+          name: file && file.name ? file.name : name,
+        });
       }
     }
 
@@ -917,6 +1073,10 @@ export function initTexturePanelStatic(material) {
       }
       slot.style.backgroundImage = "none";
       material.needsUpdate = true;
+
+      if (typeof onMetaUpdate === "function") {
+        onMetaUpdate(name, null);
+      }
     };
 
     slot.ondragover = (e) => {

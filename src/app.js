@@ -121,6 +121,23 @@ class App {
     this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
   }
 
+  // normalize the HTML before converting to markdown (replace blob: with image:<id>)
+  _preprocessHtmlBeforeSave(html) {
+    const div = document.createElement("div");
+    div.innerHTML = html;
+
+    const imgs = div.querySelectorAll("img[src]");
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.startsWith("blob:")) {
+        const id = this._project.getIdByObjectUrl(src);
+        if (id) img.setAttribute("src", `image:${id}`);
+      }
+    });
+
+    return div.innerHTML;
+  }
+
   // Create a json, retrieve section information and code from the editor
   _onProjectSave() {
     const projectData = this._project.get();
@@ -139,7 +156,26 @@ class App {
         ? this._graphics.getPerspectiveCameraValues()
         : this._graphics.getOrthographicCameraValues();
 
-    projectData.ProjectName = this._convertToMarkdown(projectName.innerHTML);
+    // normalize images in the HTML before conversion
+    const nameHtml = this._preprocessHtmlBeforeSave(projectName.innerHTML);
+    const titleHtml = this._preprocessHtmlBeforeSave(tabTitle.innerHTML);
+    const contentHtml = this._preprocessHtmlBeforeSave(tabContent.innerHTML);
+
+    // convert to markdown and remove any "<...>" that may have been inserted
+    const nameMd = this._convertToMarkdown(nameHtml).replace(
+      /\]\(<([^>]+)>\)/g,
+      "]($1)"
+    );
+    const titleMd = this._convertToMarkdown(titleHtml).replace(
+      /\]\(<([^>]+)>\)/g,
+      "]($1)"
+    );
+    const contentMd = this._convertToMarkdown(contentHtml).replace(
+      /\]\(<([^>]+)>\)/g,
+      "]($1)"
+    );
+
+    projectData.ProjectName = nameMd;
     projectData.Shaders = {};
     projectData.Shaders.InputGeometry = {};
     projectData.Shaders.InputGeometry.type = geometryType;
@@ -153,9 +189,14 @@ class App {
     projectData.Shaders.Vertex = this._editor._vertexCode;
     projectData.Shaders.Fragment = this._editor._fragmentCode;
     projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
+
+    projectData.Shaders.Textures = this._graphics.getTextureSlotsMeta
+      ? this._graphics.getTextureSlotsMeta()
+      : undefined;
+
     projectData.Section = {};
-    projectData.Section.Title = this._convertToMarkdown(tabTitle.innerHTML);
-    projectData.Section.Content = this._convertToMarkdown(tabContent.innerHTML);
+    projectData.Section.Title = titleMd;
+    projectData.Section.Content = contentMd;
 
     this._project.save();
   }
@@ -230,10 +271,48 @@ class App {
     this._graphics.setInputGeometryValues(json.Shaders.InputGeometry.values);
     this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
     this._graphics.onUniformUpdate(uniforms);
+
+    // restore iChannels from .chroma
+    const channels = ["i0", "i1", "i2", "i3"];
+    const texMeta = (json.Shaders && json.Shaders.Textures) || null;
+
+    if (texMeta) {
+      const restored = new Set();
+      for (const [ch, meta] of Object.entries(texMeta)) {
+        if (!meta) continue;
+        const pack = this._project.getTextureForChannel(ch);
+        if (pack && pack.url) {
+          this._graphics.restoreTextureFromObjectUrl(
+            ch,
+            pack.url,
+            pack.mime,
+            meta.path
+          );
+          restored.add(ch);
+        }
+      }
+      channels.forEach((ch) => {
+        if (!texMeta[ch]) this._graphics.clearTextureChannel(ch);
+      });
+    } else {
+      channels.forEach((ch) => this._graphics.clearTextureChannel(ch));
+    }
   }
 
   _convertToHtml(markdownText) {
-    return this._markdownConverter.makeHtml(markdownText);
+    const html = this._markdownConverter.makeHtml(markdownText);
+    const div = document.createElement("div");
+    div.innerHTML = html;
+    const imgs = div.querySelectorAll("img");
+    imgs.forEach((img) => {
+      const src = img.getAttribute("src") || "";
+      if (src.startsWith("image:")) {
+        const id = src.slice(6);
+        const url = this._project.getImageUrl(id);
+        if (url) img.setAttribute("src", url);
+      }
+    });
+    return div.innerHTML;
   }
 
   _convertToMarkdown(htmlText) {
