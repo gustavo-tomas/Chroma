@@ -1,6 +1,0 @@
-Browser
-Node (npm) - aplicação
-Vanilla Javascript (JS + Html + CSS) - estilo, ui e funcionamento
-ThreeJS - gráficos e compilação de shaders
-JSON - arquivo do projeto
-CodeMirror  - editor integrado
