@@ -689,7 +689,7 @@ class Graphics {
       const infos = glShaderLog
         .split("\n")
         .map((l) => l.trim())
-        .filter((l) => l != "\x00"); // junk
+        .filter((l) => l != "\x00" && l.length > 0); // junk
 
       infos.forEach((info) => {
         const m = info.match(/ERROR:\s*\d+:(\d+):\s*'(.*?)'/);
