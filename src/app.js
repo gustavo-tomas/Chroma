@@ -198,7 +198,8 @@ class App {
     projectData.Section.Title = titleMd;
     projectData.Section.Content = contentMd;
 
-    this._project.save();
+    const name = prompt("Save as", "ChromaProject") || "ChromaProject";
+    this._project.save(name);
   }
 
   // @TODO: this can also be drag n drop

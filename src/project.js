@@ -67,8 +67,8 @@ class Project {
     });
   }
 
-  save() {
-    this._saveAsChroma();
+  save(name) {
+    this._saveAsChroma(name);
   }
 
   get() {
@@ -130,7 +130,7 @@ class Project {
     }
   }
 
-  async _saveAsChroma() {
+  async _saveAsChroma(name) {
     const zip = new JSZip();
 
     const project = JSON.parse(JSON.stringify(this._project));
@@ -212,7 +212,12 @@ class Project {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    a.download = (project.ProjectName || "project") + ".chroma";
+    const base =
+      (name && String(name).trim()) || project.ProjectName || "ChromaProject";
+    const safe =
+      base.replace(/[\\/:*?"<>|]+/g, "_").replace(/\.+$/, "") ||
+      "ChromaProject";
+    a.download = safe.endsWith(".chroma") ? safe : safe + ".chroma";
     a.click();
     URL.revokeObjectURL(url);
   }
