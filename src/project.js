@@ -9,7 +9,7 @@ class Project {
 
   async loadDefault() {
     try {
-      await fetch("./projects/brute.json", { cache: "no-cache" })
+      await fetch("./projects/HelloWorld.json", { cache: "no-cache" })
         .then((response) => response.json())
         .then((json) => (this._project = json));
       this._images.clear();

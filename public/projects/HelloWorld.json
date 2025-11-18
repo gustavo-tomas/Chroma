@@ -1,5 +1,5 @@
 {
-  "ProjectName": "Brute",
+  "ProjectName": "HelloWorld",
   "Shaders": {
     "InputGeometry": {
       "type": "box",
@@ -43,6 +43,6 @@
   },
   "Section": {
     "Title": "# Welcome",
-    "Content": "## Welcome to Brute!\n\n### Lists\n\n- One\n- Two\n- Three\n\n### Images\n\nFull Image: ![UnB Logo](</projects/unb_logo.webp>)\n\n[Just the link](</projects/unb_logo.webp>)"
+    "Content": "## Welcome to Chroma!\n\n### Lists\n\n- One\n- Two\n- Three\n\n### Images\n\nFull Image: ![UnB Logo](</projects/unb_logo.webp>)\n\n[Just the link](</projects/unb_logo.webp>)"
   }
 }

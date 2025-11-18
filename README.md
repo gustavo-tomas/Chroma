@@ -1,4 +1,4 @@
-# Brute
+# Chroma
 
 ## Tasks 0 (definir requisitos)
 
