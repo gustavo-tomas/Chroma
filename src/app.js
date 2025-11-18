@@ -207,6 +207,39 @@ class App {
     this._setProject(this._project.get());
   }
 
+  _insertTextAtCursor(editableEl, text) {
+    editableEl.focus();
+    const sel = window.getSelection && window.getSelection();
+    if (sel && sel.rangeCount > 0) {
+      const range = sel.getRangeAt(0);
+      if (!editableEl.contains(range.commonAncestorContainer)) {
+        const r = document.createRange();
+        r.selectNodeContents(editableEl);
+        r.collapse(false);
+        sel.removeAllRanges();
+        sel.addRange(r);
+      }
+    } else {
+      const r = document.createRange();
+      r.selectNodeContents(editableEl);
+      r.collapse(false);
+      const s = window.getSelection();
+      s.removeAllRanges();
+      s.addRange(r);
+    }
+    const ok =
+      document.execCommand && document.execCommand("insertText", false, text);
+    if (!ok) {
+      const s = window.getSelection && window.getSelection();
+      if (s && s.rangeCount > 0) {
+        s.deleteFromDocument();
+        s.getRangeAt(0).insertNode(document.createTextNode(text));
+      } else {
+        editableEl.innerText = (editableEl.innerText || "") + text;
+      }
+    }
+  }
+
   // Make fields available for editing
   _onProjectEdit() {
     const projectName = document.getElementById("project-name");
@@ -226,6 +259,38 @@ class App {
       tabTitle.innerText = this._convertToMarkdown(tabTitle.innerHTML);
       tabContent.innerText = this._convertToMarkdown(tabContent.innerHTML);
 
+      let addImgBtn = document.getElementById("add-image-button");
+      let addImgInput = document.getElementById("add-image-input");
+
+      if (!addImgBtn) {
+        addImgBtn = document.createElement("button");
+        addImgBtn.id = "add-image-button";
+        addImgBtn.className = "button-type-1";
+        addImgBtn.textContent = "Add image";
+        const wrap = document.getElementById("project-buttons");
+        wrap && wrap.appendChild(addImgBtn);
+      }
+      if (!addImgInput) {
+        addImgInput = document.createElement("input");
+        addImgInput.type = "file";
+        addImgInput.id = "add-image-input";
+        addImgInput.accept = "image/*";
+        addImgInput.style.display = "none";
+        document.body.appendChild(addImgInput);
+      }
+
+      addImgBtn.onclick = () => addImgInput.click();
+
+      addImgInput.onchange = async (e) => {
+        const f = e.target.files && e.target.files[0];
+        if (!f) return;
+        const alt = prompt("Image alt/label:", f.name) || f.name;
+        const info = await this._project.addImageFromFile(f, alt);
+        const snippet = `\n\n${info.markdown}\n`;
+        this._insertTextAtCursor(tabContent, snippet);
+        e.target.value = "";
+      };
+
       this._editMode = true;
     }
 
@@ -240,6 +305,13 @@ class App {
       projectName.innerHTML = this._convertToHtml(projectName.innerText);
       tabTitle.innerHTML = this._convertToHtml(tabTitle.innerText);
       tabContent.innerHTML = this._convertToHtml(tabContent.innerText);
+
+      const addImgBtn = document.getElementById("add-image-button");
+      if (addImgBtn && addImgBtn.parentNode)
+        addImgBtn.parentNode.removeChild(addImgBtn);
+      const addImgInput = document.getElementById("add-image-input");
+      if (addImgInput && addImgInput.parentNode)
+        addImgInput.parentNode.removeChild(addImgInput);
 
       this._editMode = false;
     }

@@ -3,8 +3,21 @@ import JSZip from "jszip";
 class Project {
   constructor() {
     this._project = new Object();
-    this._images = new Map(); // id -> { objectUrl, blob, mime }
-    this._textures = {}; // ch -> { url, mime, path, blob } | null
+    this._images = new Map();
+    this._textures = {};
+  }
+
+  async addImageFromFile(file, alt) {
+    const id = this._uuid4();
+    const blob = file;
+    const mime = file.type || this._guessMimeFromName(file.name);
+    const objectUrl = URL.createObjectURL(blob);
+    this._images.set(id, { objectUrl, blob, mime });
+    return {
+      id,
+      objectUrl,
+      markdown: `![${alt || file.name || "image"}](${`image:${id}`})`,
+    };
   }
 
   async loadDefault() {
