@@ -3,12 +3,22 @@ import { ShaderType, CameraTypes } from "./common.js";
 import { Graphics, GraphicsConstructorParams } from "./graphics.js";
 import { Editor, EditorConstructorParams } from "./editor.js";
 import { Project } from "./project.js";
-import Showdown from "showdown";
+import { marked } from "marked";
+import TurndownService from "turndown";
+import * as TPG from "turndown-plugin-gfm";
 
 class App {
   async init() {
-    this._markdownConverter = new Showdown.Converter();
-    this._markdownConverter.setOption("openLinksInNewWindow", true);
+    this._turndownService = new TurndownService({
+      headingStyle: "atx",
+      codeBlockStyle: "fenced",
+      hr: "---",
+    });
+
+    this._turndownService.use(TPG.gfm);
+
+    marked.setOptions({ async: false, gfm: true });
+
     this._project = new Project();
 
     await this._project.loadDefault();
@@ -161,19 +171,10 @@ class App {
     const titleHtml = this._preprocessHtmlBeforeSave(tabTitle.innerHTML);
     const contentHtml = this._preprocessHtmlBeforeSave(tabContent.innerHTML);
 
-    // convert to markdown and remove any "<...>" that may have been inserted
-    const nameMd = this._convertToMarkdown(nameHtml).replace(
-      /\]\(<([^>]+)>\)/g,
-      "]($1)"
-    );
-    const titleMd = this._convertToMarkdown(titleHtml).replace(
-      /\]\(<([^>]+)>\)/g,
-      "]($1)"
-    );
-    const contentMd = this._convertToMarkdown(contentHtml).replace(
-      /\]\(<([^>]+)>\)/g,
-      "]($1)"
-    );
+    // convert to markdown
+    const nameMd = this._convertToMarkdown(nameHtml);
+    const titleMd = this._convertToMarkdown(titleHtml);
+    const contentMd = this._convertToMarkdown(contentHtml);
 
     projectData.ProjectName = nameMd;
     projectData.Shaders = {};
@@ -236,7 +237,7 @@ class App {
         s.deleteFromDocument();
         s.getRangeAt(0).insertNode(document.createTextNode(text));
       } else {
-        editableEl.innerText = (editableEl.innerText || "") + text;
+        editableEl.textContent = (editableEl.textContent || "") + text;
       }
     }
   }
@@ -256,9 +257,13 @@ class App {
       tabTitle.contentEditable = true;
       tabContent.contentEditable = true;
 
-      projectName.innerText = this._convertToMarkdown(projectName.innerHTML);
-      tabTitle.innerText = this._convertToMarkdown(tabTitle.innerHTML);
-      tabContent.innerText = this._convertToMarkdown(tabContent.innerHTML);
+      projectName.classList.add("tab-content-edit-mode");
+      tabTitle.classList.add("tab-content-edit-mode");
+      tabContent.classList.add("tab-content-edit-mode");
+
+      projectName.textContent = this._convertToMarkdown(projectName.innerHTML);
+      tabTitle.textContent = this._convertToMarkdown(tabTitle.innerHTML);
+      tabContent.textContent = this._convertToMarkdown(tabContent.innerHTML);
 
       let addImgBtn = document.getElementById("add-image-button");
       let addImgInput = document.getElementById("add-image-input");
@@ -303,9 +308,13 @@ class App {
       tabTitle.contentEditable = false;
       tabContent.contentEditable = false;
 
-      projectName.innerHTML = this._convertToHtml(projectName.innerText);
-      tabTitle.innerHTML = this._convertToHtml(tabTitle.innerText);
-      tabContent.innerHTML = this._convertToHtml(tabContent.innerText);
+      projectName.classList.remove("tab-content-edit-mode");
+      tabTitle.classList.remove("tab-content-edit-mode");
+      tabContent.classList.remove("tab-content-edit-mode");
+
+      projectName.innerHTML = this._convertToHtml(projectName.textContent);
+      tabTitle.innerHTML = this._convertToHtml(tabTitle.textContent);
+      tabContent.innerHTML = this._convertToHtml(tabContent.textContent);
 
       const addImgBtn = document.getElementById("add-image-button");
       if (addImgBtn && addImgBtn.parentNode)
@@ -373,9 +382,10 @@ class App {
   }
 
   _convertToHtml(markdownText) {
-    const html = this._markdownConverter.makeHtml(markdownText);
+    const html = marked.parse(markdownText);
     const div = document.createElement("div");
     div.innerHTML = html;
+
     const imgs = div.querySelectorAll("img");
     imgs.forEach((img) => {
       const src = img.getAttribute("src") || "";
@@ -385,20 +395,16 @@ class App {
         if (url) img.setAttribute("src", url);
       }
     });
+
     return div.innerHTML;
   }
 
   _convertToMarkdown(htmlText) {
-    // @NOTE: Showdown adds some comments at the bottom, so we need to remove them
-
-    return this._markdownConverter
-      .makeMarkdown(htmlText)
-      .replace(/<!-- -->/g, "")
-      .trim();
+    return this._turndownService.turndown(htmlText);
   }
 
   _editMode = false;
-  _markdownConverter;
+  _turndownService;
   _project;
   _graphics;
   _editor;

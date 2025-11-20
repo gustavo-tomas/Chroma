@@ -127,6 +127,121 @@ img {
   height: 100%;
 }
 
+#tab-content h1 {
+  margin: 0.67em 0;
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  font-size: 2em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+#tab-content h2 {
+  font-weight: 600;
+  padding-bottom: 0.3em;
+  font-size: 1.5em;
+  border-bottom: 1px solid #d1d9e0b3;
+}
+
+#tab-content h3 {
+  font-weight: 600;
+  font-size: 1.25em;
+}
+
+#tab-content h4 {
+  font-weight: 600;
+  font-size: 1em;
+}
+
+#tab-content h5 {
+  font-weight: 600;
+  font-size: 0.875em;
+}
+
+#tab-content h6 {
+  font-weight: 600;
+  font-size: 0.85em;
+  color: #59636e;
+}
+
+#tab-content blockquote {
+  margin: 0;
+  padding: 0 1em;
+  color: #59636e;
+  border-left: 0.25em solid #d1d9e0;
+  display: block;
+  margin-block-start: 1em;
+  margin-block-end: 1em;
+}
+
+#tab-content pre {
+  padding: 1rem;
+  font-size: 85%;
+  line-height: 1.45;
+  color: #1f2328;
+  background-color: #f6f8fa;
+  border-radius: 6px;
+}
+
+#tab-content pre code {
+  text-wrap: wrap;
+  background: transparent;
+  padding: 0;
+  margin: 0;
+  overflow: visible;
+}
+
+#tab-content hr {
+  border-bottom: 1px solid #d1d9e0b3;
+  color: #d1d9e0b3;
+  width: 100%;
+  height: 0.25em;
+  padding: 0;
+  margin: 0;
+  background-color: #d1d9e0;
+  box-sizing: border-box;
+}
+
+/* @TODO: finish */
+#tab-content table {
+  border-spacing: 0;
+  border-collapse: collapse;
+  display: block;
+  width: max-content;
+  max-width: 100%;
+  border-color: gray;
+}
+
+#tab-content thead {
+  display: table-header-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+#tab-content table th {
+  font-weight: 600;
+}
+
+#tab-content table tr {
+  background-color: #fff;
+  border-top: 1px solid #d1d9e0b3;
+}
+
+#tab-content table th,
+#tab-content table td {
+  padding: 6px 13px;
+  border: 1px solid #d1d9e0;
+}
+
+#tab-content tbody {
+  display: table-row-group;
+  vertical-align: middle;
+  border-color: inherit;
+}
+
+.tab-content-edit-mode {
+  white-space: pre-wrap; /* preserve identation and white spaces */
+}
+
 #project-buttons {
   display: flex;
   justify-content: flex-end;
