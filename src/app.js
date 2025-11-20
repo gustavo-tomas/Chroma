@@ -108,13 +108,19 @@ class App {
     // Save project shortcut
     else if (ctrlPressed && e.code === "KeyS") {
       e.preventDefault();
-      this._onProjectSave();
+
+      if (!this._editMode) {
+        this._onProjectSave();
+      }
     }
 
     // Load project shortcut
     else if (ctrlPressed && e.code === "KeyO") {
       e.preventDefault();
-      this._onProjectLoad();
+
+      if (!this._editMode) {
+        this._onProjectLoad();
+      }
     }
 
     // Edit project shortcut
@@ -199,8 +205,11 @@ class App {
     projectData.Section.Title = titleMd;
     projectData.Section.Content = contentMd;
 
-    const name = prompt("Save as", "ChromaProject") || "ChromaProject";
-    this._project.save(name);
+    const name = prompt("Save as", "ChromaProject") || null;
+
+    if (name !== null) {
+      this._project.save(name);
+    }
   }
 
   // @TODO: this can also be drag n drop
@@ -248,6 +257,8 @@ class App {
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
     const editProjectButton = document.getElementById("edit-button");
+    const saveProjectButton = document.getElementById("save-button");
+    const loadProjectButton = document.getElementById("load-button");
 
     // Enter edit mode
     if (!this._editMode) {
@@ -260,6 +271,10 @@ class App {
       projectName.classList.add("tab-content-edit-mode");
       tabTitle.classList.add("tab-content-edit-mode");
       tabContent.classList.add("tab-content-edit-mode");
+
+      // Hide buttons during editing
+      saveProjectButton.classList.add("hide-button-edit-mode");
+      loadProjectButton.classList.add("hide-button-edit-mode");
 
       projectName.textContent = this._convertToMarkdown(projectName.innerHTML);
       tabTitle.textContent = this._convertToMarkdown(tabTitle.innerHTML);
@@ -274,7 +289,7 @@ class App {
         addImgBtn.className = "button-type-1";
         addImgBtn.textContent = "Add image";
         const wrap = document.getElementById("project-buttons");
-        wrap && wrap.appendChild(addImgBtn);
+        wrap && wrap.prepend(addImgBtn);
       }
       if (!addImgInput) {
         addImgInput = document.createElement("input");
@@ -311,6 +326,9 @@ class App {
       projectName.classList.remove("tab-content-edit-mode");
       tabTitle.classList.remove("tab-content-edit-mode");
       tabContent.classList.remove("tab-content-edit-mode");
+
+      saveProjectButton.classList.remove("hide-button-edit-mode");
+      loadProjectButton.classList.remove("hide-button-edit-mode");
 
       projectName.innerHTML = this._convertToHtml(projectName.textContent);
       tabTitle.innerHTML = this._convertToHtml(tabTitle.textContent);

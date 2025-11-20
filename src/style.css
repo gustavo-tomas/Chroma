@@ -123,7 +123,7 @@ img {
   display: flex;
   flex-direction: column;
   overflow: auto;
-  padding: 1em;
+  padding-right: 1em;
   height: 100%;
 }
 
@@ -240,6 +240,12 @@ img {
 
 .tab-content-edit-mode {
   white-space: pre-wrap; /* preserve identation and white spaces */
+  border: 1px solid gray;
+  border-radius: 5px;
+}
+
+.hide-button-edit-mode {
+  display: none;
 }
 
 #project-buttons {
