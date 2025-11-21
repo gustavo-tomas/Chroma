@@ -1,3 +1,9 @@
+/* Code block highlight themes: https://github.com/highlightjs/highlight.js/tree/main/src/styles */
+/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"); */
+/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"); */
+/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/srcery.css"); */
+@import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css");
+
 :root {
   --bg-color: #e9e9e9ff;
   --fg-color: white;
@@ -173,6 +179,9 @@ img {
   margin-block-end: 1em;
 }
 
+/* Overwritten by highlight.js */
+
+/*
 #tab-content pre {
   padding: 1rem;
   font-size: 85%;
@@ -181,14 +190,11 @@ img {
   background-color: #f6f8fa;
   border-radius: 6px;
 }
+*/
 
 #tab-content pre code {
-  text-wrap: wrap;
-  background: transparent;
-  padding: 0;
-  margin: 0;
-  overflow: visible;
-}
+  border-radius: 6px;
+} 
 
 #tab-content hr {
   border-bottom: 1px solid #d1d9e0b3;

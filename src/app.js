@@ -3,7 +3,9 @@ import { ShaderType, CameraTypes } from "./common.js";
 import { Graphics, GraphicsConstructorParams } from "./graphics.js";
 import { Editor, EditorConstructorParams } from "./editor.js";
 import { Project } from "./project.js";
-import { marked } from "marked";
+import { Marked } from "marked";
+import { markedHighlight } from "marked-highlight";
+import hljs from "highlight.js";
 import TurndownService from "turndown";
 import * as TPG from "turndown-plugin-gfm";
 
@@ -17,7 +19,23 @@ class App {
 
     this._turndownService.use(TPG.gfm);
 
-    marked.setOptions({ async: false, gfm: true });
+    this._marked = new Marked(
+      markedHighlight({
+        langPrefix: "hljs ",
+        emptyLangClass: "hljs glsl",
+
+        highlight(code, lang, info) {
+          const language = "glsl"; // We can hardcode the language to glsl :)
+          const result = hljs.highlight(code, {
+            language: language,
+          }).value;
+
+          return result;
+        },
+      })
+    );
+
+    this._marked.setOptions({ async: false, gfm: true, breaks: true });
 
     this._project = new Project();
 
@@ -400,7 +418,7 @@ class App {
   }
 
   _convertToHtml(markdownText) {
-    const html = marked.parse(markdownText);
+    const html = this._marked.parse(markdownText);
     const div = document.createElement("div");
     div.innerHTML = html;
 
@@ -422,6 +440,7 @@ class App {
   }
 
   _editMode = false;
+  _marked;
   _turndownService;
   _project;
   _graphics;
