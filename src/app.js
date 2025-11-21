@@ -348,9 +348,15 @@ class App {
       saveProjectButton.classList.remove("hide-button-edit-mode");
       loadProjectButton.classList.remove("hide-button-edit-mode");
 
-      projectName.innerHTML = this._convertToHtml(projectName.textContent);
-      tabTitle.innerHTML = this._convertToHtml(tabTitle.textContent);
-      tabContent.innerHTML = this._convertToHtml(tabContent.textContent);
+      projectName.innerHTML = this._convertToHtml(
+        this._preprocessHtmlBeforeConversion(projectName.innerHTML).textContent
+      );
+      tabTitle.innerHTML = this._convertToHtml(
+        this._preprocessHtmlBeforeConversion(tabTitle.innerHTML).textContent
+      );
+      tabContent.innerHTML = this._convertToHtml(
+        this._preprocessHtmlBeforeConversion(tabContent.innerHTML).textContent
+      );
 
       const addImgBtn = document.getElementById("add-image-button");
       if (addImgBtn && addImgBtn.parentNode)
@@ -415,6 +421,23 @@ class App {
     } else {
       channels.forEach((ch) => this._graphics.clearTextureChannel(ch));
     }
+  }
+
+  _preprocessHtmlBeforeConversion(html) {
+    const div = document.createElement("div");
+
+    // @TODO: this is not a perfect solution and firefox vs chrome handle div
+    // edits differently. With this method, some edits might look spaced (like
+    // tables and lists) but its easy to fix afterwards.
+
+    const processedHtml = html
+      .replace(/<\/(div)>/gi, "") // Remove </div> tags
+      .replace(/<(br)>/gi, "") // Remove <br> tags
+      .replace(/<(div)[^>]*>/gi, "\n"); // Convert <div> into newlines
+
+    div.innerHTML = processedHtml;
+
+    return div;
   }
 
   _convertToHtml(markdownText) {
