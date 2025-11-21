@@ -49,6 +49,11 @@ img {
   max-width: 100%;
 }
 
+code {
+  font-family: "FiraCode", monospace;
+  font-size: 85%;
+}
+
 .button-type-1 {
   transition: 0.3s;
 }
@@ -194,7 +199,7 @@ img {
 
 #tab-content pre code {
   border-radius: 6px;
-} 
+}
 
 #tab-content hr {
   border-bottom: 1px solid #d1d9e0b3;
