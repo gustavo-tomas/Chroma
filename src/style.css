@@ -130,6 +130,34 @@ code {
   display: none;
 }
 
+#tab-title-editor {
+  height: 7em;
+  margin-bottom: 5px;
+}
+
+.tab-editor {
+  resize: none;
+  display: none;
+  flex-direction: column;
+  overflow: auto;
+  height: 100%;
+  border-radius: 5px;
+  font-family: inherit;
+  font-size: inherit;
+  font-weight: inherit;
+  padding: 0.25em;
+  box-shadow: var(--box-shadow);
+  outline: none;
+}
+
+.tab-editor:focus {
+  border-color: black;
+}
+
+.tab-editor-active {
+  display: flex;
+}
+
 #tab-content {
   display: flex;
   flex-direction: column;
@@ -247,12 +275,6 @@ code {
   display: table-row-group;
   vertical-align: middle;
   border-color: inherit;
-}
-
-.tab-content-edit-mode {
-  white-space: pre-wrap; /* preserve identation and white spaces */
-  border: 1px solid gray;
-  border-radius: 5px;
 }
 
 .hide-button-edit-mode {

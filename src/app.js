@@ -98,6 +98,8 @@ class App {
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
     const updateButton = document.getElementById("update-shader-btn");
+    const tabTitleEditor = document.getElementById("tab-title-editor");
+    const tabContentEditor = document.getElementById("tab-content-editor");
 
     editProjectButton.onclick = this._onProjectEdit.bind(this);
     saveProjectButton.onclick = this._onProjectSave.bind(this);
@@ -105,6 +107,17 @@ class App {
     updateButton.onclick = this._onUpdate.bind(this);
 
     document.addEventListener("keydown", this._onKeyDown.bind(this));
+
+    // Real time editing
+    tabTitleEditor.addEventListener("input", (e) => {
+      const tabTitle = document.getElementById("tab-title");
+      tabTitle.innerHTML = this._convertToHtml(tabTitleEditor.value);
+    });
+
+    tabContentEditor.addEventListener("input", (e) => {
+      const tabContent = document.getElementById("tab-content");
+      tabContent.innerHTML = this._convertToHtml(tabContentEditor.value);
+    });
   }
 
   _onShaderCompile(type, logs) {
@@ -236,44 +249,13 @@ class App {
     this._setProject(this._project.get());
   }
 
-  _insertTextAtCursor(editableEl, text) {
-    editableEl.focus();
-    const sel = window.getSelection && window.getSelection();
-    if (sel && sel.rangeCount > 0) {
-      const range = sel.getRangeAt(0);
-      if (!editableEl.contains(range.commonAncestorContainer)) {
-        const r = document.createRange();
-        r.selectNodeContents(editableEl);
-        r.collapse(false);
-        sel.removeAllRanges();
-        sel.addRange(r);
-      }
-    } else {
-      const r = document.createRange();
-      r.selectNodeContents(editableEl);
-      r.collapse(false);
-      const s = window.getSelection();
-      s.removeAllRanges();
-      s.addRange(r);
-    }
-    const ok =
-      document.execCommand && document.execCommand("insertText", false, text);
-    if (!ok) {
-      const s = window.getSelection && window.getSelection();
-      if (s && s.rangeCount > 0) {
-        s.deleteFromDocument();
-        s.getRangeAt(0).insertNode(document.createTextNode(text));
-      } else {
-        editableEl.textContent = (editableEl.textContent || "") + text;
-      }
-    }
-  }
-
   // Make fields available for editing
   _onProjectEdit() {
     const projectName = document.getElementById("project-name");
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
+    const tabTitleEditor = document.getElementById("tab-title-editor");
+    const tabContentEditor = document.getElementById("tab-content-editor");
     const editProjectButton = document.getElementById("edit-button");
     const saveProjectButton = document.getElementById("save-button");
     const loadProjectButton = document.getElementById("load-button");
@@ -282,21 +264,20 @@ class App {
     if (!this._editMode) {
       editProjectButton.textContent = "Finish Edit";
 
-      projectName.contentEditable = true;
-      tabTitle.contentEditable = true;
-      tabContent.contentEditable = true;
-
-      projectName.classList.add("tab-content-edit-mode");
-      tabTitle.classList.add("tab-content-edit-mode");
-      tabContent.classList.add("tab-content-edit-mode");
+      tabTitleEditor.classList.add("tab-editor-active");
+      tabContentEditor.classList.add("tab-editor-active");
 
       // Hide buttons during editing
       saveProjectButton.classList.add("hide-button-edit-mode");
       loadProjectButton.classList.add("hide-button-edit-mode");
 
       projectName.textContent = this._convertToMarkdown(projectName.innerHTML);
-      tabTitle.textContent = this._convertToMarkdown(tabTitle.innerHTML);
-      tabContent.textContent = this._convertToMarkdown(tabContent.innerHTML);
+
+      tabTitleEditor.textContent = this._convertToMarkdown(tabTitle.innerHTML);
+
+      tabContentEditor.textContent = this._convertToMarkdown(
+        tabContent.innerHTML
+      );
 
       let addImgBtn = document.getElementById("add-image-button");
       let addImgInput = document.getElementById("add-image-input");
@@ -326,7 +307,7 @@ class App {
         const alt = prompt("Image alt/label:", f.name) || f.name;
         const info = await this._project.addImageFromFile(f, alt);
         const snippet = `\n\n${info.markdown}\n`;
-        this._insertTextAtCursor(tabContent, snippet);
+        this._insertTextAtCursor(tabContentEditor, snippet);
         e.target.value = "";
       };
 
@@ -337,30 +318,18 @@ class App {
     else {
       editProjectButton.textContent = "Edit";
 
-      projectName.contentEditable = false;
-      tabTitle.contentEditable = false;
-      tabContent.contentEditable = false;
-
-      projectName.classList.remove("tab-content-edit-mode");
-      tabTitle.classList.remove("tab-content-edit-mode");
-      tabContent.classList.remove("tab-content-edit-mode");
+      tabTitleEditor.classList.remove("tab-editor-active");
+      tabContentEditor.classList.remove("tab-editor-active");
 
       saveProjectButton.classList.remove("hide-button-edit-mode");
       loadProjectButton.classList.remove("hide-button-edit-mode");
 
-      projectName.innerHTML = this._convertToHtml(
-        this._preprocessHtmlBeforeConversion(projectName.innerHTML).textContent
-      );
-      tabTitle.innerHTML = this._convertToHtml(
-        this._preprocessHtmlBeforeConversion(tabTitle.innerHTML).textContent
-      );
-      tabContent.innerHTML = this._convertToHtml(
-        this._preprocessHtmlBeforeConversion(tabContent.innerHTML).textContent
-      );
+      projectName.innerHTML = this._convertToHtml(projectName.textContent);
 
       const addImgBtn = document.getElementById("add-image-button");
       if (addImgBtn && addImgBtn.parentNode)
         addImgBtn.parentNode.removeChild(addImgBtn);
+
       const addImgInput = document.getElementById("add-image-input");
       if (addImgInput && addImgInput.parentNode)
         addImgInput.parentNode.removeChild(addImgInput);
@@ -423,21 +392,12 @@ class App {
     }
   }
 
-  _preprocessHtmlBeforeConversion(html) {
-    const div = document.createElement("div");
+  _insertTextAtCursor(textarea, text) {
+    const start = textarea.selectionStart;
+    const end = textarea.selectionEnd;
 
-    // @TODO: this is not a perfect solution and firefox vs chrome handle div
-    // edits differently. With this method, some edits might look spaced (like
-    // tables and lists) but its easy to fix afterwards.
-
-    const processedHtml = html
-      .replace(/<\/(div)>/gi, "") // Remove </div> tags
-      .replace(/<(br)>/gi, "") // Remove <br> tags
-      .replace(/<(div)[^>]*>/gi, "\n"); // Convert <div> into newlines
-
-    div.innerHTML = processedHtml;
-
-    return div;
+    textarea.setRangeText(text, start, end, "end");
+    textarea.dispatchEvent(new Event("input", { bubbles: true }));
   }
 
   _convertToHtml(markdownText) {
