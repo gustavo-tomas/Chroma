@@ -212,8 +212,8 @@ class Project {
     const url = URL.createObjectURL(blob);
     const a = document.createElement("a");
     a.href = url;
-    const base =
-      (name && String(name).trim()) || project.ProjectName || "ChromaProject";
+    const base = (name && String(name).trim()) || "ChromaProject";
+
     const safe =
       base.replace(/[\\/:*?"<>|]+/g, "_").replace(/\.+$/, "") ||
       "ChromaProject";

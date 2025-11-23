@@ -189,7 +189,6 @@ class App {
   _onProjectSave() {
     const projectData = this._project.get();
 
-    const projectName = document.getElementById("project-name");
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
     const geometryType = this._graphics.getActiveInputGeometryType();
@@ -204,16 +203,13 @@ class App {
         : this._graphics.getOrthographicCameraValues();
 
     // normalize images in the HTML before conversion
-    const nameHtml = this._preprocessHtmlBeforeSave(projectName.innerHTML);
     const titleHtml = this._preprocessHtmlBeforeSave(tabTitle.innerHTML);
     const contentHtml = this._preprocessHtmlBeforeSave(tabContent.innerHTML);
 
     // convert to markdown
-    const nameMd = this._convertToMarkdown(nameHtml);
     const titleMd = this._convertToMarkdown(titleHtml);
     const contentMd = this._convertToMarkdown(contentHtml);
 
-    projectData.ProjectName = nameMd;
     projectData.Shaders = {};
     projectData.Shaders.InputGeometry = {};
     projectData.Shaders.InputGeometry.type = geometryType;
@@ -251,7 +247,6 @@ class App {
 
   // Make fields available for editing
   _onProjectEdit() {
-    const projectName = document.getElementById("project-name");
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
     const tabTitleEditor = document.getElementById("tab-title-editor");
@@ -270,8 +265,6 @@ class App {
       // Hide buttons during editing
       saveProjectButton.classList.add("hide-button-edit-mode");
       loadProjectButton.classList.add("hide-button-edit-mode");
-
-      projectName.textContent = this._convertToMarkdown(projectName.innerHTML);
 
       tabTitleEditor.textContent = this._convertToMarkdown(tabTitle.innerHTML);
 
@@ -324,8 +317,6 @@ class App {
       saveProjectButton.classList.remove("hide-button-edit-mode");
       loadProjectButton.classList.remove("hide-button-edit-mode");
 
-      projectName.innerHTML = this._convertToHtml(projectName.textContent);
-
       const addImgBtn = document.getElementById("add-image-button");
       if (addImgBtn && addImgBtn.parentNode)
         addImgBtn.parentNode.removeChild(addImgBtn);
@@ -342,11 +333,9 @@ class App {
   _setProject(json) {
     const tabTitle = document.getElementById("tab-title");
     const tabContent = document.getElementById("tab-content");
-    const projectName = document.getElementById("project-name");
 
     tabTitle.innerHTML = this._convertToHtml(json.Section.Title);
     tabContent.innerHTML = this._convertToHtml(json.Section.Content);
-    projectName.innerHTML = this._convertToHtml(json.ProjectName);
 
     const vertexCode = json.Shaders.Vertex;
     const fragmentCode = json.Shaders.Fragment;

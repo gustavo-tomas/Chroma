@@ -126,10 +126,6 @@ code {
   box-shadow: var(--box-shadow);
 }
 
-#project-name {
-  display: none;
-}
-
 #tab-title-editor {
   height: 7em;
   margin-bottom: 5px;
