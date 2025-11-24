@@ -160,6 +160,7 @@ code {
   overflow: auto;
   padding-right: 1em;
   height: 100%;
+  overflow-wrap: break-word;
 }
 
 #tab-content h1 {
