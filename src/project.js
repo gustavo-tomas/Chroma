@@ -22,11 +22,14 @@ class Project {
 
   async loadDefault() {
     try {
-      await fetch("./projects/HelloWorld.json", { cache: "no-cache" })
-        .then((response) => response.json())
-        .then((json) => (this._project = json));
-      this._images.clear();
-      this._textures = {};
+      const defaultProjectFilePath = "./projects/DefaultProject.chroma";
+
+      await fetch(defaultProjectFilePath, { cache: "no-cache" })
+        .then((response) => response.arrayBuffer())
+        .then(async (data) => {
+          const file = new File([data], defaultProjectFilePath);
+          await this._loadChroma(file);
+        });
     } catch (error) {
       console.error("Error loading default project:", error);
     }
