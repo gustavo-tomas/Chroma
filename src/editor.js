@@ -143,7 +143,7 @@ class Editor {
     });
   }
 
-  getCurrentShaderCode(type) {
+  getShaderCode(type) {
     return type === TabType.Vertex
       ? this._vertexView.state.doc.toString()
       : this._fragmentView.state.doc.toString();

@@ -162,8 +162,8 @@ class App {
   }
 
   _onUpdate() {
-    const vertexCode = this._editor.getCurrentShaderCode(ShaderType.Vertex);
-    const fragmentCode = this._editor.getCurrentShaderCode(ShaderType.Fragment);
+    const vertexCode = this._editor.getShaderCode(ShaderType.Vertex);
+    const fragmentCode = this._editor.getShaderCode(ShaderType.Fragment);
 
     this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
   }
@@ -220,8 +220,10 @@ class App {
     projectData.Shaders.Camera.position = cameraPosition;
     projectData.Shaders.Camera.type = cameraType;
     projectData.Shaders.Camera.values = cameraValues;
-    projectData.Shaders.Vertex = this._editor._vertexCode;
-    projectData.Shaders.Fragment = this._editor._fragmentCode;
+    projectData.Shaders.Vertex = this._editor.getShaderCode(ShaderType.Vertex);
+    projectData.Shaders.Fragment = this._editor.getShaderCode(
+      ShaderType.Fragment
+    );
     projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
 
     projectData.Shaders.Textures = this._graphics.getTextureSlotsMeta
