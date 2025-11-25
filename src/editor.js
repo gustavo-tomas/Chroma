@@ -124,7 +124,8 @@ class Editor {
       : (this._diagnosticsFragment = diagnostics);
 
     if (diagnostics.length > 0) {
-      this._switchTab(shaderType);
+      const errorPosition = diagnostics[0].from;
+      this._switchTab(shaderType, errorPosition);
     }
 
     this._updateTabStyles();
@@ -148,15 +149,27 @@ class Editor {
       : this._fragmentView.state.doc.toString();
   }
 
-  _switchTab(tabType) {
-    if (tabType === this._currentTab) {
-      return;
-    }
-
+  _switchTab(tabType, cursorPosition = -1) {
     // update state
     this._currentTab = tabType;
 
-    // @TODO: focus on active editor
+    // focus on active editor
+    if (tabType === TabType.Vertex || tabType === TabType.Fragment) {
+      const view =
+        tabType === TabType.Vertex ? this._vertexView : this._fragmentView;
+
+      view.focus();
+
+      if (cursorPosition >= 0) {
+        view.dispatch({
+          selection: { anchor: cursorPosition, head: cursorPosition },
+          effects: EditorView.scrollIntoView(cursorPosition, {
+            y: "center",
+            yMargin: 0,
+          }),
+        });
+      }
+    }
 
     this._updateTabStyles();
   }
