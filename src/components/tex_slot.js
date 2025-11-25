@@ -30,7 +30,7 @@ function appendTexSlot(dataChannel) {
   texSlot.appendChild(texActions);
   texSlot.appendChild(texInput);
 
-  document.getElementById("channels-panel").appendChild(texSlot);
+  document.getElementById("textures-panel").appendChild(texSlot);
 }
 
 export { appendTexSlot };

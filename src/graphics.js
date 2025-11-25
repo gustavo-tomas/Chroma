@@ -59,7 +59,7 @@ class Graphics {
     this._viewPanel = document.getElementById("view-panel");
 
     for (let i = 0; i < 4; i++) {
-      appendTexSlot("iChannel" + i);
+      appendTexSlot("u_texture" + i);
     }
 
     setupDropdowns();
@@ -276,23 +276,23 @@ class Graphics {
         : params.orthographicCamera
     );
 
-    this._iChannelMeta = {}; // i0..i3 -> {src, mimeType, name}
+    this._u_textureMeta = {}; // i0..i3 -> {src, mimeType, name}
 
-    initTexturePanelStatic(this._material, (channel, meta) => {
-      const ch = (channel || "").toLowerCase();
+    initTexturePanelStatic(this._material, (texture, meta) => {
+      const ch = (texture || "").toLowerCase();
       const key =
-        ch === "ichannel0"
+        ch === "u_texture0"
           ? "i0"
-          : ch === "ichannel1"
+          : ch === "u_texture1"
           ? "i1"
-          : ch === "ichannel2"
+          : ch === "u_texture2"
           ? "i2"
-          : ch === "ichannel3"
+          : ch === "u_texture3"
           ? "i3"
           : null;
 
       if (!key) return;
-      this._iChannelMeta[key] = meta
+      this._u_textureMeta[key] = meta
         ? {
             src: meta.src || null,
             name: meta.name || key,
@@ -308,7 +308,7 @@ class Graphics {
 
     this._material.uniforms = this._material.uniforms || {};
 
-    ["iChannel0", "iChannel1", "iChannel2", "iChannel3"].forEach((n) => {
+    ["u_texture0", "u_texture1", "u_texture2", "u_texture3"].forEach((n) => {
       if (!this._material.uniforms[n])
         this._material.uniforms[n] = { value: null };
     });
@@ -732,10 +732,10 @@ class Graphics {
     };
 
     for (let i = 0; i < 4; i++) {
-      const channel = "iChannel" + i;
-      shader.uniforms[channel] = {
+      const texture = "u_texture" + i;
+      shader.uniforms[texture] = {
         type: "sampler2D",
-        value: prev(channel) || null,
+        value: prev(texture) || null,
         preset: true,
       };
     }
@@ -753,7 +753,7 @@ class Graphics {
   getTextureSlotsMeta() {
     const out = {};
     ["i0", "i1", "i2", "i3"].forEach((ch) => {
-      out[ch] = this._iChannelMeta[ch] ? { ...this._iChannelMeta[ch] } : null;
+      out[ch] = this._u_textureMeta[ch] ? { ...this._u_textureMeta[ch] } : null;
     });
     return out;
   }
@@ -761,13 +761,13 @@ class Graphics {
   restoreTextureFromObjectUrl(ch, url, mime, pathHint) {
     const name =
       ch === "i0"
-        ? "iChannel0"
+        ? "u_texture0"
         : ch === "i1"
-        ? "iChannel1"
+        ? "u_texture1"
         : ch === "i2"
-        ? "iChannel2"
+        ? "u_texture2"
         : ch === "i3"
-        ? "iChannel3"
+        ? "u_texture3"
         : null;
     if (!name || !url) return;
 
@@ -797,22 +797,22 @@ class Graphics {
       }
 
       const slot = document.querySelector(
-        `#channels-panel .tex-slot[data-channel="${name}"]`
+        `#textures-panel .tex-slot[data-channel="${name}"]`
       );
       if (slot) slot.style.backgroundImage = "url(" + url + ")";
 
       this._material.needsUpdate = true;
 
-      this._iChannelMeta = this._iChannelMeta || {};
+      this._u_textureMeta = this._u_textureMeta || {};
       const key =
-        name === "iChannel0"
+        name === "u_texture0"
           ? "i0"
-          : name === "iChannel1"
+          : name === "u_texture1"
           ? "i1"
-          : name === "iChannel2"
+          : name === "u_texture2"
           ? "i2"
           : "i3";
-      this._iChannelMeta[key] = {
+      this._u_textureMeta[key] = {
         src: url,
         name: pathHint || key,
         mimeType: mime,
@@ -821,16 +821,16 @@ class Graphics {
     img.src = url;
   }
 
-  clearTextureChannel(ch) {
+  clearTexture(ch) {
     const name =
       ch === "i0"
-        ? "iChannel0"
+        ? "u_texture0"
         : ch === "i1"
-        ? "iChannel1"
+        ? "u_texture1"
         : ch === "i2"
-        ? "iChannel2"
+        ? "u_texture2"
         : ch === "i3"
-        ? "iChannel3"
+        ? "u_texture3"
         : null;
     if (!name) return;
 
@@ -844,20 +844,20 @@ class Graphics {
     }
 
     const slot = document.querySelector(
-      `#channels-panel .tex-slot[data-channel="${name}"]`
+      `#textures-panel .tex-slot[data-channel="${name}"]`
     );
     if (slot) slot.style.backgroundImage = "none";
 
     // clears meta
     const key =
-      name === "iChannel0"
+      name === "u_texture0"
         ? "i0"
-        : name === "iChannel1"
+        : name === "u_texture1"
         ? "i1"
-        : name === "iChannel2"
+        : name === "u_texture2"
         ? "i2"
         : "i3";
-    this._iChannelMeta[key] = null;
+    this._u_textureMeta[key] = null;
 
     this._material.needsUpdate = true;
   }
@@ -937,7 +937,7 @@ class Graphics {
   _onShaderCompileCallback;
   _mousePositionNormalized; // [-1.0, 1.0]
   _screenResolution;
-  _iChannelMeta;
+  _u_textureMeta;
 }
 
 export { Graphics, GraphicsConstructorParams, ShaderCompileLog };
@@ -977,8 +977,8 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
     material.needsUpdate = true;
   }
 
-  document.querySelectorAll("#channels-panel .tex-slot").forEach((slot) => {
-    const name = slot.dataset.channel; // iChannel0..3
+  document.querySelectorAll("#textures-panel .tex-slot").forEach((slot) => {
+    const name = slot.dataset.channel; // u_texture0..3
     const load = slot.querySelector(".tex-load");
     const clear = slot.querySelector(".tex-clear");
     const input = slot.querySelector('input[type="file"]');
