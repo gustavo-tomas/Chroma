@@ -308,13 +308,7 @@ class Graphics {
 
     this._material.uniforms = this._material.uniforms || {};
 
-    [
-      "iChannel0",
-      "iChannel1",
-      "iChannel2",
-      "iChannel3",
-      "u_userTexture",
-    ].forEach((n) => {
+    ["iChannel0", "iChannel1", "iChannel2", "iChannel3"].forEach((n) => {
       if (!this._material.uniforms[n])
         this._material.uniforms[n] = { value: null };
     });
@@ -737,12 +731,6 @@ class Graphics {
       preset: true,
     };
 
-    shader.uniforms["u_userTexture"] = {
-      type: "sampler2D",
-      value: null,
-      preset: true,
-    };
-
     for (let i = 0; i < 4; i++) {
       const channel = "iChannel" + i;
       shader.uniforms[channel] = {
@@ -751,12 +739,6 @@ class Graphics {
         preset: true,
       };
     }
-
-    shader.uniforms["u_userTexture"] = {
-      type: "sampler2D",
-      value: prev("u_userTexture") || prev("iChannel0") || null,
-      preset: true,
-    };
 
     for (const [name, description] of Object.entries(shader.uniforms)) {
       const s = "uniform " + description.type + " " + name + ";\n";
@@ -807,21 +789,11 @@ class Graphics {
         };
       this._material.uniforms[name].value = tex;
 
-      if (name === "iChannel0") {
-        if (!this._material.uniforms.u_userTexture)
-          this._material.uniforms.u_userTexture = {
-            type: "sampler2D",
-            value: null,
-            preset: true,
-          };
-        this._material.uniforms.u_userTexture.value = tex;
-      }
-
       if (this._material.userData && this._material.userData.shader) {
         const su = this._material.userData.shader.uniforms || {};
-        if (su[name]) su[name].value = tex;
-        if (name === "iChannel0" && su.u_userTexture)
-          su.u_userTexture.value = tex;
+        if (su[name]) {
+          su[name].value = tex;
+        }
       }
 
       const slot = document.querySelector(
@@ -869,15 +841,6 @@ class Graphics {
     if (this._material.userData && this._material.userData.shader) {
       const su = this._material.userData.shader.uniforms || {};
       if (su[name]) su[name].value = null;
-    }
-    if (name === "iChannel0") {
-      if (this._material.uniforms && this._material.uniforms.u_userTexture) {
-        this._material.uniforms.u_userTexture.value = null;
-      }
-      if (this._material.userData && this._material.userData.shader) {
-        const su = this._material.userData.shader.uniforms || {};
-        if (su.u_userTexture) su.u_userTexture.value = null;
-      }
     }
 
     const slot = document.querySelector(
@@ -1004,20 +967,12 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
         preset: true,
       };
     material.uniforms[name].value = tex;
-    if (name === "iChannel0") {
-      if (!material.uniforms.u_userTexture)
-        material.uniforms.u_userTexture = {
-          type: "sampler2D",
-          value: null,
-          preset: true,
-        };
-      material.uniforms.u_userTexture.value = tex;
-    }
+
     if (material.userData && material.userData.shader) {
       const su = material.userData.shader.uniforms || {};
-      if (su[name]) su[name].value = tex;
-      if (name === "iChannel0" && su.u_userTexture)
-        su.u_userTexture.value = tex;
+      if (su[name]) {
+        su[name].value = tex;
+      }
     }
     material.needsUpdate = true;
   }
@@ -1060,17 +1015,7 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
       ) {
         material.userData.shader.uniforms[name].value = null;
       }
-      if (name === "iChannel0") {
-        if (material.uniforms && material.uniforms.u_userTexture)
-          material.uniforms.u_userTexture.value = null;
-        if (
-          material.userData &&
-          material.userData.shader &&
-          material.userData.shader.uniforms.u_userTexture
-        ) {
-          material.userData.shader.uniforms.u_userTexture.value = null;
-        }
-      }
+
       slot.style.backgroundImage = "none";
       material.needsUpdate = true;
 
