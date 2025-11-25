@@ -343,13 +343,23 @@ code {
   border-radius: 0 0 var(--div-border-radius) var(--div-border-radius);
 }
 
-#shader {
+#vertex-shader-view {
+  display: none;
+  height: 100%;
+}
+
+#fragment-shader-view {
+  display: none;
   height: 100%;
 }
 
 #geometry {
   display: none;
   padding: 20px;
+}
+
+.active-tab {
+  display: block !important;
 }
 
 #gfx-panel {

@@ -25,11 +25,12 @@ class EditorConstructorParams {
 
 class Editor {
   constructor(params) {
-    this._vertexCode = params.initialVertex;
-    this._fragmentCode = params.initialFragment;
     this._currentTab = TabType.Vertex;
 
-    this._shaderDisplay = document.querySelector("#shader");
+    this._shaderDisplayVertex = document.querySelector("#vertex-shader-view");
+    this._shaderDisplayFragment = document.querySelector(
+      "#fragment-shader-view"
+    );
     this._geometryDisplay = document.querySelector("#geometry");
     this._geometryInputs = document.querySelector("#geometry-btn-group");
 
@@ -42,20 +43,32 @@ class Editor {
     const vertexTab = new Tab();
     vertexTab.type = TabType.Vertex;
     vertexTab.button = document.getElementById("tab-vertex");
-    vertexTab.display = this._shaderDisplay;
+    vertexTab.display = this._shaderDisplayVertex;
 
     const fragmentTab = new Tab();
     fragmentTab.type = TabType.Fragment;
     fragmentTab.button = document.getElementById("tab-fragment");
-    fragmentTab.display = this._shaderDisplay;
+    fragmentTab.display = this._shaderDisplayFragment;
 
     // We can also access this as a map using indices if necessary
     this._tabs = [geometryTab, vertexTab, fragmentTab];
 
     // initialize CodeMirror view
-    this._view = new EditorView({
-      doc: this._vertexCode,
-      parent: this._shaderDisplay,
+    this._vertexView = new EditorView({
+      doc: params.initialVertex,
+      parent: this._shaderDisplayVertex,
+      extensions: [
+        basicSetup,
+        lintGutter(),
+        keymap.of([indentWithTab]),
+        EditorView.lineWrapping,
+        LRLanguage.define({ parser: parser }), // glsl syntax highlighting
+      ],
+    });
+
+    this._fragmentView = new EditorView({
+      doc: params.initialFragment,
+      parent: this._shaderDisplayFragment,
       extensions: [
         basicSetup,
         lintGutter(),
@@ -70,10 +83,6 @@ class Editor {
       tab.button.addEventListener("click", () => this._switchTab(tab.type));
     });
 
-    this._shaderDisplay.addEventListener("keyup", (e) => {
-      this._onKeyUp(e);
-    });
-
     this._diagnosticsVertex = [];
     this._diagnosticsFragment = [];
 
@@ -82,23 +91,19 @@ class Editor {
   }
 
   onUpdate(shaderType, shaderLogs) {
-    const oldTab = this._currentTab;
-
-    // Switch tabs to get diagnostics for this shader. If everything is ok, we
-    // go back to the old tab. If not, we display the error in the current tab.
-
-    this._switchTab(shaderType);
-
     // collect diagnostics only at the exact position of the token with the error
     const diagnostics = [];
 
     shaderLogs.forEach((shaderLog) => {
-      const line = this._view.state.doc.line(shaderLog.lineNumber);
+      const view =
+        shaderType === TabType.Vertex ? this._vertexView : this._fragmentView;
+
+      const line = view.state.doc.line(shaderLog.lineNumber);
       let from = line.from;
       let to = line.to;
 
       if (shaderLog.token) {
-        const text = this._view.state.doc.sliceString(line.from, line.to);
+        const text = view.state.doc.sliceString(line.from, line.to);
         const idx = text.indexOf(shaderLog.token);
         if (idx >= 0) {
           from = line.from + idx;
@@ -114,58 +119,29 @@ class Editor {
       });
     });
 
-    if (this._currentTab === TabType.Vertex) {
-      this._diagnosticsVertex = diagnostics;
-    } else if (this._currentTab === TabType.Fragment) {
-      this._diagnosticsFragment = diagnostics;
-    }
-
-    if (diagnostics.length === 0) {
-      this._switchTab(oldTab);
-    }
+    shaderType === TabType.Vertex
+      ? (this._diagnosticsVertex = diagnostics)
+      : (this._diagnosticsFragment = diagnostics);
 
     this._updateTabStyles();
   }
 
   setShaderCode(tab, code) {
-    // @TODO: switching tabs is a bit of a hack but works fine
-    this._switchTab(tab);
+    const view = tab === TabType.Vertex ? this._vertexView : this._fragmentView;
 
-    if (tab === TabType.Vertex) {
-      this._vertexCode = code;
-    } else if (tab === TabType.Fragment) {
-      this._fragmentCode = code;
-    }
-
-    this._view.dispatch({
+    view.dispatch({
       changes: {
         from: 0,
-        to: this._view.state.doc.length,
+        to: view.state.doc.length,
         insert: code,
       },
     });
   }
 
   getCurrentShaderCode(type) {
-    if (type === TabType.Vertex) {
-      return this._vertexCode;
-    } else if (type === TabType.Fragment) {
-      return this._fragmentCode;
-    }
-  }
-
-  _saveCurrentText() {
-    const currentText = this._view.state.doc.toString();
-
-    if (this._currentTab === TabType.Vertex) {
-      this._vertexCode = currentText;
-    } else if (this._currentTab === TabType.Fragment) {
-      this._fragmentCode = currentText;
-    }
-  }
-
-  _onKeyUp(e) {
-    this._saveCurrentText();
+    return type === TabType.Vertex
+      ? this._vertexView.state.doc.toString()
+      : this._fragmentView.state.doc.toString();
   }
 
   _switchTab(tabType) {
@@ -173,34 +149,12 @@ class Editor {
       return;
     }
 
-    this._saveCurrentText();
-
     // update state
     this._currentTab = tabType;
 
-    // load the new buffer into the view
-    if (tabType === TabType.Vertex || tabType === TabType.Fragment) {
-      const newText =
-        tabType === TabType.Vertex ? this._vertexCode : this._fragmentCode;
-
-      this._view.dispatch({
-        changes: { from: 0, to: this._view.state.doc.length, insert: newText },
-      });
-    }
+    // @TODO: focus on active editor
 
     this._updateTabStyles();
-  }
-
-  _toggleGeometryTab(visible) {
-    if (visible) {
-      this._shaderDisplay.style.visibility = "hidden";
-      this._shaderDisplay.style.display = "none";
-      this._geometryDisplay.style.display = "block";
-    } else {
-      this._shaderDisplay.style.visibility = "visible";
-      this._shaderDisplay.style.display = "block";
-      this._geometryDisplay.style.display = "none";
-    }
   }
 
   _updateTabStyles() {
@@ -209,18 +163,22 @@ class Editor {
       tab.button.classList.toggle("active", this._currentTab === tab.type);
     });
 
-    this._toggleGeometryTab(this._currentTab === TabType.Geometry);
+    // display
+    this._tabs.forEach((tab) => {
+      if (this._currentTab === tab.type) {
+        tab.display.classList.add("active-tab");
+      } else {
+        tab.display.classList.remove("active-tab");
+      }
+    });
 
     // Apply the diagnostics (an empty list will clear them)
-    if (this._currentTab === TabType.Vertex) {
-      this._view.dispatch(
-        setDiagnostics(this._view.state, this._diagnosticsVertex)
-      );
-    } else if (this._currentTab === TabType.Fragment) {
-      this._view.dispatch(
-        setDiagnostics(this._view.state, this._diagnosticsFragment)
-      );
-    }
+    this._vertexView.dispatch(
+      setDiagnostics(this._vertexView.state, this._diagnosticsVertex)
+    );
+    this._fragmentView.dispatch(
+      setDiagnostics(this._fragmentView.state, this._diagnosticsFragment)
+    );
   }
 }
 
