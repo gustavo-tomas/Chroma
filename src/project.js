@@ -65,7 +65,7 @@ class Project {
         }
       };
 
-      input.oncancel = () => reject(new Error("File selection cancelled"));
+      input.oncancel = () => resolve(null);
       input.click();
     });
   }
