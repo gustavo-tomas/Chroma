@@ -402,7 +402,11 @@ class App {
       if (src.startsWith("image:")) {
         const id = src.slice(6);
         const url = this._project.getImageUrl(id);
-        if (url) img.setAttribute("src", url);
+        if (url) {
+          img.setAttribute("src", url);
+        } else {
+          img.removeAttribute("src");
+        }
       }
     });
 

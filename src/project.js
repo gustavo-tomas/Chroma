@@ -242,6 +242,20 @@ class Project {
   }
 
   async _fetchAsBlob(src) {
+    if (src.startsWith("image:")) {
+      const id = src.slice(6);
+      const pack = this._images.get(id);
+
+      if (pack && pack.blob) {
+        return {
+          blob: pack.blob,
+          mime: pack.mime || "application/octet-stream",
+        };
+      }
+
+      throw new Error(`Unknown image id: ${id}`);
+    }
+
     if (src.startsWith("blob:")) {
       const id = this.getIdByObjectUrl(src);
       if (id) {
@@ -256,16 +270,18 @@ class Project {
       const res = await fetch(src);
       const blob = await res.blob();
       return { blob, mime: blob.type || "application/octet-stream" };
-    } else if (src.startsWith("data:")) {
+    }
+
+    if (src.startsWith("data:")) {
       const res = await fetch(src);
       const blob = await res.blob();
       return { blob, mime: blob.type || "application/octet-stream" };
-    } else {
-      const res = await fetch(src, { cache: "no-cache" });
-      const blob = await res.blob();
-      const mime = blob.type || this._guessMimeFromName(src);
-      return { blob, mime };
     }
+
+    const res = await fetch(src, { cache: "no-cache" });
+    const blob = await res.blob();
+    const mime = blob.type || this._guessMimeFromName(src);
+    return { blob, mime };
   }
 
   _uuid4() {
