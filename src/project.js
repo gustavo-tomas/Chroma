@@ -91,7 +91,7 @@ class Project {
     return null;
   }
 
-  getTextureForChannel(ch) {
+  getTexture(ch) {
     return (this._textures && this._textures[ch]) || null;
   }
 

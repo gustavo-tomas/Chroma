@@ -354,15 +354,15 @@ class App {
     this._graphics.onShaderCodeUpdate(vertexCode, fragmentCode);
     this._graphics.onUniformUpdate(uniforms);
 
-    // restore iChannels from .chroma
-    const channels = ["i0", "i1", "i2", "i3"];
+    // restore u_textures from .chroma
+    const textures = ["i0", "i1", "i2", "i3"];
     const texMeta = (json.Shaders && json.Shaders.Textures) || null;
 
     if (texMeta) {
       const restored = new Set();
       for (const [ch, meta] of Object.entries(texMeta)) {
         if (!meta) continue;
-        const pack = this._project.getTextureForChannel(ch);
+        const pack = this._project.getTexture(ch);
         if (pack && pack.url) {
           this._graphics.restoreTextureFromObjectUrl(
             ch,
@@ -373,11 +373,11 @@ class App {
           restored.add(ch);
         }
       }
-      channels.forEach((ch) => {
-        if (!texMeta[ch]) this._graphics.clearTextureChannel(ch);
+      textures.forEach((ch) => {
+        if (!texMeta[ch]) this._graphics.clearTexture(ch);
       });
     } else {
-      channels.forEach((ch) => this._graphics.clearTextureChannel(ch));
+      textures.forEach((ch) => this._graphics.clearTexture(ch));
     }
   }
 
