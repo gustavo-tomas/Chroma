@@ -94,10 +94,10 @@ class Editor {
     // collect diagnostics only at the exact position of the token with the error
     const diagnostics = [];
 
-    shaderLogs.forEach((shaderLog) => {
-      const view =
-        shaderType === TabType.Vertex ? this._vertexView : this._fragmentView;
+    const view =
+      shaderType === TabType.Vertex ? this._vertexView : this._fragmentView;
 
+    shaderLogs.forEach((shaderLog) => {
       const line = view.state.doc.line(shaderLog.lineNumber);
       let from = line.from;
       let to = line.to;
@@ -122,6 +122,10 @@ class Editor {
     shaderType === TabType.Vertex
       ? (this._diagnosticsVertex = diagnostics)
       : (this._diagnosticsFragment = diagnostics);
+
+    if (diagnostics.length > 0) {
+      this._switchTab(shaderType);
+    }
 
     this._updateTabStyles();
   }
