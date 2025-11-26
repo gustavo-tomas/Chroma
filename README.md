@@ -34,13 +34,12 @@
 - [x] Adicionar markdown para aba de teoria (sem imagem)
 - [x] Adicionar carregamento de texturas
 - [x] Adicionar opções de geometria e câmera
-- [ ] Expandir escopo ao salvar o projeto
-  - [ ] Adicionar suporte para salvar imagens
-    - [ ] Adicionar path para recursos no arquivo proj
-    - [ ] Salvar imagens na aba de teoria
-    - [ ] Salvar texturas
-- [ ] Adicionar opções de Quality Of Life (QoL)
-  - [ ] Drag n Drop para projeto
+- [x] Expandir escopo ao salvar o projeto
+  - [x] Adicionar suporte para salvar imagens
+    - [x] Salvar imagens na aba de teoria
+    - [x] Salvar texturas
+- [x] Adicionar opções de Quality Of Life (QoL)
+  - [x] Drag n Drop para projeto
   - [x] Hints
   - [x] Shortcut para rodar o código (Alt + Enter)
   - [x] Shortcuts ao editar (select all, tab, etc)
