@@ -1,8 +1,7 @@
 /* Code block highlight themes: https://github.com/highlightjs/highlight.js/tree/main/src/styles */
-/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/default.min.css"); */
-/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/github.min.css"); */
-/* @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/srcery.css"); */
 @import url("https://cdnjs.cloudflare.com/ajax/libs/highlight.js/11.9.0/styles/atom-one-dark.min.css");
+@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Text:ital,wght@0,300..700;1,300..700&display=swap");
+@import url("https://fonts.googleapis.com/css2?family=Fira+Code:ital,wght@0,300..700;1,300..700&display=swap");
 
 :root {
   --bg-color: #e9e9e9ff;
@@ -14,22 +13,11 @@
   --box-shadow: rgba(0, 0, 0, 0.24) 0px 3px 5px;
 }
 
-@font-face {
-  font-family: "RedHatText";
-  src: url("fonts/Red_Hat_Text/RedHatText-VariableFont_wght.ttf")
-    format("truetype");
-}
-
-@font-face {
-  font-family: "FiraCode";
-  src: url("fonts/Fira_Code/FiraCode-VariableFont_wght.ttf") format("truetype");
-}
-
 body {
   margin: 0;
   padding: 0;
   background-color: var(--bg-color);
-  font-family: "RedHatText", monospace;
+  font-family: "Red Hat Text", monospace;
 }
 
 button {
@@ -50,7 +38,7 @@ img {
 }
 
 code {
-  font-family: "FiraCode", monospace;
+  font-family: "Fira Code", monospace;
   font-size: 85%;
 }
 
@@ -446,7 +434,7 @@ code {
 /* Codemirror style */
 
 .cm-editor * {
-  font-family: "FiraCode", monospace;
+  font-family: "Fira Code", monospace;
   font-size: 0.95em;
 }
 
