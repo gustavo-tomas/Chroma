@@ -1058,7 +1058,8 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
       for (let i = 0; i < e.dataTransfer.items.length; i++) {
         const item = e.dataTransfer.items[i];
 
-        if (getFileType(item) === FileTypes.Image) {
+        // @TODO: silly
+        if (getFileType(item) !== FileTypes.Chroma) {
           e.dataTransfer.dropEffect = "copy";
 
           slot.classList.add("dragover");
@@ -1084,8 +1085,8 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
         const f = dt.files[0];
         if (f && getFileType(f) === FileTypes.Image) {
           loadFile(f);
+          return;
         }
-        return;
       }
 
       // File via items
@@ -1095,10 +1096,10 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
             const f = item.getAsFile();
             if (f && getFileType(f) === FileTypes.Image) {
               loadFile(f);
+              return;
             }
           }
         }
-        return;
       }
 
       // URL (Firefox and generic link/image drag)
