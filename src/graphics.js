@@ -977,6 +977,26 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
     material.needsUpdate = true;
   }
 
+  function urlToTex(url, nameHint, mimeHint, cb) {
+    const img = new Image();
+    img.crossOrigin = "anonymous";
+    img.onload = () => {
+      const tex = new THREE.Texture(img);
+      tex.needsUpdate = true;
+      tex.wrapS = THREE.ClampToEdgeWrapping;
+      tex.wrapT = THREE.ClampToEdgeWrapping;
+      tex.minFilter = THREE.LinearFilter;
+      tex.magFilter = THREE.LinearFilter;
+
+      const pseudoFile = {
+        type: mimeHint || "",
+        name: nameHint || url,
+      };
+      cb(tex, url, pseudoFile);
+    };
+    img.src = url;
+  }
+
   document.querySelectorAll("#textures-panel .tex-slot").forEach((slot) => {
     const name = slot.dataset.channel; // u_texture0..3
     const load = slot.querySelector(".tex-load");
@@ -1026,15 +1046,77 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
 
     slot.ondragover = (e) => {
       e.preventDefault();
+      if (e.dataTransfer) {
+        e.dataTransfer.dropEffect = "copy";
+      }
       slot.classList.add("dragover");
     };
     slot.ondragleave = () => slot.classList.remove("dragover");
     slot.ondrop = (e) => {
       e.preventDefault();
       slot.classList.remove("dragover");
-      const f =
-        e.dataTransfer && e.dataTransfer.files && e.dataTransfer.files[0];
-      if (f) loadFile(f);
+
+      const dt = e.dataTransfer;
+      if (!dt) return;
+
+      // File (works in Chrome/Brave and some Firefox cases)
+      if (dt.files && dt.files.length > 0) {
+        const f = dt.files[0];
+        if (f) loadFile(f);
+        return;
+      }
+
+      // File via items
+      if (dt.items && dt.items.length > 0) {
+        for (const item of dt.items) {
+          if (item.kind === "file") {
+            const f = item.getAsFile();
+            if (f) {
+              loadFile(f);
+              return;
+            }
+          }
+        }
+      }
+
+      // URL (Firefox and generic link/image drag)
+      let url =
+        dt.getData("text/uri-list") ||
+        dt.getData("text/x-moz-url") || // pode vir como "url\nTítulo"
+        "";
+
+      // Try HTML fragment
+      if (!url) {
+        const html = dt.getData("text/html");
+        if (html) {
+          const div = document.createElement("div");
+          div.innerHTML = html;
+          const img = div.querySelector("img");
+          if (img && img.src) {
+            url = img.src;
+          }
+        }
+      }
+
+      // Fallback plain text
+      if (!url) {
+        url = dt.getData("text/plain");
+      }
+
+      if (url) {
+        const parts = url.split("\n");
+        const cleanUrl = parts[0].trim();
+        const nameHint = (parts[1] && parts[1].trim()) || undefined;
+
+        if (cleanUrl) {
+          urlToTex(cleanUrl, nameHint, undefined, (tex, u, pseudoFile) => {
+            apply(tex, u, {
+              type: pseudoFile.type,
+              name: pseudoFile.name,
+            });
+          });
+        }
+      }
     };
   });
 }
