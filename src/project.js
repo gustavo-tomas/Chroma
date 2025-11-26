@@ -28,7 +28,7 @@ class Project {
         .then((response) => response.arrayBuffer())
         .then(async (data) => {
           const file = new File([data], defaultProjectFilePath);
-          await this._loadChroma(file);
+          await this.loadChroma(file);
         });
     } catch (error) {
       console.error("Error loading default project:", error);
@@ -50,7 +50,7 @@ class Project {
           }
 
           if (file.name.toLowerCase().endsWith(".chroma")) {
-            await this._loadChroma(file);
+            await this.loadChroma(file);
             resolve(this._project);
           } else {
             const text = await file.text();
@@ -95,7 +95,7 @@ class Project {
     return (this._textures && this._textures[ch]) || null;
   }
 
-  async _loadChroma(file) {
+  async loadChroma(file) {
     const ab = await file.arrayBuffer();
     const zip = await JSZip.loadAsync(ab);
 

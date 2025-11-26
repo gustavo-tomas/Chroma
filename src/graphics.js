@@ -1,4 +1,10 @@
-import { InputGeometryTypes, ShaderType, CameraTypes } from "./common.js";
+import {
+  InputGeometryTypes,
+  ShaderType,
+  CameraTypes,
+  getFileType,
+  FileTypes,
+} from "./common.js";
 import { appendTexSlot } from "./components/tex_slot.js";
 import { setupDropdowns } from "./components/dropdown.js";
 import * as THREE from "three";
@@ -1046,23 +1052,39 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
 
     slot.ondragover = (e) => {
       e.preventDefault();
-      if (e.dataTransfer) {
-        e.dataTransfer.dropEffect = "copy";
+
+      if (!e.dataTransfer || !e.dataTransfer.items) return;
+
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        const item = e.dataTransfer.items[i];
+
+        if (getFileType(item) === FileTypes.Image) {
+          e.dataTransfer.dropEffect = "copy";
+
+          slot.classList.add("dragover");
+
+          return;
+        }
       }
-      slot.classList.add("dragover");
     };
+
     slot.ondragleave = () => slot.classList.remove("dragover");
+
     slot.ondrop = (e) => {
       e.preventDefault();
+
       slot.classList.remove("dragover");
 
       const dt = e.dataTransfer;
+
       if (!dt) return;
 
       // File (works in Chrome/Brave and some Firefox cases)
       if (dt.files && dt.files.length > 0) {
         const f = dt.files[0];
-        if (f) loadFile(f);
+        if (f && getFileType(f) === FileTypes.Image) {
+          loadFile(f);
+        }
         return;
       }
 
@@ -1071,12 +1093,12 @@ export function initTexturePanelStatic(material, onMetaUpdate) {
         for (const item of dt.items) {
           if (item.kind === "file") {
             const f = item.getAsFile();
-            if (f) {
+            if (f && getFileType(f) === FileTypes.Image) {
               loadFile(f);
-              return;
             }
           }
         }
+        return;
       }
 
       // URL (Firefox and generic link/image drag)

@@ -1,5 +1,5 @@
 import "./style.css";
-import { ShaderType, CameraTypes } from "./common.js";
+import { ShaderType, CameraTypes, getFileType, FileTypes } from "./common.js";
 import { Graphics, GraphicsConstructorParams } from "./graphics.js";
 import { Editor, EditorConstructorParams } from "./editor.js";
 import { Project } from "./project.js";
@@ -118,6 +118,8 @@ class App {
       const tabContent = document.getElementById("tab-content");
       tabContent.innerHTML = this._convertToHtml(tabContentEditor.value);
     });
+
+    this._setupProjectDragNDrop();
   }
 
   _onShaderCompile(type, logs) {
@@ -415,6 +417,68 @@ class App {
 
   _convertToMarkdown(htmlText) {
     return this._turndownService.turndown(htmlText);
+  }
+
+  _setupProjectDragNDrop() {
+    const app = document.getElementById("app");
+
+    app.ondragover = (e) => {
+      e.preventDefault();
+
+      if (!e.dataTransfer || !e.dataTransfer.items) return;
+
+      for (let i = 0; i < e.dataTransfer.items.length; i++) {
+        const item = e.dataTransfer.items[i];
+
+        // Chroma file types
+        if (getFileType(item) === FileTypes.Chroma) {
+          e.dataTransfer.dropEffect = "copy";
+
+          app.classList.add("dragover");
+
+          return;
+        }
+      }
+    };
+
+    app.ondragleave = () => app.classList.remove("dragover");
+
+    app.ondrop = async (e) => {
+      e.preventDefault();
+
+      app.classList.remove("dragover");
+
+      const dt = e.dataTransfer;
+
+      if (!dt) {
+        return;
+      }
+
+      // File (works in Chrome/Brave and some Firefox cases)
+      if (dt.files && dt.files.length > 0) {
+        const f = dt.files[0];
+
+        if (f && getFileType(f) === FileTypes.Chroma) {
+          await this._project.loadChroma(f);
+          this._setProject(this._project.get());
+        }
+        return;
+      }
+
+      // File via items
+      if (dt.items && dt.items.length > 0) {
+        for (const item of dt.items) {
+          if (item.kind === "file") {
+            const f = item.getAsFile();
+            if (f && getFileType(f) === FileTypes.Chroma) {
+              await this._project.loadChroma(f);
+              this._setProject(this._project.get());
+              return;
+            }
+          }
+        }
+      }
+    };
   }
 
   _editMode = false;

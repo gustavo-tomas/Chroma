@@ -113,6 +113,17 @@ code {
   padding: var(--inner-margin);
 }
 
+#app.dragover::after {
+  outline: 4px dashed #007acc;
+  outline-offset: -4px;
+  content: "";
+  position: fixed;
+  inset: 0;
+  background-color: rgba(0, 0, 0, 0.57);
+  pointer-events: none;
+  z-index: 9999;
+}
+
 /* Theory tab on the left */
 #theory-tab {
   display: flex;
@@ -429,6 +440,7 @@ code {
 
 .tex-slot.dragover {
   outline: 2px dashed #007acc;
+  outline-offset: -2px;
 }
 
 /* Codemirror style */

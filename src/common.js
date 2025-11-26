@@ -14,4 +14,31 @@ const CameraTypes = {
   Orthographic: "orthographic",
 };
 
-export { ShaderType, InputGeometryTypes, CameraTypes };
+const FileTypes = {
+  Unknown: "unknown",
+  Image: "image",
+  Chroma: "chroma",
+};
+
+function getFileType(file) {
+  const type = file.type;
+
+  // Chroma
+  if (
+    type === "" || // @TODO: This is unfortunate
+    type === "application/zip" ||
+    type === "application/x-zip-compressed" ||
+    type === "application/x-zip"
+  ) {
+    return FileTypes.Chroma;
+  }
+
+  // Image
+  if (type.startsWith("image/")) {
+    return FileTypes.Image;
+  }
+
+  return FileTypes.Unknown;
+}
+
+export { ShaderType, InputGeometryTypes, CameraTypes, FileTypes, getFileType };
