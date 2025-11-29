@@ -243,7 +243,6 @@ class App {
     }
   }
 
-  // @TODO: this can also be drag n drop
   async _onProjectLoad() {
     await this._project.load();
     this._setProject(this._project.get());
