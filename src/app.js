@@ -282,7 +282,7 @@ class App {
         addImgBtn = document.createElement("button");
         addImgBtn.id = "add-image-button";
         addImgBtn.className = "button-type-1";
-        addImgBtn.textContent = "Add image";
+        addImgBtn.textContent = "Add Image";
         const wrap = document.getElementById("project-buttons");
         wrap && wrap.prepend(addImgBtn);
       }
