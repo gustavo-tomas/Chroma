@@ -286,16 +286,7 @@ class Graphics {
 
     initTexturePanelStatic(this._material, (texture, meta) => {
       const ch = (texture || "").toLowerCase();
-      const key =
-        ch === "u_texture0"
-          ? "i0"
-          : ch === "u_texture1"
-          ? "i1"
-          : ch === "u_texture2"
-          ? "i2"
-          : ch === "u_texture3"
-          ? "i3"
-          : null;
+      const key = this._getChannelFromTextureUniform(ch);
 
       if (!key) return;
       this._u_textureMeta[key] = meta
@@ -306,6 +297,36 @@ class Graphics {
           }
         : null;
     });
+  }
+
+  // Ugly but it works
+  _getChannelFromTextureUniform(textureChannel) {
+    if (textureChannel === "u_texture0") {
+      return "i0";
+    } else if (textureChannel === "u_texture1") {
+      return "i1";
+    } else if (textureChannel === "u_texture2") {
+      return "i2";
+    } else if (textureChannel === "u_texture3") {
+      return "i3";
+    } else {
+      return null;
+    }
+  }
+
+  // Ugly but it works
+  _getTextureUniformFromChannel(ch) {
+    if (ch === "i0") {
+      return "u_texture0";
+    } else if (ch === "i1") {
+      return "u_texture1";
+    } else if (ch === "i2") {
+      return "u_texture2";
+    } else if (ch === "i3") {
+      return "u_texture3";
+    } else {
+      return null;
+    }
   }
 
   onShaderCodeUpdate(vertexShader, fragmentShader) {
@@ -765,16 +786,8 @@ class Graphics {
   }
 
   restoreTextureFromObjectUrl(ch, url, mime, pathHint) {
-    const name =
-      ch === "i0"
-        ? "u_texture0"
-        : ch === "i1"
-        ? "u_texture1"
-        : ch === "i2"
-        ? "u_texture2"
-        : ch === "i3"
-        ? "u_texture3"
-        : null;
+    const name = this._getTextureUniformFromChannel(ch);
+
     if (!name || !url) return;
 
     const img = new Image();
@@ -810,14 +823,9 @@ class Graphics {
       this._material.needsUpdate = true;
 
       this._u_textureMeta = this._u_textureMeta || {};
-      const key =
-        name === "u_texture0"
-          ? "i0"
-          : name === "u_texture1"
-          ? "i1"
-          : name === "u_texture2"
-          ? "i2"
-          : "i3";
+
+      const key = this._getChannelFromTextureUniform(name);
+
       this._u_textureMeta[key] = {
         src: url,
         name: pathHint || key,
@@ -828,16 +836,8 @@ class Graphics {
   }
 
   clearTexture(ch) {
-    const name =
-      ch === "i0"
-        ? "u_texture0"
-        : ch === "i1"
-        ? "u_texture1"
-        : ch === "i2"
-        ? "u_texture2"
-        : ch === "i3"
-        ? "u_texture3"
-        : null;
+    const name = this._getTextureUniformFromChannel(ch);
+
     if (!name) return;
 
     // materials uniforms
@@ -855,14 +855,8 @@ class Graphics {
     if (slot) slot.style.backgroundImage = "none";
 
     // clears meta
-    const key =
-      name === "u_texture0"
-        ? "i0"
-        : name === "u_texture1"
-        ? "i1"
-        : name === "u_texture2"
-        ? "i2"
-        : "i3";
+    const key = this._getChannelFromTextureUniform(name);
+
     this._u_textureMeta[key] = null;
 
     this._material.needsUpdate = true;
