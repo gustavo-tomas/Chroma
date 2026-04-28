@@ -98,7 +98,16 @@ class Editor {
       shaderType === TabType.Vertex ? this._vertexView : this._fragmentView;
 
     shaderLogs.forEach((shaderLog) => {
-      const line = view.state.doc.line(shaderLog.lineNumber);
+      let line = view.state.doc.line(1);
+
+      // GLSL errors can be hard to parse (and a bit unpredictable) so we use
+      // try catch as a safeguard to prevent crashes
+      try {
+        line = view.state.doc.line(shaderLog.lineNumber);
+      } catch (err) {
+        console.error(err);
+      }
+
       let from = line.from;
       let to = line.to;
 
