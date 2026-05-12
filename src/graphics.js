@@ -871,11 +871,10 @@ class Graphics {
     mousePosition.x = event.clientX - boundingRect.left;
     mousePosition.y = event.clientY - boundingRect.top;
 
-    // Convert to range [-1, 1] with (0, 0) at the center
+    // Convert to range [0, 0] with (0, 0) at the left bottom
     mousePosition.x = mousePosition.x / canvas.clientWidth;
     mousePosition.y = mousePosition.y / canvas.clientHeight;
-    mousePosition.x = mousePosition.x * 2.0 - 1.0;
-    mousePosition.y = mousePosition.y * -2.0 + 1.0;
+    mousePosition.y = 1.0 - mousePosition.y;
 
     this._mousePositionNormalized = mousePosition;
   }
