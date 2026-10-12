@@ -32,8 +32,19 @@ class App {
 
           return result;
         },
-      })
+      }),
     );
+
+    const renderer = {
+      link({ href, title, text }) {
+        // Add target="_blank" for external links
+        const target = ' target="_blank" rel="noopener noreferrer"';
+        const tab_title = title ? ` title="${title}"` : "";
+        return `<a href="${href}"${tab_title}${target}>${text}</a>`;
+      },
+    };
+
+    this._marked.use({ renderer });
 
     this._marked.setOptions({ async: false, gfm: true, breaks: true });
 
@@ -224,7 +235,7 @@ class App {
     projectData.Shaders.Camera.values = cameraValues;
     projectData.Shaders.Vertex = this._editor.getShaderCode(ShaderType.Vertex);
     projectData.Shaders.Fragment = this._editor.getShaderCode(
-      ShaderType.Fragment
+      ShaderType.Fragment,
     );
     projectData.Shaders.Uniforms = this._graphics.getUserUniforms();
 
@@ -272,7 +283,7 @@ class App {
       tabTitleEditor.textContent = this._convertToMarkdown(tabTitle.innerHTML);
 
       tabContentEditor.textContent = this._convertToMarkdown(
-        tabContent.innerHTML
+        tabContent.innerHTML,
       );
 
       let addImgBtn = document.getElementById("add-image-button");
@@ -371,7 +382,7 @@ class App {
             ch,
             pack.url,
             pack.mime,
-            meta.path
+            meta.path,
           );
           restored.add(ch);
         }
