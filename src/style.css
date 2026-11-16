@@ -551,12 +551,13 @@ code {
   box-shadow: var(--box-shadow);
 }
 
-#config-menu-item-list {
+.config-menu-item-list {
   padding: 0;
 }
 
-#config-menu-item {
+.config-menu-item {
   display: flex;
   justify-content: space-between;
+  padding-bottom: 0.2em;
 }
 

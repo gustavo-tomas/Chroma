@@ -399,13 +399,31 @@
     <div id="config-menu-overlay">
       <div id="config-menu">
         <h3>Editor configuration</h3>
-        <ul id="config-menu-item-list">
-          <li id="config-menu-item">
-            <div>Keybinds</div>
+        <ul class="config-menu-item-list">
+          <li class="config-menu-item">
+            <div>Keymap</div>
             <select id="select-keybind">
               <option value="default" selected>Default</option>
               <option value="vim" >Vim</option>
             </select>
+          </li>
+        </ul>
+
+        <hr>
+      
+        Default Keybinds
+        <ul class="config-menu-item-list">
+          <li class="config-menu-item">
+            <div>Run Code</div> <div>Alt + Enter</div>
+          </li>
+          <li class="config-menu-item">
+            <div>Save project</div> <div>Ctrl + S</div>
+          </li>
+          <li class="config-menu-item">
+            <div>Open project</div> <div>Ctrl + O</div>
+          </li>
+          <li class="config-menu-item">
+            <div>Edit project</div> <div>Ctrl + E</div>
           </li>
         </ul>
       </div>
