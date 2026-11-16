@@ -60,7 +60,7 @@
             <button id="tab-vertex" class="active">Vertex Shader</button>
             <button id="tab-fragment">Fragment Shader</button>
             <div style="flex-grow: 1;"></div>
-            <button id="vim-button">Vim</button>
+            <button id="config-button">Config</button>
           </div>
           <div id="shader-controls">
             <button
@@ -394,6 +394,23 @@
         </div>
       </div>
     </div>
+
+    <!-- config menu -->
+    <div id="config-menu-overlay">
+      <div id="config-menu">
+        <h3>Editor configuration</h3>
+        <ul id="config-menu-item-list">
+          <li id="config-menu-item">
+            <div>Keybinds</div>
+            <select id="select-keybind">
+              <option value="default" selected>Default</option>
+              <option value="vim" >Vim</option>
+            </select>
+          </li>
+        </ul>
+      </div>
+    </div>
+
     <script type="module" src="/src/main.js"></script>
   </body>
 </html>

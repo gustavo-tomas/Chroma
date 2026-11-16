@@ -5,7 +5,6 @@ import { indentWithTab } from "@codemirror/commands";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
 import { LRLanguage } from "@codemirror/language";
 import { parser } from "lezer-glsl";
-import { vim } from "@replit/codemirror-vim"
 import { StateEffect } from "@codemirror/state"
 
 const TabType = {
@@ -24,6 +23,14 @@ class EditorConstructorParams {
   initialVertex = "";
   initialFragment = "";
 }
+
+const defaultEditorExtensions = [
+  basicSetup,
+  lintGutter(),
+  keymap.of([indentWithTab]),
+  EditorView.lineWrapping,
+  LRLanguage.define({ parser: parser }), // glsl syntax highlighting
+];
 
 class Editor {
   constructor(params) {
@@ -55,58 +62,22 @@ class Editor {
     // We can also access this as a map using indices if necessary
     this._tabs = [geometryTab, vertexTab, fragmentTab];
 
-    const editorExtensions = [
-      basicSetup,
-      lintGutter(),
-      keymap.of([indentWithTab]),
-      EditorView.lineWrapping,
-      LRLanguage.define({ parser: parser }), // glsl syntax highlighting
-    ];
-
     // initialize CodeMirror view
     this._vertexView = new EditorView({
       doc: params.initialVertex,
       parent: this._shaderDisplayVertex,
-      extensions: editorExtensions
+      extensions: defaultEditorExtensions
     });
 
     this._fragmentView = new EditorView({
       doc: params.initialFragment,
       parent: this._shaderDisplayFragment,
-      extensions: editorExtensions
+      extensions: defaultEditorExtensions
     });
 
     // attach click handlers to switch tabs
     this._tabs.forEach((tab) => {
       tab.button.addEventListener("click", () => this._switchTab(tab.type));
-    });
-
-    // vim mode handling
-    this._vimMode = false;
-    const vimButton = document.getElementById("vim-button");
-
-    vimButton.addEventListener("click", () => {
-      if (this._vimMode) {
-        this._fragmentView.dispatch({
-          effects: StateEffect.reconfigure.of(editorExtensions)
-        });
-        this._vertexView.dispatch({
-          effects: StateEffect.reconfigure.of(editorExtensions)
-        });
-
-        this._vimMode = false;
-      } else {
-        this._fragmentView.dispatch({
-          effects: StateEffect.appendConfig.of(vim())
-        });
-        this._vertexView.dispatch({
-          effects: StateEffect.appendConfig.of(vim())
-        });
-
-        this._vimMode = true;
-      }
-
-      vimButton.classList.toggle("active", this._vimMode);
     });
 
     this._diagnosticsVertex = [];
@@ -184,6 +155,15 @@ class Editor {
       : this._fragmentView.state.doc.toString();
   }
 
+  reconfigureEditorViews(extensions) {
+    this._fragmentView.dispatch({
+      effects: StateEffect.reconfigure.of(extensions)
+    });
+    this._vertexView.dispatch({
+      effects: StateEffect.reconfigure.of(extensions)
+    });
+  }
+
   _switchTab(tabType, cursorPosition = -1) {
     // update state
     this._currentTab = tabType;
@@ -234,4 +214,4 @@ class Editor {
   }
 }
 
-export { Editor, EditorConstructorParams };
+export { Editor, EditorConstructorParams, defaultEditorExtensions };

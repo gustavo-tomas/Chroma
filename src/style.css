@@ -505,3 +505,58 @@ code {
   margin: 0;
   display: none;
 }
+
+/* Editor configuration menu */
+#config-menu-overlay {
+  position: fixed;
+  inset: 0;
+  overflow: auto;
+  z-index: var(--z-modal);
+  visibility: hidden;
+
+  display: flex;
+  justify-content: center;
+  align-items: center;
+
+  background-color: color-mix(in srgb, var(--sd-background) 80%, transparent);
+  backdrop-filter: blur(4px);
+}
+
+#config-menu-overlay[data-state="open"] {
+  animation: fade-in 150ms ease-out;
+}
+
+#config-menu-overlay[data-state="closed"] {
+  animation: fade-out 150ms ease-in;
+}
+
+@keyframes fade-in {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+@keyframes fade-out {
+  from { opacity: 1; }
+  to   { opacity: 0; }
+}
+
+#config-menu {
+  min-width: 300px;
+  min-height: 200px;
+
+  padding: 30px;
+  margin: var(--inner-margin);
+  background-color: var(--fg-color);
+  border-radius: var(--div-border-radius);
+  box-shadow: var(--box-shadow);
+}
+
+#config-menu-item-list {
+  padding: 0;
+}
+
+#config-menu-item {
+  display: flex;
+  justify-content: space-between;
+}
+
