@@ -19,15 +19,22 @@ function registerConfigMenuEvents(editor) {
   })
 
   // keybinds
-  
   const vimEditorExtensions = [...defaultEditorExtensions]; //array copy trick
-  vimEditorExtensions.push(vim({status: false}));
+  vimEditorExtensions.push(vim({status: true}));
+
+  const runCodeButton = document.getElementById("update-shader-btn");
 
   selectKeybind.addEventListener("change", (event) => {
     if (event.target.value === "default") {
       editor.reconfigureEditorViews(defaultEditorExtensions);
+
+      // removes the extre status bar space
+      runCodeButton.style.marginBottom = "0px";
     } else if (event.target.value == "vim") {
       editor.reconfigureEditorViews(vimEditorExtensions);
+
+      // adds a little of space bellow to make for the status bar
+      runCodeButton.style.marginBottom = "8px";
     }
   })
 }
