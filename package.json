@@ -13,6 +13,7 @@
   },
   "dependencies": {
     "@codemirror/language": "^6.11.3",
+    "@replit/codemirror-vim": "^6.4.0",
     "codemirror": "^6.0.1",
     "highlight.js": "^11.11.1",
     "jszip": "^3.10.1",

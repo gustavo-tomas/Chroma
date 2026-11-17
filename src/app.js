@@ -8,6 +8,7 @@ import { markedHighlight } from "marked-highlight";
 import hljs from "highlight.js";
 import TurndownService from "turndown";
 import * as TPG from "turndown-plugin-gfm";
+import { registerConfigMenuEvents } from "./config_menu.js";
 
 class App {
   async init() {
@@ -102,6 +103,7 @@ class App {
     editorParams.initialFragment = fragmentCode;
 
     this._editor = new Editor(editorParams);
+    registerConfigMenuEvents(this._editor);
 
     this._setProject(projectData);
 

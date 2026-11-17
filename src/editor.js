@@ -5,6 +5,7 @@ import { indentWithTab } from "@codemirror/commands";
 import { lintGutter, setDiagnostics } from "@codemirror/lint";
 import { LRLanguage } from "@codemirror/language";
 import { parser } from "lezer-glsl";
+import { StateEffect } from "@codemirror/state"
 
 const TabType = {
   Geometry: "geometry",
@@ -22,6 +23,14 @@ class EditorConstructorParams {
   initialVertex = "";
   initialFragment = "";
 }
+
+const defaultEditorExtensions = [
+  basicSetup,
+  lintGutter(),
+  keymap.of([indentWithTab]),
+  EditorView.lineWrapping,
+  LRLanguage.define({ parser: parser }), // glsl syntax highlighting
+];
 
 class Editor {
   constructor(params) {
@@ -57,25 +66,13 @@ class Editor {
     this._vertexView = new EditorView({
       doc: params.initialVertex,
       parent: this._shaderDisplayVertex,
-      extensions: [
-        basicSetup,
-        lintGutter(),
-        keymap.of([indentWithTab]),
-        EditorView.lineWrapping,
-        LRLanguage.define({ parser: parser }), // glsl syntax highlighting
-      ],
+      extensions: defaultEditorExtensions
     });
 
     this._fragmentView = new EditorView({
       doc: params.initialFragment,
       parent: this._shaderDisplayFragment,
-      extensions: [
-        basicSetup,
-        lintGutter(),
-        keymap.of([indentWithTab]),
-        EditorView.lineWrapping,
-        LRLanguage.define({ parser: parser }), // glsl syntax highlighting
-      ],
+      extensions: defaultEditorExtensions
     });
 
     // attach click handlers to switch tabs
@@ -158,6 +155,15 @@ class Editor {
       : this._fragmentView.state.doc.toString();
   }
 
+  reconfigureEditorViews(extensions) {
+    this._fragmentView.dispatch({
+      effects: StateEffect.reconfigure.of(extensions)
+    });
+    this._vertexView.dispatch({
+      effects: StateEffect.reconfigure.of(extensions)
+    });
+  }
+
   _switchTab(tabType, cursorPosition = -1) {
     // update state
     this._currentTab = tabType;
@@ -208,4 +214,4 @@ class Editor {
   }
 }
 
-export { Editor, EditorConstructorParams };
+export { Editor, EditorConstructorParams, defaultEditorExtensions };
